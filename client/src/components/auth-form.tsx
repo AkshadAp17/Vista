@@ -87,7 +87,13 @@ export default function AuthForm() {
             <span className="text-2xl font-bold text-hema-secondary">Hema Motor</span>
           </div>
           <CardTitle>Welcome</CardTitle>
-          <CardDescription>Sign in to your account or create a new one</CardDescription>
+          <CardDescription>
+            Sign in to your account or create a new one
+            <br />
+            <small className="text-xs text-muted-foreground">
+              Note: The first user to sign up will automatically become an admin
+            </small>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="space-y-4">

@@ -22,6 +22,10 @@ export class AuthService {
       throw new Error("User already exists with this email");
     }
 
+    // Check if this is the first user (should be admin)
+    const stats = await storage.getStats();
+    const isFirstUser = stats.totalUsers === 0;
+
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 12);
 
@@ -33,7 +37,7 @@ export class AuthService {
       firstName: data.firstName,
       lastName: data.lastName,
       profileImageUrl: null,
-      isAdmin: false,
+      isAdmin: isFirstUser, // First user becomes admin
     });
 
     return user;
