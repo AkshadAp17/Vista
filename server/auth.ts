@@ -22,9 +22,8 @@ export class AuthService {
       throw new Error("User already exists with this email");
     }
 
-    // Check if this is the first user (should be admin)
-    const stats = await storage.getStats();
-    const isFirstUser = stats.totalUsers === 0;
+    // Check if this is the admin email
+    const isAdmin = data.email === "akshadapstambh37@gmail.com";
 
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 12);
@@ -37,10 +36,32 @@ export class AuthService {
       firstName: data.firstName,
       lastName: data.lastName,
       profileImageUrl: null,
-      isAdmin: isFirstUser, // First user becomes admin
+      isAdmin: isAdmin,
     });
 
     return user;
+  }
+
+  static async initializeAdmin() {
+    // Check if admin already exists
+    const existingAdmin = await storage.getUserByEmail("akshadapstambh37@gmail.com");
+    if (existingAdmin) {
+      return existingAdmin;
+    }
+
+    // Create admin user
+    const hashedPassword = await bcrypt.hash("Akshad@11", 12);
+    const adminUser = await storage.upsertUser({
+      id: randomUUID(),
+      email: "akshadapstambh37@gmail.com",
+      password: hashedPassword,
+      firstName: "Shubam",
+      lastName: "Pujari",
+      profileImageUrl: null,
+      isAdmin: true,
+    });
+
+    return adminUser;
   }
 
   static async login(data: LoginData) {

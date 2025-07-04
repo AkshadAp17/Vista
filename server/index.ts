@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { AuthService } from "./auth";
 
 // Set default session secret if not provided
 if (!process.env.SESSION_SECRET) {
@@ -42,6 +43,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize admin user on startup
+  try {
+    await AuthService.initializeAdmin();
+    log("Admin user initialized successfully");
+  } catch (error) {
+    log("Admin user initialization failed: " + (error as Error).message);
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

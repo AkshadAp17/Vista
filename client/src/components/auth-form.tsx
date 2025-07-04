@@ -78,6 +78,14 @@ export default function AuthForm() {
     signupMutation.mutate(signupData);
   };
 
+  const handleAdminLogin = () => {
+    const adminCredentials = {
+      email: "akshadapstambh37@gmail.com",
+      password: "Akshad@11"
+    };
+    loginMutation.mutate(adminCredentials);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral p-4">
       <Card className="w-full max-w-md">
@@ -130,6 +138,27 @@ export default function AuthForm() {
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? "Logging in..." : "Login"}
+                </Button>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or
+                    </span>
+                  </div>
+                </div>
+                
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleAdminLogin}
+                  disabled={loginMutation.isPending}
+                >
+                  Admin Login
                 </Button>
               </form>
             </TabsContent>
