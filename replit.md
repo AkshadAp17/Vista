@@ -110,6 +110,16 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 04, 2025. Removed "Start Chat" button from admin view and added vehicle ID display
 - July 04, 2025. Enhanced chat system to show unique vehicle IDs in conversations
 - July 04, 2025. Added notifications schema for admin chat request notifications
+- July 04, 2025. Migration completed from Replit Agent to Replit environment with PostgreSQL database setup
+- July 04, 2025. Created initial admin user with credentials stored in replit.md for easy reference
+
+## Admin Credentials
+
+**Your admin login credentials:**
+- Email: akshadapastambh37@gmail.com
+- Password: Akshad@11
+
+Note: These credentials can be updated through the admin settings panel after logging in. The admin account has full access to the platform including user management, vehicle approval, and system settings.
 
 ## User Preferences
 
