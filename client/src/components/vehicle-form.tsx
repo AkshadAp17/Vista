@@ -29,9 +29,23 @@ import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
 const vehicleFormSchema = insertVehicleSchema.extend({
-  price: z.string().min(1, "Price is required").transform(val => parseFloat(val)),
-  year: z.string().min(4, "Year must be 4 digits").transform(val => parseInt(val)),
-  kmDriven: z.string().min(1, "KM driven is required").transform(val => parseInt(val)),
+  price: z.string().min(1, "Price is required").transform(val => {
+    const num = parseFloat(val);
+    if (isNaN(num)) throw new Error("Invalid price");
+    return num.toString();
+  }),
+  year: z.string().min(4, "Year must be 4 digits").transform(val => {
+    const num = parseInt(val);
+    if (isNaN(num) || num < 1900 || num > new Date().getFullYear() + 1) {
+      throw new Error("Invalid year");
+    }
+    return num;
+  }),
+  kmDriven: z.string().min(1, "KM driven is required").transform(val => {
+    const num = parseInt(val);
+    if (isNaN(num) || num < 0) throw new Error("Invalid KM driven");
+    return num;
+  }),
   engineCapacity: z.string().optional(),
   description: z.string().optional(),
 });
@@ -53,14 +67,14 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
     defaultValues: {
       brand: vehicle?.brand || "",
       model: vehicle?.model || "",
-      year: vehicle?.year?.toString() || "",
+      year: vehicle?.year?.toString() || "2024",
       price: vehicle?.price?.toString() || "",
       vehicleNumber: vehicle?.vehicleNumber || "",
-      engineCapacity: vehicle?.engineCapacity || undefined,
+      engineCapacity: vehicle?.engineCapacity || "",
       fuelType: vehicle?.fuelType || "petrol",
-      kmDriven: vehicle?.kmDriven?.toString() || "",
+      kmDriven: vehicle?.kmDriven?.toString() || "0",
       location: vehicle?.location || "",
-      description: vehicle?.description || undefined,
+      description: vehicle?.description || "",
       condition: vehicle?.condition || "good",
       vehicleType: vehicle?.vehicleType || "motorcycle",
       isFeatured: vehicle?.isFeatured ?? false,
@@ -192,7 +206,7 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select year" />

@@ -145,27 +145,19 @@ export class AuthService {
   }
 
   static async login(data: LoginData) {
-    console.log("Login attempt for email:", data.email);
-    
     // Find user by email
     const user = await storage.getUserByEmail(data.email);
-    console.log("User found:", user ? "Yes" : "No");
-    
     if (!user) {
       throw new Error("Invalid email or password");
     }
 
     // Verify password
-    console.log("Checking password for user:", user.email);
     const isValidPassword = await bcrypt.compare(data.password, user.password);
-    console.log("Password valid:", isValidPassword);
-    
     if (!isValidPassword) {
       throw new Error("Invalid email or password");
     }
 
     // Check if email is verified (required for ALL users including admin)
-    console.log("Email verified:", user.isEmailVerified);
     if (!user.isEmailVerified) {
       throw new Error("Please verify your email before logging in. Check your email for verification code.");
     }
