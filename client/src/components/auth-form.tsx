@@ -129,6 +129,7 @@ export default function AuthForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Login attempt with data:", loginData);
     loginMutation.mutate(loginData);
   };
 
