@@ -33,7 +33,7 @@ export class AuthService {
     }
 
     // Check if this is the admin email
-    const isAdmin = data.email === "akshadapstambh37@gmail.com";
+    const isAdmin = data.email === "akshadapastambh37@gmail.com";
 
     // Generate verification code for ALL users including admin
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -69,7 +69,7 @@ export class AuthService {
 
   static async initializeAdmin() {
     // Check if admin already exists
-    const existingAdmin = await storage.getUserByEmail("akshadapstambh37@gmail.com");
+    const existingAdmin = await storage.getUserByEmail("akshadapastambh37@gmail.com");
     if (existingAdmin) {
       return existingAdmin;
     }
@@ -81,7 +81,7 @@ export class AuthService {
     
     const adminUser = await storage.upsertUser({
       id: randomUUID(),
-      email: "akshadapstambh37@gmail.com",
+      email: "akshadapastambh37@gmail.com",
       password: hashedPassword,
       firstName: "Shubam",
       lastName: "Pujari",
@@ -94,7 +94,7 @@ export class AuthService {
 
     // Send verification email to admin
     try {
-      await this.sendVerificationEmail("akshadapstambh37@gmail.com", verificationCode);
+      await this.sendVerificationEmail("akshadapastambh37@gmail.com", verificationCode);
       console.log("Admin verification email sent successfully");
     } catch (error) {
       console.error("Failed to send admin verification email:", error);
