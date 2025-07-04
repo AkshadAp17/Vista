@@ -12,7 +12,7 @@ import UserDashboard from "@/pages/user-dashboard";
 import VehicleDetail from "@/pages/vehicle-detail";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -29,8 +29,12 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/dashboard" component={UserDashboard} />
+          <Route path="/admin">
+            {user?.isAdmin ? <AdminDashboard /> : <UserDashboard />}
+          </Route>
+          <Route path="/dashboard">
+            {user?.isAdmin ? <AdminDashboard /> : <UserDashboard />}
+          </Route>
           <Route path="/vehicle/:id" component={VehicleDetail} />
         </>
       )}
