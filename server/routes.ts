@@ -366,7 +366,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if chat room already exists
       const existingChatRoom = await storage.getChatRoom(vehicleId, userId);
       if (existingChatRoom) {
-        return res.json(existingChatRoom);
+        // Return existing chat room with messages
+        const chatRoomWithMessages = await storage.getChatRoomWithMessages(existingChatRoom.id);
+        return res.json(chatRoomWithMessages);
       }
       
       // Get vehicle details to get seller ID
@@ -382,10 +384,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const chatRoom = await storage.createChatRoom(chatRoomData);
-      res.json(chatRoom);
+      const chatRoomWithMessages = await storage.getChatRoomWithMessages(chatRoom.id);
+      res.json(chatRoomWithMessages);
     } catch (error) {
       console.error("Error creating chat room:", error);
       res.status(500).json({ message: "Failed to create chat room" });
+    }
+  });
+
+  app.post('/api/chat-rooms/:id/messages', isAuth, async (req: any, res) => {
+    try {
+      const chatRoomId = parseInt(req.params.id);
+      const userId = req.session.userId;
+      const { content } = req.body;
+      
+      // Verify user is part of the chat room
+      const chatRoom = await storage.getChatRoomWithMessages(chatRoomId);
+      if (!chatRoom) {
+        return res.status(404).json({ message: "Chat room not found" });
+      }
+      
+      if (chatRoom.buyerId !== userId && chatRoom.sellerId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to send messages in this chat room" });
+      }
+      
+      const messageData = insertMessageSchema.parse({
+        chatRoomId,
+        senderId: userId,
+        content,
+      });
+      
+      const message = await storage.addMessage(messageData);
+      const messageWithSender = {
+        ...message,
+        sender: await storage.getUser(userId),
+      };
+      
+      res.json(messageWithSender);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      res.status(500).json({ message: "Failed to send message" });
     }
   });
 

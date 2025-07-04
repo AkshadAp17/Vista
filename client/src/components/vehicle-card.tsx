@@ -1,7 +1,13 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Eye, MessageCircle, MapPin, Calendar, Gauge, Camera } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import VehicleChatDialog from "./vehicle-chat-dialog";
 
 interface VehicleCardProps {
   vehicle: {
@@ -25,13 +31,27 @@ interface VehicleCardProps {
 }
 
 export default function VehicleCard({ vehicle }: VehicleCardProps) {
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [chatOpen, setChatOpen] = useState(false);
+
   const handleViewDetails = () => {
     window.location.href = `/vehicle/${vehicle.id}`;
   };
 
   const handleStartChat = () => {
-    // This will be handled by the vehicle detail page
-    window.location.href = `/vehicle/${vehicle.id}`;
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to start a chat with the seller.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Open chat dialog
+    setChatOpen(true);
   };
 
   return (
@@ -104,6 +124,13 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           </Button>
         </div>
       </CardContent>
+      
+      {/* Chat Dialog */}
+      <VehicleChatDialog
+        open={chatOpen}
+        onOpenChange={setChatOpen}
+        vehicle={vehicle}
+      />
     </Card>
   );
 }
