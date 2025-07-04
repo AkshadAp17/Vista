@@ -8,11 +8,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Bike, Plus, User, Settings, LogOut, Menu } from "lucide-react";
+import SettingsForm from "@/components/settings-form";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
@@ -63,11 +71,17 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
+                    <DropdownMenuItem onClick={() => {
+                      if ((user as any)?.isAdmin) {
+                        window.location.href = '/admin';
+                      } else {
+                        window.location.href = '/dashboard';
+                      }
+                    }}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Dashboard</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </DropdownMenuItem>
@@ -118,6 +132,16 @@ export default function Header() {
           </div>
         )}
       </div>
+
+      {/* Settings Modal */}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Settings</DialogTitle>
+          </DialogHeader>
+          <SettingsForm isAdmin={(user as any)?.isAdmin} />
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

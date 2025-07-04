@@ -73,7 +73,10 @@ export default function Landing() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button className="bg-hema-orange text-white py-3 px-6 hover:bg-hema-orange/90">
+              <Button 
+                className="bg-hema-orange text-white py-3 px-6 hover:bg-hema-orange/90"
+                onClick={() => window.location.href = '/api/login'}
+              >
                 <Search className="h-4 w-4 mr-2" />
                 Search
               </Button>
