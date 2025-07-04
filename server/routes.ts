@@ -12,6 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Simple session-based auth middleware
   const isAuth = (req: any, res: any, next: any) => {
+    console.log("Session check:", { sessionId: req.session?.id, userId: req.session?.userId, hasSession: !!req.session });
     if (req.session?.userId) {
       return next();
     }
