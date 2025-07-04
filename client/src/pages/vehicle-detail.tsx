@@ -149,9 +149,20 @@ export default function VehicleDetail() {
           {/* Vehicle Images */}
           <div className="space-y-4">
             <div className="relative">
-              <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                <Camera className="h-12 w-12 text-gray-400" />
-              </div>
+              {vehicle.images && vehicle.images.length > 0 ? (
+                <img 
+                  src={vehicle.images[0]} 
+                  alt={`${vehicle.brand} ${vehicle.model}`}
+                  className="w-full h-64 object-cover rounded-lg"
+                />
+              ) : (
+                <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <Camera className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">No images available</p>
+                  </div>
+                </div>
+              )}
               <div className="absolute top-3 right-3 flex space-x-2">
                 <Button size="sm" variant="outline" className="bg-white">
                   <Heart className="h-4 w-4" />
@@ -163,13 +174,25 @@ export default function VehicleDetail() {
             </div>
             
             <div className="grid grid-cols-4 gap-2">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="w-full h-16 bg-gray-200 rounded cursor-pointer hover:ring-2 hover:ring-hema-orange">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Camera className="h-4 w-4 text-gray-400" />
+              {vehicle.images && vehicle.images.length > 0 ? (
+                vehicle.images.slice(0, 4).map((image: string, i: number) => (
+                  <div key={i} className="w-full h-16 bg-gray-200 rounded cursor-pointer hover:ring-2 hover:ring-hema-orange overflow-hidden">
+                    <img 
+                      src={image} 
+                      alt={`${vehicle.brand} ${vehicle.model} ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                [...Array(4)].map((_, i) => (
+                  <div key={i} className="w-full h-16 bg-gray-200 rounded cursor-pointer hover:ring-2 hover:ring-hema-orange">
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Camera className="h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -296,6 +319,16 @@ export default function VehicleDetail() {
                 variant="outline" 
                 className="w-full"
                 disabled={!vehicle.isActive}
+                onClick={() => {
+                  if (vehicle.seller?.phoneNumber) {
+                    window.open(`tel:${vehicle.seller.phoneNumber}`, '_self');
+                  } else {
+                    toast({
+                      title: "Contact Information",
+                      description: `Contact ${vehicle.seller?.firstName} ${vehicle.seller?.lastName} for more details about this vehicle.`,
+                    });
+                  }
+                }}
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Contact Seller

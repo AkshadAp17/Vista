@@ -56,6 +56,7 @@ const vehicleFormSchema = z.object({
   vehicleType: z.string().min(1, "Vehicle type is required"),
   engineCapacity: z.string().optional(),
   description: z.string().optional(),
+  images: z.array(z.string()).optional(),
   isFeatured: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
@@ -189,18 +190,41 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
     console.log("Form valid:", form.formState.isValid);
     setIsSubmitting(true);
     try {
+      // Convert photos to base64 strings
+      const imageUrls: string[] = [];
+      for (const photo of photos) {
+        const base64 = await convertFileToBase64(photo);
+        imageUrls.push(base64);
+      }
+      
+      // Include images in the submission data
+      const vehicleDataWithImages = {
+        ...data,
+        images: imageUrls.length > 0 ? imageUrls : undefined
+      };
+      
       if (vehicle) {
         console.log("Updating vehicle with ID:", vehicle.id);
-        await updateVehicleMutation.mutateAsync(data);
+        await updateVehicleMutation.mutateAsync(vehicleDataWithImages);
       } else {
-        console.log("Creating new vehicle");
-        await createVehicleMutation.mutateAsync(data);
+        console.log("Creating new vehicle with images:", imageUrls.length);
+        await createVehicleMutation.mutateAsync(vehicleDataWithImages);
       }
     } catch (error) {
       console.error("Form submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Helper function to convert file to base64
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
 
   const currentYear = new Date().getFullYear();
