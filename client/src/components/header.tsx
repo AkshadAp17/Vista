@@ -42,7 +42,7 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
-                {user?.isAdmin && (
+                {user && (user as any)?.isAdmin && (
                   <Button 
                     variant="outline"
                     onClick={() => window.location.href = '/admin'}
@@ -55,9 +55,9 @@ export default function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.profileImageUrl || ""} alt="Profile" />
+                        <AvatarImage src={(user as any)?.profileImageUrl || ""} alt="Profile" />
                         <AvatarFallback>
-                          {user?.firstName?.[0]}{user?.lastName?.[0]}
+                          {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -71,7 +71,7 @@ export default function Header() {
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.location.href = '/api/logout'}>
+                    <DropdownMenuItem onClick={() => window.location.href = '/api/auth/logout'}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
                     </DropdownMenuItem>

@@ -66,7 +66,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "Could not log out" });
       }
       res.clearCookie('connect.sid');
-      res.json({ message: "Logged out successfully" });
+      // Redirect to landing page after successful logout
+      res.redirect('/');
     });
   });
 
