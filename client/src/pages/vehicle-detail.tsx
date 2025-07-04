@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
@@ -5,6 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { 
   ArrowLeft, 
   Heart, 
@@ -17,7 +24,9 @@ import {
   Fuel,
   User,
   Shield,
-  Camera
+  Camera,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -28,6 +37,8 @@ export default function VehicleDetail() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showSellerProfile, setShowSellerProfile] = useState(false);
 
   const { data: vehicle, isLoading } = useQuery({
     queryKey: [`/api/vehicles/${id}`],
@@ -40,9 +51,13 @@ export default function VehicleDetail() {
     onSuccess: (response) => {
       toast({
         title: "Chat Started",
-        description: "You can now chat with the seller about this vehicle",
+        description: "Redirecting to your conversations...",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
+      // Redirect to dashboard with chat focus
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 1000);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -149,12 +164,41 @@ export default function VehicleDetail() {
           {/* Vehicle Images */}
           <div className="space-y-4">
             <div className="relative">
-              {vehicle.images && vehicle.images.length > 0 ? (
-                <img 
-                  src={vehicle.images[0]} 
-                  alt={`${vehicle.brand} ${vehicle.model}`}
-                  className="w-full h-64 object-cover rounded-lg"
-                />
+              {vehicle?.images && vehicle.images.length > 0 ? (
+                <>
+                  <img 
+                    src={vehicle.images[currentImageIndex] || vehicle.images[0]} 
+                    alt={`${vehicle.brand} ${vehicle.model}`}
+                    className="w-full h-64 object-cover rounded-lg"
+                  />
+                  {vehicle.images.length > 1 && (
+                    <>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white"
+                        onClick={() => setCurrentImageIndex(prev => 
+                          prev === 0 ? vehicle.images.length - 1 : prev - 1
+                        )}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white"
+                        onClick={() => setCurrentImageIndex(prev => 
+                          prev === vehicle.images.length - 1 ? 0 : prev + 1
+                        )}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                      <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-2 py-1 rounded text-xs">
+                        {currentImageIndex + 1} / {vehicle.images.length}
+                      </div>
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                   <div className="text-center">
@@ -174,9 +218,15 @@ export default function VehicleDetail() {
             </div>
             
             <div className="grid grid-cols-4 gap-2">
-              {vehicle.images && vehicle.images.length > 0 ? (
+              {vehicle?.images && vehicle.images.length > 0 ? (
                 vehicle.images.slice(0, 4).map((image: string, i: number) => (
-                  <div key={i} className="w-full h-16 bg-gray-200 rounded cursor-pointer hover:ring-2 hover:ring-hema-orange overflow-hidden">
+                  <div 
+                    key={i} 
+                    className={`w-full h-16 bg-gray-200 rounded cursor-pointer hover:ring-2 hover:ring-hema-orange overflow-hidden ${
+                      currentImageIndex === i ? 'ring-2 ring-hema-orange' : ''
+                    }`}
+                    onClick={() => setCurrentImageIndex(i)}
+                  >
                     <img 
                       src={image} 
                       alt={`${vehicle.brand} ${vehicle.model} ${i + 1}`}
@@ -318,17 +368,8 @@ export default function VehicleDetail() {
                 size="lg" 
                 variant="outline" 
                 className="w-full"
-                disabled={!vehicle.isActive}
-                onClick={() => {
-                  if (vehicle.seller?.phoneNumber) {
-                    window.open(`tel:${vehicle.seller.phoneNumber}`, '_self');
-                  } else {
-                    toast({
-                      title: "Contact Information",
-                      description: `Contact ${vehicle.seller?.firstName} ${vehicle.seller?.lastName} for more details about this vehicle.`,
-                    });
-                  }
-                }}
+                disabled={!vehicle?.isActive}
+                onClick={() => setShowSellerProfile(true)}
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Contact Seller
@@ -402,6 +443,80 @@ export default function VehicleDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Seller Profile Dialog */}
+        <Dialog open={showSellerProfile} onOpenChange={setShowSellerProfile}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Seller Information</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src={vehicle?.seller?.profileImageUrl || ""} />
+                  <AvatarFallback>
+                    {vehicle?.seller?.firstName?.[0]}{vehicle?.seller?.lastName?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-semibold text-lg">
+                    {vehicle?.seller?.firstName} {vehicle?.seller?.lastName}
+                  </h3>
+                  <p className="text-sm text-gray-600">Vehicle Seller</p>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Email:</span>
+                  <span className="font-medium">{vehicle?.seller?.email || 'Not provided'}</span>
+                </div>
+                
+                {vehicle?.seller?.phoneNumber && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Phone:</span>
+                    <span className="font-medium">{vehicle.seller.phoneNumber}</span>
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Vehicle:</span>
+                  <span className="font-medium">{vehicle?.brand} {vehicle?.model}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {vehicle?.seller?.phoneNumber && (
+                  <Button 
+                    className="w-full" 
+                    onClick={() => {
+                      window.open(`tel:${vehicle.seller.phoneNumber}`, '_self');
+                      setShowSellerProfile(false);
+                    }}
+                  >
+                    <Phone className="h-4 w-4 mr-2" />
+                    Call {vehicle.seller.firstName}
+                  </Button>
+                )}
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    const subject = `Inquiry about ${vehicle?.brand} ${vehicle?.model}`;
+                    const body = `Hi ${vehicle?.seller?.firstName},\n\nI'm interested in your ${vehicle?.brand} ${vehicle?.model} listed for ₹${vehicle?.price}. Could you please provide more details?\n\nThanks!`;
+                    window.open(`mailto:${vehicle?.seller?.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_self');
+                    setShowSellerProfile(false);
+                  }}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Send Email
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

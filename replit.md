@@ -131,6 +131,9 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 04, 2025. Fixed chat system bugs: resolved white page issue, prevented self-chat for sellers, improved user interface types
 - July 04, 2025. Added proper seller validation in chat - admins and vehicle owners cannot chat with themselves
 - July 04, 2025. Created test buyer account for proper chat functionality testing between different users
+- July 04, 2025. Fixed chat system navigation - now redirects to dashboard after starting chat instead of showing white page
+- July 04, 2025. Added image navigation controls - forward/backward arrows and thumbnail selection for vehicle images
+- July 04, 2025. Enhanced Contact Seller button - now shows detailed seller profile modal with contact options
 
 ## Admin Credentials
 
