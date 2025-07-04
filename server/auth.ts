@@ -35,7 +35,7 @@ export class AuthService {
     // Check if this is the admin email
     const isAdmin = data.email === "akshadapstambh37@gmail.com";
 
-    // Generate verification code
+    // Generate verification code for ALL users including admin
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -51,19 +51,17 @@ export class AuthService {
       lastName: data.lastName,
       profileImageUrl: null,
       isAdmin: isAdmin,
-      isEmailVerified: isAdmin, // Admin is automatically verified
-      verificationCode: isAdmin ? null : verificationCode,
-      verificationCodeExpiry: isAdmin ? null : verificationCodeExpiry,
+      isEmailVerified: false, // ALL users including admin need email verification
+      verificationCode: verificationCode,
+      verificationCodeExpiry: verificationCodeExpiry,
     });
 
-    // Send verification email (except for admin)
-    if (!isAdmin) {
-      try {
-        await this.sendVerificationEmail(data.email, verificationCode);
-      } catch (error) {
-        console.error("Failed to send verification email:", error);
-        // Don't throw error, allow user creation to succeed
-      }
+    // Send verification email to ALL users including admin
+    try {
+      await this.sendVerificationEmail(data.email, verificationCode);
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+      // Don't throw error, allow user creation to succeed
     }
 
     return user;
@@ -76,8 +74,11 @@ export class AuthService {
       return existingAdmin;
     }
 
-    // Create admin user
+    // Create admin user with email verification required
     const hashedPassword = await bcrypt.hash("Akshad@11", 12);
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    
     const adminUser = await storage.upsertUser({
       id: randomUUID(),
       email: "akshadapstambh37@gmail.com",
@@ -86,7 +87,18 @@ export class AuthService {
       lastName: "Pujari",
       profileImageUrl: null,
       isAdmin: true,
+      isEmailVerified: false, // Admin must verify email
+      verificationCode: verificationCode,
+      verificationCodeExpiry: verificationCodeExpiry,
     });
+
+    // Send verification email to admin
+    try {
+      await this.sendVerificationEmail("akshadapstambh37@gmail.com", verificationCode);
+      console.log("Admin verification email sent successfully");
+    } catch (error) {
+      console.error("Failed to send admin verification email:", error);
+    }
 
     return adminUser;
   }
@@ -143,6 +155,11 @@ export class AuthService {
     const isValidPassword = await bcrypt.compare(data.password, user.password);
     if (!isValidPassword) {
       throw new Error("Invalid email or password");
+    }
+
+    // Check if email is verified (required for ALL users including admin)
+    if (!user.isEmailVerified) {
+      throw new Error("Please verify your email before logging in. Check your email for verification code.");
     }
 
     return user;
