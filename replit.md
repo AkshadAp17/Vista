@@ -122,6 +122,8 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 04, 2025. Fixed chat system bugs: resolved white page issue, prevented self-chat for sellers, improved user interface types
 - July 04, 2025. Added proper seller validation in chat - admins and vehicle owners cannot chat with themselves
 - July 04, 2025. Created test buyer account for proper chat functionality testing between different users
+- July 04, 2025. Migration completed from Replit Agent to Replit environment with PostgreSQL database setup
+- July 04, 2025. Created initial admin user with credentials stored in replit.md for easy reference
 
 ## Admin Credentials
 
