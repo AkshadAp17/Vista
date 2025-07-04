@@ -35,6 +35,7 @@ import {
   IndianRupee
 } from "lucide-react";
 import VehicleForm from "@/components/vehicle-form";
+import SettingsForm from "@/components/settings-form";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminDashboard() {
@@ -132,6 +133,7 @@ export default function AdminDashboard() {
               <p className="text-gray-600">Welcome back, {user?.firstName || 'Admin'}</p>
             </div>
             <div className="flex items-center space-x-4">
+              <SettingsForm isAdmin={true} />
               <Button 
                 variant="outline" 
                 onClick={() => window.location.href = '/'}
@@ -140,7 +142,7 @@ export default function AdminDashboard() {
               </Button>
               <Button 
                 className="bg-hema-orange hover:bg-hema-orange/90"
-                onClick={() => window.location.href = '/api/logout'}
+                onClick={() => window.location.href = '/api/auth/logout'}
               >
                 Logout
               </Button>

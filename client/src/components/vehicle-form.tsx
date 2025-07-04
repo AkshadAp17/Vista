@@ -147,11 +147,14 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
   const onSubmit = async (data: VehicleFormData) => {
     console.log("Form submitted with data:", data);
     console.log("Form errors:", form.formState.errors);
+    console.log("Form valid:", form.formState.isValid);
     setIsSubmitting(true);
     try {
       if (vehicle) {
+        console.log("Updating vehicle with ID:", vehicle.id);
         await updateVehicleMutation.mutateAsync(data);
       } else {
+        console.log("Creating new vehicle");
         await createVehicleMutation.mutateAsync(data);
       }
     } catch (error) {

@@ -98,6 +98,11 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 
 - July 04, 2025. Initial setup
 - July 04, 2025. Implemented secure admin creation system - removed automatic admin generation for security. Only one admin can be created manually by website creator during deployment.
+- July 04, 2025. Fixed logout functionality and session management - updated logout routes to use /api/auth/logout
+- July 04, 2025. Added comprehensive settings/profile management system for both admin and users
+- July 04, 2025. Enhanced dashboard navigation with proper role-based routing and settings functionality
+- July 04, 2025. Added password change functionality with current password verification
+- July 04, 2025. Implemented separate settings forms for admin and user roles with email/password management
 
 ## User Preferences
 

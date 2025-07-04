@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageCircle, Heart, Car, Settings, Home } from "lucide-react";
 import VehicleCard from "@/components/vehicle-card";
 import ChatWidget from "@/components/chat-widget";
+import SettingsForm from "@/components/settings-form";
 
 export default function UserDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -65,6 +66,7 @@ export default function UserDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <SettingsForm isAdmin={false} />
               <Button 
                 variant="outline" 
                 onClick={() => window.location.href = '/'}
@@ -74,7 +76,7 @@ export default function UserDashboard() {
               </Button>
               <Button 
                 className="bg-hema-orange hover:bg-hema-orange/90"
-                onClick={() => window.location.href = '/api/logout'}
+                onClick={() => window.location.href = '/api/auth/logout'}
               >
                 Logout
               </Button>

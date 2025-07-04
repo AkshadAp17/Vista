@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
+import * as bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { getSession } from "./replitAuth";
 import { AuthService } from "./auth";
@@ -59,13 +60,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/auth/logout', (req, res) => {
+  app.get('/api/auth/logout', (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({ message: "Could not log out" });
       }
+      res.clearCookie('connect.sid');
       res.json({ message: "Logged out successfully" });
     });
+  });
+
+  // Profile update route
+  app.put('/api/auth/profile', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { firstName, lastName, email } = req.body;
+      
+      if (!firstName || !lastName || !email) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Check if email is already used by another user
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(400).json({ message: "Email is already in use" });
+      }
+
+      const updatedUser = await storage.updateUser(userId, { firstName, lastName, email });
+      res.json({ message: "Profile updated successfully", user: updatedUser });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Password update route
+  app.put('/api/auth/password', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      await storage.updateUser(userId, { password: hashedNewPassword });
+      
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Error updating password:", error);
+      res.status(500).json({ message: "Failed to update password" });
+    }
   });
 
   app.post('/api/auth/verify-email', async (req, res) => {
