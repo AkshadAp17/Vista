@@ -237,12 +237,12 @@ export default function AdminDashboard() {
                         Add Vehicle
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-w-4xl max-h-[90vh]">
                       <DialogHeader>
                         <DialogTitle>Add New Vehicle</DialogTitle>
                       </DialogHeader>
-                      <div className="max-h-[75vh] overflow-y-auto pr-2">
-                        <VehicleForm />
+                      <div className="overflow-y-auto max-h-[calc(90vh-8rem)] pr-2">
+                        <VehicleForm onSuccess={() => window.location.reload()} />
                       </div>
                     </DialogContent>
                   </Dialog>

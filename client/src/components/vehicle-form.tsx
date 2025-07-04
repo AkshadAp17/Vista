@@ -32,6 +32,8 @@ const vehicleFormSchema = insertVehicleSchema.extend({
   price: z.string().min(1, "Price is required").transform(val => parseFloat(val)),
   year: z.string().min(4, "Year must be 4 digits").transform(val => parseInt(val)),
   kmDriven: z.string().min(1, "KM driven is required").transform(val => parseInt(val)),
+  engineCapacity: z.string().optional(),
+  description: z.string().optional(),
 });
 
 type VehicleFormData = z.infer<typeof vehicleFormSchema>;
@@ -54,14 +56,14 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
       year: vehicle?.year?.toString() || "",
       price: vehicle?.price?.toString() || "",
       vehicleNumber: vehicle?.vehicleNumber || "",
-      engineCapacity: vehicle?.engineCapacity || "",
+      engineCapacity: vehicle?.engineCapacity || undefined,
       fuelType: vehicle?.fuelType || "petrol",
       kmDriven: vehicle?.kmDriven?.toString() || "",
       location: vehicle?.location || "",
-      description: vehicle?.description || "",
+      description: vehicle?.description || undefined,
       condition: vehicle?.condition || "good",
       vehicleType: vehicle?.vehicleType || "motorcycle",
-      isFeatured: vehicle?.isFeatured || false,
+      isFeatured: vehicle?.isFeatured ?? false,
       isActive: vehicle?.isActive ?? true,
     },
   });
@@ -129,6 +131,8 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
   });
 
   const onSubmit = async (data: VehicleFormData) => {
+    console.log("Form submitted with data:", data);
+    console.log("Form errors:", form.formState.errors);
     setIsSubmitting(true);
     try {
       if (vehicle) {
@@ -136,6 +140,8 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
       } else {
         await createVehicleMutation.mutateAsync(data);
       }
+    } catch (error) {
+      console.error("Form submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -387,6 +393,36 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
           )}
         />
 
+        {/* Photo Upload (Optional) */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Vehicle Photos (Optional)
+          </label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              id="photo-upload"
+            />
+            <label
+              htmlFor="photo-upload"
+              className="cursor-pointer flex flex-col items-center space-y-2"
+            >
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <div className="text-sm text-gray-600">
+                <span className="font-medium text-hema-orange">Click to upload</span> or drag and drop
+              </div>
+              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            </label>
+          </div>
+        </div>
+
         {/* Checkboxes */}
         <div className="flex items-center space-x-6">
           <FormField
@@ -396,7 +432,7 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
               <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                 <FormControl>
                   <Checkbox
-                    checked={field.value}
+                    checked={field.value ?? false}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
@@ -417,7 +453,7 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
               <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                 <FormControl>
                   <Checkbox
-                    checked={field.value}
+                    checked={field.value ?? true}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
