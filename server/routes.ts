@@ -1,0 +1,280 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
+import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
+import { insertVehicleSchema, insertChatRoomSchema, insertMessageSchema } from "@shared/schema";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Vehicle routes
+  app.get('/api/vehicles', async (req, res) => {
+    try {
+      const { search, location, priceRange, vehicleType, sellerId } = req.query;
+      
+      const filters: any = {};
+      if (search) filters.search = search as string;
+      if (location) filters.location = location as string;
+      if (vehicleType) filters.vehicleType = vehicleType as string;
+      if (sellerId) filters.sellerId = sellerId as string;
+      if (priceRange) {
+        const [min, max] = (priceRange as string).split(',').map(Number);
+        filters.priceRange = [min, max];
+      }
+
+      const vehicles = await storage.getVehicles(filters);
+      res.json(vehicles);
+    } catch (error) {
+      console.error("Error fetching vehicles:", error);
+      res.status(500).json({ message: "Failed to fetch vehicles" });
+    }
+  });
+
+  app.get('/api/vehicles/featured', async (req, res) => {
+    try {
+      const vehicles = await storage.getFeaturedVehicles();
+      res.json(vehicles);
+    } catch (error) {
+      console.error("Error fetching featured vehicles:", error);
+      res.status(500).json({ message: "Failed to fetch featured vehicles" });
+    }
+  });
+
+  app.get('/api/vehicles/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const vehicle = await storage.getVehicle(id);
+      if (!vehicle) {
+        return res.status(404).json({ message: "Vehicle not found" });
+      }
+      res.json(vehicle);
+    } catch (error) {
+      console.error("Error fetching vehicle:", error);
+      res.status(500).json({ message: "Failed to fetch vehicle" });
+    }
+  });
+
+  app.post('/api/vehicles', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const vehicleData = insertVehicleSchema.parse({
+        ...req.body,
+        sellerId: userId,
+      });
+      
+      const vehicle = await storage.createVehicle(vehicleData);
+      res.json(vehicle);
+    } catch (error) {
+      console.error("Error creating vehicle:", error);
+      res.status(500).json({ message: "Failed to create vehicle" });
+    }
+  });
+
+  app.put('/api/vehicles/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Check if user owns the vehicle or is admin
+      const existingVehicle = await storage.getVehicle(id);
+      if (!existingVehicle) {
+        return res.status(404).json({ message: "Vehicle not found" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (existingVehicle.sellerId !== userId && !user?.isAdmin) {
+        return res.status(403).json({ message: "Unauthorized to update this vehicle" });
+      }
+
+      const vehicleData = insertVehicleSchema.partial().parse(req.body);
+      const vehicle = await storage.updateVehicle(id, vehicleData);
+      res.json(vehicle);
+    } catch (error) {
+      console.error("Error updating vehicle:", error);
+      res.status(500).json({ message: "Failed to update vehicle" });
+    }
+  });
+
+  app.delete('/api/vehicles/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Check if user owns the vehicle or is admin
+      const existingVehicle = await storage.getVehicle(id);
+      if (!existingVehicle) {
+        return res.status(404).json({ message: "Vehicle not found" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (existingVehicle.sellerId !== userId && !user?.isAdmin) {
+        return res.status(403).json({ message: "Unauthorized to delete this vehicle" });
+      }
+
+      await storage.deleteVehicle(id);
+      res.json({ message: "Vehicle deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting vehicle:", error);
+      res.status(500).json({ message: "Failed to delete vehicle" });
+    }
+  });
+
+  // Chat routes
+  app.get('/api/chat-rooms', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const chatRooms = await storage.getChatRooms(userId);
+      res.json(chatRooms);
+    } catch (error) {
+      console.error("Error fetching chat rooms:", error);
+      res.status(500).json({ message: "Failed to fetch chat rooms" });
+    }
+  });
+
+  app.get('/api/chat-rooms/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const chatRoom = await storage.getChatRoomWithMessages(id);
+      if (!chatRoom) {
+        return res.status(404).json({ message: "Chat room not found" });
+      }
+      res.json(chatRoom);
+    } catch (error) {
+      console.error("Error fetching chat room:", error);
+      res.status(500).json({ message: "Failed to fetch chat room" });
+    }
+  });
+
+  app.post('/api/chat-rooms', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { vehicleId } = req.body;
+      
+      // Check if chat room already exists
+      const existingChatRoom = await storage.getChatRoom(vehicleId, userId);
+      if (existingChatRoom) {
+        return res.json(existingChatRoom);
+      }
+      
+      // Get vehicle details to get seller ID
+      const vehicle = await storage.getVehicle(vehicleId);
+      if (!vehicle) {
+        return res.status(404).json({ message: "Vehicle not found" });
+      }
+      
+      const chatRoomData = insertChatRoomSchema.parse({
+        vehicleId,
+        buyerId: userId,
+        sellerId: vehicle.sellerId,
+      });
+      
+      const chatRoom = await storage.createChatRoom(chatRoomData);
+      res.json(chatRoom);
+    } catch (error) {
+      console.error("Error creating chat room:", error);
+      res.status(500).json({ message: "Failed to create chat room" });
+    }
+  });
+
+  // Admin routes
+  app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const stats = await storage.getStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  const httpServer = createServer(app);
+
+  // WebSocket setup for real-time chat
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+
+  const clients = new Map<string, WebSocket>();
+
+  wss.on('connection', (ws, req) => {
+    console.log('New WebSocket connection');
+    
+    ws.on('message', async (data) => {
+      try {
+        const message = JSON.parse(data.toString());
+        
+        if (message.type === 'authenticate') {
+          clients.set(message.userId, ws);
+          ws.send(JSON.stringify({ type: 'authenticated', userId: message.userId }));
+        } else if (message.type === 'chat_message') {
+          const messageData = insertMessageSchema.parse({
+            chatRoomId: message.chatRoomId,
+            senderId: message.senderId,
+            content: message.content,
+          });
+          
+          const newMessage = await storage.addMessage(messageData);
+          const messageWithSender = {
+            ...newMessage,
+            sender: await storage.getUser(message.senderId),
+          };
+          
+          // Get chat room details to notify both buyer and seller
+          const chatRoom = await storage.getChatRoomWithMessages(message.chatRoomId);
+          if (chatRoom) {
+            const buyerWs = clients.get(chatRoom.buyerId);
+            const sellerWs = clients.get(chatRoom.sellerId);
+            
+            const broadcastMessage = {
+              type: 'new_message',
+              message: messageWithSender,
+              chatRoomId: message.chatRoomId,
+            };
+            
+            if (buyerWs && buyerWs.readyState === WebSocket.OPEN) {
+              buyerWs.send(JSON.stringify(broadcastMessage));
+            }
+            
+            if (sellerWs && sellerWs.readyState === WebSocket.OPEN) {
+              sellerWs.send(JSON.stringify(broadcastMessage));
+            }
+          }
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      // Remove client from map
+      for (const [userId, client] of clients.entries()) {
+        if (client === ws) {
+          clients.delete(userId);
+          break;
+        }
+      }
+      console.log('WebSocket connection closed');
+    });
+  });
+
+  return httpServer;
+}
