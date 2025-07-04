@@ -124,6 +124,7 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 04, 2025. Created test buyer account for proper chat functionality testing between different users
 - July 04, 2025. Migration completed from Replit Agent to Replit environment with PostgreSQL database setup
 - July 04, 2025. Created initial admin user with credentials stored in replit.md for easy reference
+- July 04, 2025. Configured Gmail SMTP service for OTP email verification system using environment variables
 
 ## Admin Credentials
 
