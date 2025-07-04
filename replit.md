@@ -135,6 +135,7 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 04, 2025. Added image navigation controls - forward/backward arrows and thumbnail selection for vehicle images
 - July 04, 2025. Enhanced Contact Seller button - now shows detailed seller profile modal with contact options
 - July 04, 2025. Added floating chat widget to admin dashboard for consistent UI experience across all pages
+- July 04, 2025. Completely redesigned landing page with modern visuals, dark gradients, animations, and attractive UI components
 
 ## Admin Credentials
 
