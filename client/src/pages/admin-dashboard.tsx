@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import VehicleForm from "@/components/vehicle-form";
 import SettingsForm from "@/components/settings-form";
+import ChatWidget from "@/components/chat-widget";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminDashboard() {
@@ -385,6 +386,9 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Floating Chat Widget */}
+      <ChatWidget />
     </div>
   );
 }
