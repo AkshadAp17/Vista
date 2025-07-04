@@ -32,8 +32,9 @@ export class AuthService {
       throw new Error("User already exists with this email");
     }
 
-    // Check if this is the admin email
-    const isAdmin = data.email === "akshadapastambh37@gmail.com";
+    // Regular users are never admin by default
+    // Admin accounts are created manually by the website creator
+    const isAdmin = false;
 
     // Generate verification code for ALL users including admin
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -163,5 +164,38 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  // Secure admin creation - only for website creator during deployment
+  static async createFirstAdmin(data: SignupData & { adminSecret: string }) {
+    // Check if any admin already exists
+    const hasAdmin = await storage.hasAdminUsers();
+    if (hasAdmin) {
+      throw new Error("Admin account already exists. Only one admin allowed.");
+    }
+
+    // Verify admin creation secret (you should set this as an environment variable)
+    if (data.adminSecret !== process.env.ADMIN_CREATION_SECRET) {
+      throw new Error("Invalid admin creation secret.");
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(data.password, 12);
+
+    // Create admin user with verified email (no verification needed for admin)
+    const adminUser = await storage.upsertUser({
+      id: randomUUID(),
+      email: data.email,
+      password: hashedPassword,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      profileImageUrl: null,
+      isAdmin: true,
+      isEmailVerified: true, // Admin is auto-verified
+      verificationCode: null,
+      verificationCodeExpiry: null,
+    });
+
+    return adminUser;
   }
 }

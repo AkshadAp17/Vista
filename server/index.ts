@@ -43,13 +43,8 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Initialize admin user on startup
-  try {
-    await AuthService.initializeAdmin();
-    log("Admin user initialized successfully");
-  } catch (error) {
-    log("Admin user initialization failed: " + (error as Error).message);
-  }
+  // Admin user is created manually by the website creator during deployment
+  // No automatic admin generation for security reasons
 
   const server = await registerRoutes(app);
 

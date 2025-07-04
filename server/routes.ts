@@ -121,6 +121,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Secure admin creation route - only for website creator during deployment
+  app.post('/api/auth/create-admin', async (req: Request, res: Response) => {
+    try {
+      const adminUser = await AuthService.createFirstAdmin(req.body);
+      res.json({ 
+        message: "Admin account created successfully", 
+        user: { 
+          id: adminUser.id, 
+          email: adminUser.email, 
+          firstName: adminUser.firstName, 
+          lastName: adminUser.lastName, 
+          isAdmin: adminUser.isAdmin 
+        } 
+      });
+    } catch (error: any) {
+      console.error("Admin creation error:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Check if admin exists (public endpoint for setup)
+  app.get('/api/auth/admin-exists', async (req: Request, res: Response) => {
+    try {
+      const hasAdmin = await storage.hasAdminUsers();
+      res.json({ hasAdmin });
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+      res.status(500).json({ message: "Failed to check admin status" });
+    }
+  });
+
   // Vehicle routes
   app.get('/api/vehicles', async (req, res) => {
     try {

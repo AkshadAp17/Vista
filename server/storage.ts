@@ -53,6 +53,7 @@ export interface IStorage {
     activeChats: number;
     totalSales: number;
   }>;
+  hasAdminUsers(): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -337,6 +338,15 @@ export class DatabaseStorage implements IStorage {
       activeChats: chatCount?.count || 0,
       totalSales: salesTotal?.total || 0,
     };
+  }
+
+  async hasAdminUsers(): Promise<boolean> {
+    const [adminCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.isAdmin, true));
+
+    return (adminCount?.count || 0) > 0;
   }
 }
 
