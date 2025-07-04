@@ -290,7 +290,7 @@ export default function ChatWidget() {
                                 </h4>
                               </div>
                               <p className="text-xs text-gray-600 truncate">
-                                {chat.vehicle.brand} {chat.vehicle.model}
+                                {chat.vehicle.brand} {chat.vehicle.model} • ID: #{chat.vehicle.id}
                               </p>
                               {lastMessage && (
                                 <p className="text-xs text-gray-500 truncate mt-1">

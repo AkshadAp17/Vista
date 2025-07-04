@@ -103,6 +103,13 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 04, 2025. Enhanced dashboard navigation with proper role-based routing and settings functionality
 - July 04, 2025. Added password change functionality with current password verification
 - July 04, 2025. Implemented separate settings forms for admin and user roles with email/password management
+- July 04, 2025. Fixed vehicle creation form validation and added comprehensive debugging
+- July 04, 2025. Added scrollable admin settings modal for overflow handling
+- July 04, 2025. Implemented photo upload functionality for vehicle listings with add/remove capabilities
+- July 04, 2025. Added phone number field to user profiles and seller contact information
+- July 04, 2025. Removed "Start Chat" button from admin view and added vehicle ID display
+- July 04, 2025. Enhanced chat system to show unique vehicle IDs in conversations
+- July 04, 2025. Added notifications schema for admin chat request notifications
 
 ## User Preferences
 

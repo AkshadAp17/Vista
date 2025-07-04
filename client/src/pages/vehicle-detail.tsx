@@ -255,9 +255,16 @@ export default function VehicleDetail() {
                         {vehicle.seller?.firstName?.[0]}{vehicle.seller?.lastName?.[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-medium">
-                      {vehicle.seller?.firstName} {vehicle.seller?.lastName}
-                    </span>
+                    <div>
+                      <span className="font-medium">
+                        {vehicle.seller?.firstName} {vehicle.seller?.lastName}
+                      </span>
+                      {vehicle.seller?.phoneNumber && (
+                        <p className="text-xs text-gray-500">
+                          {vehicle.seller.phoneNumber}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -271,15 +278,18 @@ export default function VehicleDetail() {
             )}
 
             <div className="space-y-3">
-              <Button 
-                size="lg" 
-                className="w-full bg-hema-orange hover:bg-hema-orange/90"
-                onClick={handleStartChat}
-                disabled={createChatMutation.isPending || !vehicle.isActive}
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                {createChatMutation.isPending ? "Starting Chat..." : "Start Chat"}
-              </Button>
+              {/* Show Start Chat button only for non-admin users */}
+              {!user?.isAdmin && (
+                <Button 
+                  size="lg" 
+                  className="w-full bg-hema-orange hover:bg-hema-orange/90"
+                  onClick={handleStartChat}
+                  disabled={createChatMutation.isPending || !vehicle.isActive}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  {createChatMutation.isPending ? "Starting Chat..." : "Start Chat"}
+                </Button>
+              )}
               
               <Button 
                 size="lg" 
@@ -290,6 +300,13 @@ export default function VehicleDetail() {
                 <Phone className="h-4 w-4 mr-2" />
                 Contact Seller
               </Button>
+              
+              {/* Show vehicle ID for admin users */}
+              {user?.isAdmin && (
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <p className="text-sm text-gray-600">Vehicle ID: <span className="font-mono font-medium">#{vehicle.id}</span></p>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -27,6 +27,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { Plus, X } from "lucide-react";
 
 const vehicleFormSchema = z.object({
   brand: z.string().min(1, "Brand is required"),
@@ -70,6 +71,35 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length + photos.length > 5) {
+      toast({
+        title: "Too many photos",
+        description: "You can only upload up to 5 photos.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newPhotos = [...photos, ...files];
+    setPhotos(newPhotos);
+
+    // Create preview URLs
+    const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+    setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+  };
+
+  const removePhoto = (index: number) => {
+    // Clean up URL object to prevent memory leaks
+    URL.revokeObjectURL(previewUrls[index]);
+    
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+  };
 
   const form = useForm<VehicleFormData>({
     resolver: zodResolver(vehicleFormSchema),
@@ -396,6 +426,57 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
             </FormItem>
           )}
         />
+
+        {/* Photo Upload */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <FormLabel>Vehicle Photos</FormLabel>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => document.getElementById('photo-upload')?.click()}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Photo
+            </Button>
+          </div>
+          
+          <input
+            id="photo-upload"
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handlePhotoUpload}
+          />
+          
+          {previewUrls.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={url}
+                    alt={`Vehicle photo ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <FormDescription>
+            Add up to 5 photos of your vehicle. First photo will be used as the main image.
+          </FormDescription>
+        </div>
 
         {/* Description */}
         <FormField

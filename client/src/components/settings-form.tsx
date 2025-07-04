@@ -29,6 +29,7 @@ const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
+  phoneNumber: z.string().optional(),
 });
 
 const passwordSchema = z.object({
@@ -60,6 +61,7 @@ export default function SettingsForm({ isAdmin }: SettingsFormProps) {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       email: user?.email || "",
+      phoneNumber: user?.phoneNumber || "",
     },
   });
 
@@ -126,14 +128,14 @@ export default function SettingsForm({ isAdmin }: SettingsFormProps) {
           Settings
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>
             {isAdmin ? "Admin Settings" : "Account Settings"}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto max-h-[calc(90vh-8rem)] pr-2">
           {/* Profile Settings */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Profile Information</h3>
@@ -175,6 +177,20 @@ export default function SettingsForm({ isAdmin }: SettingsFormProps) {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input placeholder="Enter email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={profileForm.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter phone number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
