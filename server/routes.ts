@@ -35,16 +35,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await AuthService.login(req.body);
       req.session.userId = user.id;
       
-      // Force session save and add debugging
+      // Force session save and wait for completion
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
+          return res.status(500).json({ message: "Session save failed" });
         } else {
           console.log("Session saved successfully:", { sessionId: req.session.id, userId: req.session.userId });
+          res.json({ message: "Login successful", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
         }
       });
       
-      res.json({ message: "Login successful", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
     } catch (error: any) {
       console.error("Login error:", error);
       res.status(401).json({ message: error.message });
