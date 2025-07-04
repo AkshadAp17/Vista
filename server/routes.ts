@@ -2,11 +2,14 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { getSession } from "./replitAuth";
 import { AuthService } from "./auth";
 import { insertVehicleSchema, insertChatRoomSchema, insertMessageSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup session middleware
+  app.use(getSession());
+
   // Simple session-based auth middleware
   const isAuth = (req: any, res: any, next: any) => {
     if (req.session?.userId) {
@@ -172,9 +175,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Chat routes
-  app.get('/api/chat-rooms', isAuthenticated, async (req: any, res) => {
+  app.get('/api/chat-rooms', isAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const chatRooms = await storage.getChatRooms(userId);
       res.json(chatRooms);
     } catch (error) {
@@ -183,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/chat-rooms/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/chat-rooms/:id', isAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const chatRoom = await storage.getChatRoomWithMessages(id);
@@ -197,9 +200,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/chat-rooms', isAuthenticated, async (req: any, res) => {
+  app.post('/api/chat-rooms', isAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const { vehicleId } = req.body;
       
       // Check if chat room already exists
@@ -229,9 +232,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes
-  app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/stats', isAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
