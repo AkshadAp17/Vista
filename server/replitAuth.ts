@@ -34,15 +34,16 @@ export function getSession() {
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
       httpOnly: true,
       secure: false, // Set to false for development
       maxAge: sessionTtl,
       sameSite: 'lax', // Allow cross-site requests
+      path: '/',
     },
-    name: 'sessionId', // Explicitly set session name
+    name: 'connect.sid', // Use default session name
   });
 }
 

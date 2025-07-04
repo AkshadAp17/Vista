@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
@@ -6,12 +6,19 @@ import { getSession } from "./replitAuth";
 import { AuthService } from "./auth";
 import { insertVehicleSchema, insertChatRoomSchema, insertMessageSchema } from "@shared/schema";
 
+// Extend Express session to include userId
+declare module 'express-session' {
+  interface SessionData {
+    userId?: string;
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session middleware
   app.use(getSession());
 
   // Simple session-based auth middleware
-  const isAuth = (req: any, res: any, next: any) => {
+  const isAuth = (req: Request, res: Response, next: NextFunction) => {
     console.log("Session check:", { sessionId: req.session?.id, userId: req.session?.userId, hasSession: !!req.session });
     if (req.session?.userId) {
       return next();
@@ -30,7 +37,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/auth/login', async (req, res) => {
+  app.post('/api/auth/login', async (req: Request, res: Response) => {
     try {
       const user = await AuthService.login(req.body);
       req.session.userId = user.id;
