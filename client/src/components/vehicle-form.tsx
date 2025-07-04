@@ -28,12 +28,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
-const vehicleFormSchema = insertVehicleSchema.extend({
-  price: z.string().min(1, "Price is required").transform(val => {
-    const num = parseFloat(val);
-    if (isNaN(num)) throw new Error("Invalid price");
-    return num.toString();
-  }),
+const vehicleFormSchema = z.object({
+  brand: z.string().min(1, "Brand is required"),
+  model: z.string().min(1, "Model is required"),
   year: z.string().min(4, "Year must be 4 digits").transform(val => {
     const num = parseInt(val);
     if (isNaN(num) || num < 1900 || num > new Date().getFullYear() + 1) {
@@ -41,13 +38,25 @@ const vehicleFormSchema = insertVehicleSchema.extend({
     }
     return num;
   }),
+  price: z.string().min(1, "Price is required").transform(val => {
+    const num = parseFloat(val);
+    if (isNaN(num) || num <= 0) throw new Error("Invalid price");
+    return num.toString();
+  }),
+  vehicleNumber: z.string().min(1, "Vehicle number is required"),
+  fuelType: z.string().min(1, "Fuel type is required"),
   kmDriven: z.string().min(1, "KM driven is required").transform(val => {
     const num = parseInt(val);
     if (isNaN(num) || num < 0) throw new Error("Invalid KM driven");
     return num;
   }),
+  location: z.string().min(1, "Location is required"),
+  condition: z.string().min(1, "Condition is required"),
+  vehicleType: z.string().min(1, "Vehicle type is required"),
   engineCapacity: z.string().optional(),
   description: z.string().optional(),
+  isFeatured: z.boolean().default(false),
+  isActive: z.boolean().default(true),
 });
 
 type VehicleFormData = z.infer<typeof vehicleFormSchema>;

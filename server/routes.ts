@@ -259,17 +259,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/vehicles', isAuth, async (req: any, res) => {
     try {
+      console.log("Vehicle creation request:", req.body);
       const userId = req.session.userId;
+      console.log("User ID:", userId);
+      
       const vehicleData = insertVehicleSchema.parse({
         ...req.body,
         sellerId: userId,
       });
+      console.log("Parsed vehicle data:", vehicleData);
       
       const vehicle = await storage.createVehicle(vehicleData);
+      console.log("Vehicle created successfully:", vehicle);
       res.json(vehicle);
     } catch (error) {
       console.error("Error creating vehicle:", error);
-      res.status(500).json({ message: "Failed to create vehicle" });
+      if (error instanceof Error) {
+        console.error("Error details:", error.message);
+        console.error("Error stack:", error.stack);
+      }
+      res.status(500).json({ message: "Failed to create vehicle", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
