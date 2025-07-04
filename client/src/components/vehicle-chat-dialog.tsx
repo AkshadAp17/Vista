@@ -72,9 +72,12 @@ interface VehicleChatDialogProps {
     isFeatured: boolean;
     isActive: boolean;
     fuelType: string;
+    sellerId: string;
     seller: {
+      id: string;
       firstName: string;
       lastName: string;
+      phoneNumber?: string;
     };
   };
 }
@@ -141,6 +144,16 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
   // Initialize chat room when dialog opens
   useEffect(() => {
     if (open && isAuthenticated && user) {
+      // Check if user is trying to chat with themselves (they are the seller)  
+      if ((user as any).isAdmin || (user as any).id === vehicle.sellerId) {
+        toast({
+          title: "Cannot Start Chat",
+          description: "You cannot start a chat with yourself. This is your own vehicle listing.",
+          variant: "destructive",
+        });
+        onOpenChange(false);
+        return;
+      }
       createChatRoomMutation.mutate();
     }
   }, [open, isAuthenticated, user]);
@@ -157,7 +170,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       console.log("WebSocket connected");
       ws.send(JSON.stringify({
         type: "authenticate",
-        userId: user?.id,
+        userId: (user as any)?.id,
       }));
       setSocket(ws);
     };
@@ -202,7 +215,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
 
   const getOtherUser = (chat: ChatRoom) => {
     if (!user) return null;
-    return chat.buyerId === user.id ? chat.seller : chat.buyer;
+    return chat.buyerId === (user as any).id ? chat.seller : chat.buyer;
   };
 
   if (!isAuthenticated) {
@@ -254,7 +267,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
               ) : (
                 <div className="space-y-4">
                   {chatRoom.messages.map((message) => {
-                    const isOwnMessage = message.senderId === user?.id;
+                    const isOwnMessage = message.senderId === (user as any)?.id;
                     return (
                       <div
                         key={message.id}

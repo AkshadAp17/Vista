@@ -23,9 +23,12 @@ interface VehicleCardProps {
     isFeatured: boolean;
     isActive: boolean;
     fuelType: string;
+    sellerId: string;
     seller: {
+      id: string;
       firstName: string;
       lastName: string;
+      phoneNumber?: string;
     };
   };
 }
