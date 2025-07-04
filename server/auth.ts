@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { randomUUID } from "crypto";
+import nodemailer from "nodemailer";
 
 export interface LoginData {
   email: string;
@@ -14,6 +15,15 @@ export interface SignupData {
   lastName: string;
 }
 
+// Configure nodemailer
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 export class AuthService {
   static async signup(data: SignupData) {
     // Check if user already exists
@@ -24,6 +34,10 @@ export class AuthService {
 
     // Check if this is the admin email
     const isAdmin = data.email === "akshadapstambh37@gmail.com";
+
+    // Generate verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 12);
@@ -37,7 +51,20 @@ export class AuthService {
       lastName: data.lastName,
       profileImageUrl: null,
       isAdmin: isAdmin,
+      isEmailVerified: isAdmin, // Admin is automatically verified
+      verificationCode: isAdmin ? null : verificationCode,
+      verificationCodeExpiry: isAdmin ? null : verificationCodeExpiry,
     });
+
+    // Send verification email (except for admin)
+    if (!isAdmin) {
+      try {
+        await this.sendVerificationEmail(data.email, verificationCode);
+      } catch (error) {
+        console.error("Failed to send verification email:", error);
+        // Don't throw error, allow user creation to succeed
+      }
+    }
 
     return user;
   }
@@ -62,6 +89,47 @@ export class AuthService {
     });
 
     return adminUser;
+  }
+
+  static async sendVerificationEmail(email: string, verificationCode: string) {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Email Verification - Hema Motor",
+      html: `
+        <h2>Welcome to Hema Motor!</h2>
+        <p>Please verify your email address by using this verification code:</p>
+        <h3 style="color: #f97316; font-size: 24px; letter-spacing: 3px;">${verificationCode}</h3>
+        <p>This code will expire in 10 minutes.</p>
+        <p>If you didn't create an account with Hema Motor, please ignore this email.</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+  }
+
+  static async verifyEmail(email: string, verificationCode: string) {
+    const user = await storage.getUserByEmail(email);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.verificationCode !== verificationCode) {
+      throw new Error("Invalid verification code");
+    }
+
+    if (user.verificationCodeExpiry && new Date() > user.verificationCodeExpiry) {
+      throw new Error("Verification code has expired");
+    }
+
+    // Update user to mark email as verified
+    await storage.updateUser(user.id, {
+      isEmailVerified: true,
+      verificationCode: null,
+      verificationCodeExpiry: null,
+    });
+
+    return user;
   }
 
   static async login(data: LoginData) {

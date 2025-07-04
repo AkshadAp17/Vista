@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Bike } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface LoginData {
   email: string;
@@ -32,15 +33,23 @@ export default function AuthForm() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   const loginMutation = useMutation({
     mutationFn: (data: LoginData) => apiRequest("POST", "/api/auth/login", data),
-    onSuccess: () => {
+    onSuccess: (response: any) => {
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Navigate based on user role
+      if (response.user?.isAdmin) {
+        setLocation("/admin");
+      } else {
+        setLocation("/dashboard");
+      }
     },
     onError: (error: any) => {
       toast({
