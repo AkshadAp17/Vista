@@ -3,18 +3,56 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { AuthService } from "./auth";
 import { insertVehicleSchema, insertChatRoomSchema, insertMessageSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // Simple session-based auth middleware
+  const isAuth = (req: any, res: any, next: any) => {
+    if (req.session?.userId) {
+      return next();
+    }
+    return res.status(401).json({ message: "Unauthorized" });
+  };
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.post('/api/auth/signup', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      const user = await AuthService.signup(req.body);
+      res.json({ message: "Account created successfully", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    } catch (error: any) {
+      console.error("Signup error:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const user = await AuthService.login(req.body);
+      req.session.userId = user.id;
+      res.json({ message: "Login successful", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      res.status(401).json({ message: error.message });
+    }
+  });
+
+  app.post('/api/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Could not log out" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get('/api/auth/user', isAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -68,9 +106,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/vehicles', isAuthenticated, async (req: any, res) => {
+  app.post('/api/vehicles', isAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const vehicleData = insertVehicleSchema.parse({
         ...req.body,
         sellerId: userId,
@@ -84,10 +122,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/vehicles/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/vehicles/:id', isAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       
       // Check if user owns the vehicle or is admin
       const existingVehicle = await storage.getVehicle(id);
@@ -109,10 +147,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/vehicles/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/vehicles/:id', isAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       
       // Check if user owns the vehicle or is admin
       const existingVehicle = await storage.getVehicle(id);
