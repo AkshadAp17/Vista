@@ -242,6 +242,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createVehicle(vehicle: InsertVehicle): Promise<any> {
+    // Generate vehicle number if not provided
+    if (!vehicle.vehicleNumber) {
+      const count = await Vehicle.countDocuments();
+      vehicle.vehicleNumber = `VH${String(count + 1).padStart(3, '0')}`;
+    }
+    
     const newVehicle = await Vehicle.create(vehicle);
     return newVehicle.toObject();
   }

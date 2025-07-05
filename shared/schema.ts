@@ -19,7 +19,7 @@ export const insertVehicleSchema = z.object({
   model: z.string(),
   year: z.number(),
   price: z.number(),
-  vehicleNumber: z.string(),
+  vehicleNumber: z.string().optional(),
   engineCapacity: z.string().optional(),
   fuelType: z.string(),
   kmDriven: z.number(),

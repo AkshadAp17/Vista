@@ -6,6 +6,8 @@ import { storage } from "./storage";
 import { getSession } from "./replitAuth";
 import { AuthService } from "./auth";
 import { insertVehicleSchema, insertChatRoomSchema, insertMessageSchema } from "@shared/schema";
+import { createSampleData } from "./sampleData";
+import { createTestUsers } from "./testUsers";
 
 // Extend Express session to include userId
 declare module 'express-session' {
@@ -466,6 +468,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching admin stats:", error);
       res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  app.post('/api/admin/create-sample-data', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      console.log("Admin requested sample data creation");
+      const success = await createSampleData();
+      
+      if (success) {
+        res.json({ message: "Sample data created successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to create sample data" });
+      }
+    } catch (error) {
+      console.error("Error creating sample data:", error);
+      res.status(500).json({ message: "Failed to create sample data" });
+    }
+  });
+
+  app.post('/api/admin/create-test-users', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      console.log("Admin requested test users creation");
+      const testUsers = await createTestUsers();
+      
+      if (testUsers) {
+        res.json({ 
+          message: "Test users created successfully",
+          users: {
+            buyer1: { email: "buyer1@test.com", password: "test123" },
+            buyer2: { email: "buyer2@test.com", password: "test123" },
+            seller1: { email: "seller1@test.com", password: "test123" }
+          }
+        });
+      } else {
+        res.status(500).json({ message: "Failed to create test users" });
+      }
+    } catch (error) {
+      console.error("Error creating test users:", error);
+      res.status(500).json({ message: "Failed to create test users" });
     }
   });
 

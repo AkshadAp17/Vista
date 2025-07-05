@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { randomUUID } from "crypto";
 import nodemailer from "nodemailer";
+import { createSampleData } from "./sampleData";
 
 export interface LoginData {
   email: string;
@@ -92,6 +93,11 @@ export class AuthService {
     });
 
     console.log("Admin user created successfully");
+    
+    // Initialize sample data after admin creation
+    console.log("Setting up sample data...");
+    await createSampleData();
+    
     return adminUser;
   }
 
