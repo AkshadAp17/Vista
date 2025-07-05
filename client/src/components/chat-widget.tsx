@@ -103,74 +103,86 @@ export default function ChatWidget() {
   useEffect(() => {
     if (!isAuthenticated || !user || !(user as any)?.id) return;
 
-    try {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = window.location.host || 'localhost:5000';
-      const wsUrl = `${protocol}//${host}/ws`;
-      console.log("Connecting to WebSocket:", wsUrl);
-      const ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        console.log("WebSocket connected");
-        if ((user as any)?.id) {
-          ws.send(JSON.stringify({
-            type: "authenticate",
-            userId: (user as any).id,
-          }));
-        }
-        setSocket(ws);
-      };
-
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+    let ws: WebSocket;
+    
+    const connectWebSocket = () => {
+      try {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const host = window.location.host;
+        const wsUrl = `${protocol}//${host}/ws`;
+        console.log("Connecting to WebSocket:", wsUrl);
         
-        if (data.type === "new_message") {
-          // Update chat rooms cache with new message
-          queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
-            return oldData.map(chat => {
-              if (chat.id === data.chatRoomId) {
-                return {
-                  ...chat,
-                  messages: [...(chat.messages || []), data.message],
-                };
-              }
-              return chat;
-            });
-          });
+        ws = new WebSocket(wsUrl);
 
-          // Update selected chat if it matches
-          if (selectedChat && selectedChat.id === data.chatRoomId) {
-            setSelectedChat(prev => prev ? {
-              ...prev,
-              messages: [...(prev.messages || []), data.message],
-            } : null);
+        ws.onopen = () => {
+          console.log("WebSocket connected");
+          if ((user as any)?.id) {
+            ws.send(JSON.stringify({
+              type: "authenticate",
+              userId: (user as any).id,
+            }));
           }
+          setSocket(ws);
+        };
 
-          // Show notification if chat is not currently open
-          if (!isOpen || !selectedChat || selectedChat.id !== data.chatRoomId) {
-            toast({
-              title: "New Message",
-              description: `${data.message.sender.firstName}: ${data.message.content}`,
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          
+          if (data.type === "new_message") {
+            // Update chat rooms cache with new message
+            queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
+              return oldData.map(chat => {
+                if (chat.id === data.chatRoomId) {
+                  return {
+                    ...chat,
+                    messages: [...(chat.messages || []), data.message],
+                  };
+                }
+                return chat;
+              });
             });
+
+            // Update selected chat if it matches
+            if (selectedChat && selectedChat.id === data.chatRoomId) {
+              setSelectedChat(prev => prev ? {
+                ...prev,
+                messages: [...(prev.messages || []), data.message],
+              } : null);
+            }
+
+            // Show notification if chat is not currently open
+            if (!isOpen || !selectedChat || selectedChat.id !== data.chatRoomId) {
+              toast({
+                title: "New Message",
+                description: `${data.message.sender.firstName}: ${data.message.content}`,
+              });
+            }
           }
-        }
-      };
+        };
 
-      ws.onclose = () => {
-        console.log("WebSocket disconnected");
-        setSocket(null);
-      };
+        ws.onclose = () => {
+          console.log("WebSocket disconnected");
+          setSocket(null);
+          // Attempt to reconnect after 3 seconds
+          setTimeout(connectWebSocket, 3000);
+        };
 
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
+        ws.onerror = (error) => {
+          console.error("WebSocket error:", error);
+          setSocket(null);
+        };
+      } catch (error) {
+        console.error("Failed to create WebSocket connection:", error);
+      }
+    };
 
-      return () => {
+    connectWebSocket();
+
+    return () => {
+      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
         ws.close();
-      };
-    } catch (error) {
-      console.error("Failed to create WebSocket connection:", error);
-    }
+      }
+    };
   }, [isAuthenticated, user, queryClient, isOpen, selectedChat, toast]);
 
   // Send message mutation
