@@ -19,8 +19,8 @@ export interface SignupData {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.GMAIL_EMAIL,
-    pass: process.env.GMAIL_APP_PASSWORD,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
@@ -50,7 +50,7 @@ export class AuthService {
       password: hashedPassword,
       firstName: data.firstName,
       lastName: data.lastName,
-      profileImageUrl: null,
+      profileImageUrl: undefined,
       isAdmin: isAdmin,
       isEmailVerified: false, // ALL users including admin need email verification
       verificationCode: verificationCode,
@@ -75,50 +75,53 @@ export class AuthService {
       return existingAdmin;
     }
 
-    // Create admin user with email verification required
+    // Create admin user with email already verified
     const hashedPassword = await bcrypt.hash("Akshad@11", 12);
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     
     const adminUser = await storage.upsertUser({
       id: randomUUID(),
       email: "akshadapastambh37@gmail.com",
       password: hashedPassword,
-      firstName: "Shubam",
-      lastName: "Pujari",
-      profileImageUrl: null,
+      firstName: "Akshada",
+      lastName: "Pastambh",
+      profileImageUrl: undefined,
       isAdmin: true,
-      isEmailVerified: false, // Admin must verify email
-      verificationCode: verificationCode,
-      verificationCodeExpiry: verificationCodeExpiry,
+      isEmailVerified: true, // Admin is already verified
+      verificationCode: undefined,
+      verificationCodeExpiry: undefined,
     });
 
-    // Send verification email to admin
-    try {
-      await this.sendVerificationEmail("akshadapastambh37@gmail.com", verificationCode);
-      console.log("Admin verification email sent successfully");
-    } catch (error) {
-      console.error("Failed to send admin verification email:", error);
-    }
-
+    console.log("Admin user created successfully");
     return adminUser;
   }
 
   static async sendVerificationEmail(email: string, verificationCode: string) {
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Email Verification - Hema Motor",
-      html: `
-        <h2>Welcome to Hema Motor!</h2>
-        <p>Please verify your email address by using this verification code:</p>
-        <h3 style="color: #f97316; font-size: 24px; letter-spacing: 3px;">${verificationCode}</h3>
-        <p>This code will expire in 10 minutes.</p>
-        <p>If you didn't create an account with Hema Motor, please ignore this email.</p>
-      `,
-    };
+    try {
+      // Check if email credentials are available
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+        console.log(`[DEV MODE] Verification code for ${email}: ${verificationCode}`);
+        return;
+      }
+      
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Email Verification - Hema Motor",
+        html: `
+          <h2>Welcome to Hema Motor!</h2>
+          <p>Please verify your email address by using this verification code:</p>
+          <h3 style="color: #f97316; font-size: 24px; letter-spacing: 3px;">${verificationCode}</h3>
+          <p>This code will expire in 10 minutes.</p>
+          <p>If you didn't create an account with Hema Motor, please ignore this email.</p>
+        `,
+      };
 
-    await transporter.sendMail(mailOptions);
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+      // Log the verification code for development
+      console.log(`[DEV MODE] Verification code for ${email}: ${verificationCode}`);
+    }
   }
 
   static async verifyEmail(email: string, verificationCode: string) {
@@ -138,8 +141,8 @@ export class AuthService {
     // Update user to mark email as verified
     await storage.updateUser(user.id, {
       isEmailVerified: true,
-      verificationCode: null,
-      verificationCodeExpiry: null,
+      verificationCode: undefined,
+      verificationCodeExpiry: undefined,
     });
 
     return user;
@@ -189,11 +192,11 @@ export class AuthService {
       password: hashedPassword,
       firstName: data.firstName,
       lastName: data.lastName,
-      profileImageUrl: null,
+      profileImageUrl: undefined,
       isAdmin: true,
       isEmailVerified: true, // Admin is auto-verified
-      verificationCode: null,
-      verificationCodeExpiry: null,
+      verificationCode: undefined,
+      verificationCodeExpiry: undefined,
     });
 
     return adminUser;

@@ -18,6 +18,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session middleware
   app.use(getSession());
 
+  // Health check endpoint
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
   // Simple session-based auth middleware
   const isAuth = (req: Request, res: Response, next: NextFunction) => {
     console.log("Session check:", { sessionId: req.session?.id, userId: req.session?.userId, hasSession: !!req.session });
@@ -246,7 +251,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/vehicles/:id', async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const vehicle = await storage.getVehicle(id);
       if (!vehicle) {
         return res.status(404).json({ message: "Vehicle not found" });
@@ -285,7 +290,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/vehicles/:id', isAuth, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const userId = req.session.userId;
       
       // Check if user owns the vehicle or is admin
@@ -310,7 +315,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/vehicles/:id', isAuth, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const userId = req.session.userId;
       
       // Check if user owns the vehicle or is admin
@@ -346,7 +351,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/chat-rooms/:id', isAuth, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const chatRoom = await storage.getChatRoomWithMessages(id);
       if (!chatRoom) {
         return res.status(404).json({ message: "Chat room not found" });
@@ -367,7 +372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingChatRoom = await storage.getChatRoom(vehicleId, userId);
       if (existingChatRoom) {
         // Return existing chat room with messages
-        const chatRoomWithMessages = await storage.getChatRoomWithMessages(existingChatRoom.id);
+        const chatRoomWithMessages = await storage.getChatRoomWithMessages(existingChatRoom._id.toString());
         return res.json(chatRoomWithMessages);
       }
       
@@ -384,7 +389,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const chatRoom = await storage.createChatRoom(chatRoomData);
-      const chatRoomWithMessages = await storage.getChatRoomWithMessages(chatRoom.id);
+      const chatRoomWithMessages = await storage.getChatRoomWithMessages(chatRoom._id.toString());
       res.json(chatRoomWithMessages);
     } catch (error) {
       console.error("Error creating chat room:", error);
@@ -394,7 +399,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/chat-rooms/:id/messages', isAuth, async (req: any, res) => {
     try {
-      const chatRoomId = parseInt(req.params.id);
+      const chatRoomId = req.params.id;
       const userId = req.session.userId;
       const { content } = req.body;
       
@@ -503,12 +508,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     ws.on('close', () => {
       // Remove client from map
-      for (const [userId, client] of clients.entries()) {
+      let clientUserId = '';
+      
+      // Find the userId associated with this WebSocket
+      clients.forEach((client, userId) => {
         if (client === ws) {
-          clients.delete(userId);
-          break;
+          clientUserId = userId;
         }
+      });
+      
+      // Delete the entry if found
+      if (clientUserId) {
+        clients.delete(clientUserId);
       }
+      
       console.log('WebSocket connection closed');
     });
   });

@@ -1,28 +1,103 @@
 import {
-  users,
-  vehicles,
-  chatRooms,
-  messages,
-  type User,
-  type UpsertUser,
-  type Vehicle,
-  type InsertVehicle,
-  type VehicleWithSeller,
-  type ChatRoom,
-  type InsertChatRoom,
-  type Message,
-  type InsertMessage,
-  type ChatRoomWithDetails,
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, and, desc, sql } from "drizzle-orm";
+  User,
+  Vehicle,
+  ChatRoom,
+  Message,
+  Notification
+} from "./models";
+import mongoose from 'mongoose';
+
+export interface UpsertUser {
+  id: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  profileImageUrl?: string;
+  isAdmin?: boolean;
+  isEmailVerified?: boolean;
+  verificationCode?: string;
+  verificationCodeExpiry?: Date;
+}
+
+export interface InsertVehicle {
+  sellerId: string;
+  brand: string;
+  model: string;
+  year: number;
+  price: number;
+  vehicleNumber: string;
+  engineCapacity?: string;
+  fuelType: string;
+  kmDriven: number;
+  location: string;
+  description?: string;
+  images?: string[];
+  condition: string;
+  isActive?: boolean;
+  isFeatured?: boolean;
+  vehicleType: string;
+}
+
+export interface InsertChatRoom {
+  vehicleId: string;
+  buyerId: string;
+  sellerId: string;
+  isActive?: boolean;
+}
+
+export interface InsertMessage {
+  chatRoomId: string;
+  senderId: string;
+  content: string;
+  messageType?: string;
+}
+
+// Define simplified interfaces for MongoDB document responses
+export interface VehicleWithSeller {
+  _id: mongoose.Types.ObjectId | string;
+  sellerId: mongoose.Types.ObjectId | string;
+  brand: string;
+  model: string;
+  year: number;
+  price: mongoose.Types.Decimal128 | number;
+  vehicleNumber: string;
+  engineCapacity?: string;
+  fuelType: string;
+  kmDriven: number;
+  location: string;
+  description?: string;
+  images?: string[];
+  condition: string;
+  isActive: boolean;
+  isFeatured: boolean;
+  vehicleType: string;
+  createdAt: Date;
+  updatedAt: Date;
+  seller: any;
+}
+
+export interface ChatRoomWithDetails {
+  _id: mongoose.Types.ObjectId | string;
+  vehicleId: mongoose.Types.ObjectId | string;
+  buyerId: mongoose.Types.ObjectId | string;
+  sellerId: mongoose.Types.ObjectId | string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  vehicle: any;
+  buyer: any;
+  seller: any;
+  messages: any[];
+}
 
 export interface IStorage {
-  // User operations (mandatory for Replit Auth)
-  getUser(id: string): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
-  updateUser(id: string, updates: Partial<UpsertUser>): Promise<User>;
+  // User operations
+  getUser(id: string): Promise<any | undefined>;
+  getUserByEmail(email: string): Promise<any | undefined>;
+  upsertUser(user: UpsertUser): Promise<any>;
+  updateUser(id: string, updates: Partial<UpsertUser>): Promise<any>;
   
   // Vehicle operations
   getVehicles(filters?: { 
@@ -32,19 +107,19 @@ export interface IStorage {
     vehicleType?: string;
     sellerId?: string;
   }): Promise<VehicleWithSeller[]>;
-  getVehicle(id: number): Promise<VehicleWithSeller | undefined>;
-  createVehicle(vehicle: InsertVehicle): Promise<Vehicle>;
-  updateVehicle(id: number, vehicle: Partial<InsertVehicle>): Promise<Vehicle>;
-  deleteVehicle(id: number): Promise<void>;
+  getVehicle(id: string): Promise<VehicleWithSeller | undefined>;
+  createVehicle(vehicle: InsertVehicle): Promise<any>;
+  updateVehicle(id: string, vehicle: Partial<InsertVehicle>): Promise<any>;
+  deleteVehicle(id: string): Promise<void>;
   getFeaturedVehicles(): Promise<VehicleWithSeller[]>;
   
   // Chat operations
-  getChatRoom(vehicleId: number, buyerId: string): Promise<ChatRoom | undefined>;
-  createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom>;
+  getChatRoom(vehicleId: string, buyerId: string): Promise<any | undefined>;
+  createChatRoom(chatRoom: InsertChatRoom): Promise<any>;
   getChatRooms(userId: string): Promise<ChatRoomWithDetails[]>;
-  getChatRoomWithMessages(id: number): Promise<ChatRoomWithDetails | undefined>;
-  addMessage(message: InsertMessage): Promise<Message>;
-  getMessages(chatRoomId: number): Promise<(Message & { sender: User })[]>;
+  getChatRoomWithMessages(id: string): Promise<ChatRoomWithDetails | undefined>;
+  addMessage(message: InsertMessage): Promise<any>;
+  getMessages(chatRoomId: string): Promise<any[]>;
   
   // Admin operations
   getStats(): Promise<{
@@ -58,46 +133,37 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   // User operations
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+  async getUser(id: string): Promise<any | undefined> {
+    const user = await User.findOne({ id });
+    return user ? user.toObject() : undefined;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
+  async getUserByEmail(email: string): Promise<any | undefined> {
+    const user = await User.findOne({ email });
+    return user ? user.toObject() : undefined;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
+  async upsertUser(userData: UpsertUser): Promise<any> {
+    const user = await User.findOneAndUpdate(
+      { id: userData.id },
+      { ...userData, updatedAt: new Date() },
+      { new: true, upsert: true }
+    );
+    return user.toObject();
   }
 
-  async updateUser(id: string, updates: Partial<UpsertUser>): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        ...updates,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, id))
-      .returning();
+  async updateUser(id: string, updates: Partial<UpsertUser>): Promise<any> {
+    const user = await User.findOneAndUpdate(
+      { id },
+      { ...updates, updatedAt: new Date() },
+      { new: true }
+    );
     
     if (!user) {
       throw new Error("User not found");
     }
     
-    return user;
+    return user.toObject();
   }
 
   // Vehicle operations
@@ -108,201 +174,191 @@ export class DatabaseStorage implements IStorage {
     vehicleType?: string;
     sellerId?: string;
   }): Promise<VehicleWithSeller[]> {
-    let query = db
-      .select()
-      .from(vehicles)
-      .innerJoin(users, eq(vehicles.sellerId, users.id))
-      .where(eq(vehicles.isActive, true));
+    let query: any = { isActive: true };
 
     if (filters?.search) {
-      query = query.where(
-        sql`${vehicles.brand} ILIKE ${'%' + filters.search + '%'} OR ${vehicles.model} ILIKE ${'%' + filters.search + '%'}`
-      );
+      query.$or = [
+        { brand: { $regex: filters.search, $options: 'i' } },
+        { model: { $regex: filters.search, $options: 'i' } }
+      ];
     }
 
     if (filters?.location) {
-      query = query.where(sql`${vehicles.location} ILIKE ${'%' + filters.location + '%'}`);
+      query.location = { $regex: filters.location, $options: 'i' };
     }
 
     if (filters?.vehicleType) {
-      query = query.where(eq(vehicles.vehicleType, filters.vehicleType));
+      query.vehicleType = filters.vehicleType;
     }
 
     if (filters?.sellerId) {
-      query = query.where(eq(vehicles.sellerId, filters.sellerId));
+      query.sellerId = filters.sellerId;
     }
 
     if (filters?.priceRange) {
-      query = query.where(
-        and(
-          sql`${vehicles.price} >= ${filters.priceRange[0]}`,
-          sql`${vehicles.price} <= ${filters.priceRange[1]}`
-        )
-      );
+      query.price = { 
+        $gte: filters.priceRange[0], 
+        $lte: filters.priceRange[1] 
+      };
     }
 
-    const results = await query.orderBy(desc(vehicles.createdAt));
+    const vehicles = await Vehicle.find(query).sort({ createdAt: -1 });
     
-    return results.map(row => ({
-      ...row.vehicles,
-      seller: row.users,
-    }));
+    const results = await Promise.all(
+      vehicles.map(async (vehicle) => {
+        const seller = await User.findOne({ id: vehicle.sellerId.toString() });
+        const vehicleObj = vehicle.toObject();
+        return {
+          ...vehicleObj,
+          seller: seller ? seller.toObject() : null
+        } as unknown as VehicleWithSeller;
+      })
+    );
+    
+    return results;
   }
 
-  async getVehicle(id: number): Promise<VehicleWithSeller | undefined> {
-    const [result] = await db
-      .select()
-      .from(vehicles)
-      .innerJoin(users, eq(vehicles.sellerId, users.id))
-      .where(eq(vehicles.id, id));
+  async getVehicle(id: string): Promise<VehicleWithSeller | undefined> {
+    const vehicle = await Vehicle.findById(id);
+    if (!vehicle) return undefined;
 
-    if (!result) return undefined;
-
+    const seller = await User.findOne({ id: vehicle.sellerId.toString() });
+    const vehicleObj = vehicle.toObject();
+    
     return {
-      ...result.vehicles,
-      seller: result.users,
-    };
+      ...vehicleObj,
+      seller: seller ? seller.toObject() : null
+    } as unknown as VehicleWithSeller;
   }
 
-  async createVehicle(vehicle: InsertVehicle): Promise<Vehicle> {
-    const [newVehicle] = await db
-      .insert(vehicles)
-      .values(vehicle)
-      .returning();
-    return newVehicle;
+  async createVehicle(vehicle: InsertVehicle): Promise<any> {
+    const newVehicle = await Vehicle.create(vehicle);
+    return newVehicle.toObject();
   }
 
-  async updateVehicle(id: number, vehicle: Partial<InsertVehicle>): Promise<Vehicle> {
-    const [updatedVehicle] = await db
-      .update(vehicles)
-      .set({ ...vehicle, updatedAt: new Date() })
-      .where(eq(vehicles.id, id))
-      .returning();
-    return updatedVehicle;
+  async updateVehicle(id: string, vehicle: Partial<InsertVehicle>): Promise<any> {
+    const updatedVehicle = await Vehicle.findByIdAndUpdate(
+      id,
+      { ...vehicle, updatedAt: new Date() },
+      { new: true }
+    );
+    
+    if (!updatedVehicle) {
+      throw new Error("Vehicle not found");
+    }
+    
+    return updatedVehicle.toObject();
   }
 
-  async deleteVehicle(id: number): Promise<void> {
-    await db.delete(vehicles).where(eq(vehicles.id, id));
+  async deleteVehicle(id: string): Promise<void> {
+    await Vehicle.findByIdAndDelete(id);
   }
 
   async getFeaturedVehicles(): Promise<VehicleWithSeller[]> {
-    const results = await db
-      .select()
-      .from(vehicles)
-      .innerJoin(users, eq(vehicles.sellerId, users.id))
-      .where(and(eq(vehicles.isFeatured, true), eq(vehicles.isActive, true)))
-      .orderBy(desc(vehicles.createdAt))
-      .limit(8);
+    const vehicles = await Vehicle.find({ 
+      isFeatured: true, 
+      isActive: true 
+    }).sort({ createdAt: -1 }).limit(8);
 
-    return results.map(row => ({
-      ...row.vehicles,
-      seller: row.users,
-    }));
+    const results = await Promise.all(
+      vehicles.map(async (vehicle) => {
+        const seller = await User.findOne({ id: vehicle.sellerId.toString() });
+        const vehicleObj = vehicle.toObject();
+        return {
+          ...vehicleObj,
+          seller: seller ? seller.toObject() : null
+        } as unknown as VehicleWithSeller;
+      })
+    );
+    
+    return results;
   }
 
   // Chat operations
-  async getChatRoom(vehicleId: number, buyerId: string): Promise<ChatRoom | undefined> {
-    const [chatRoom] = await db
-      .select()
-      .from(chatRooms)
-      .where(
-        and(
-          eq(chatRooms.vehicleId, vehicleId),
-          eq(chatRooms.buyerId, buyerId)
-        )
-      );
-    return chatRoom;
+  async getChatRoom(vehicleId: string, buyerId: string): Promise<any | undefined> {
+    const chatRoom = await ChatRoom.findOne({ vehicleId, buyerId });
+    return chatRoom ? chatRoom.toObject() : undefined;
   }
 
-  async createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom> {
-    const [newChatRoom] = await db
-      .insert(chatRooms)
-      .values(chatRoom)
-      .returning();
-    return newChatRoom;
+  async createChatRoom(chatRoom: InsertChatRoom): Promise<any> {
+    const newChatRoom = await ChatRoom.create(chatRoom);
+    return newChatRoom.toObject();
   }
 
   async getChatRooms(userId: string): Promise<ChatRoomWithDetails[]> {
-    const results = await db
-      .select()
-      .from(chatRooms)
-      .innerJoin(vehicles, eq(chatRooms.vehicleId, vehicles.id))
-      .innerJoin(users, eq(chatRooms.buyerId, users.id))
-      .where(
-        and(
-          eq(chatRooms.isActive, true),
-          sql`${chatRooms.buyerId} = ${userId} OR ${chatRooms.sellerId} = ${userId}`
-        )
-      )
-      .orderBy(desc(chatRooms.updatedAt));
+    const chatRooms = await ChatRoom.find({
+      isActive: true,
+      $or: [{ buyerId: userId }, { sellerId: userId }]
+    }).sort({ updatedAt: -1 });
 
-    const chatRoomsWithDetails = await Promise.all(
-      results.map(async (row) => {
-        const seller = await this.getUser(row.chat_rooms.sellerId);
-        const recentMessages = await this.getMessages(row.chat_rooms.id);
+    const results = await Promise.all(
+      chatRooms.map(async (room) => {
+        const vehicle = await Vehicle.findById(room.vehicleId);
+        const buyer = await User.findOne({ id: room.buyerId.toString() });
+        const seller = await User.findOne({ id: room.sellerId.toString() });
+        const messages = await this.getMessages(room._id.toString());
+        const roomObj = room.toObject();
         
         return {
-          ...row.chat_rooms,
-          vehicle: row.vehicles,
-          buyer: row.users,
-          seller: seller!,
-          messages: recentMessages,
+          ...roomObj,
+          vehicle: vehicle ? vehicle.toObject() : null,
+          buyer: buyer ? buyer.toObject() : null,
+          seller: seller ? seller.toObject() : null,
+          messages
+        } as unknown as ChatRoomWithDetails;
+      })
+    );
+    
+    return results;
+  }
+
+  async getChatRoomWithMessages(id: string): Promise<ChatRoomWithDetails | undefined> {
+    const chatRoom = await ChatRoom.findById(id);
+    if (!chatRoom) return undefined;
+
+    const vehicle = await Vehicle.findById(chatRoom.vehicleId);
+    const buyer = await User.findOne({ id: chatRoom.buyerId.toString() });
+    const seller = await User.findOne({ id: chatRoom.sellerId.toString() });
+    const messages = await this.getMessages(id);
+    const roomObj = chatRoom.toObject();
+    
+    return {
+      ...roomObj,
+      vehicle: vehicle ? vehicle.toObject() : null,
+      buyer: buyer ? buyer.toObject() : null,
+      seller: seller ? seller.toObject() : null,
+      messages
+    } as unknown as ChatRoomWithDetails;
+  }
+
+  async addMessage(message: InsertMessage): Promise<any> {
+    const newMessage = await Message.create(message);
+    
+    // Update the chat room's updatedAt timestamp
+    await ChatRoom.findByIdAndUpdate(
+      message.chatRoomId,
+      { updatedAt: new Date() }
+    );
+    
+    return newMessage.toObject();
+  }
+
+  async getMessages(chatRoomId: string): Promise<any[]> {
+    const messages = await Message.find({ chatRoomId })
+      .sort({ createdAt: 1 })
+      .limit(100);
+    
+    const messagesWithSenders = await Promise.all(
+      messages.map(async (message) => {
+        const sender = await User.findOne({ id: message.senderId });
+        return {
+          ...message.toObject(),
+          sender: sender ? sender.toObject() : null
         };
       })
     );
-
-    return chatRoomsWithDetails;
-  }
-
-  async getChatRoomWithMessages(id: number): Promise<ChatRoomWithDetails | undefined> {
-    const [chatRoom] = await db
-      .select()
-      .from(chatRooms)
-      .innerJoin(vehicles, eq(chatRooms.vehicleId, vehicles.id))
-      .where(eq(chatRooms.id, id));
-
-    if (!chatRoom) return undefined;
-
-    const buyer = await this.getUser(chatRoom.chat_rooms.buyerId);
-    const seller = await this.getUser(chatRoom.chat_rooms.sellerId);
-    const messagesList = await this.getMessages(id);
-
-    return {
-      ...chatRoom.chat_rooms,
-      vehicle: chatRoom.vehicles,
-      buyer: buyer!,
-      seller: seller!,
-      messages: messagesList,
-    };
-  }
-
-  async addMessage(message: InsertMessage): Promise<Message> {
-    const [newMessage] = await db
-      .insert(messages)
-      .values(message)
-      .returning();
     
-    // Update chat room's updated_at timestamp
-    await db
-      .update(chatRooms)
-      .set({ updatedAt: new Date() })
-      .where(eq(chatRooms.id, message.chatRoomId));
-
-    return newMessage;
-  }
-
-  async getMessages(chatRoomId: number): Promise<(Message & { sender: User })[]> {
-    const results = await db
-      .select()
-      .from(messages)
-      .innerJoin(users, eq(messages.senderId, users.id))
-      .where(eq(messages.chatRoomId, chatRoomId))
-      .orderBy(messages.createdAt);
-
-    return results.map(row => ({
-      ...row.messages,
-      sender: row.users,
-    }));
+    return messagesWithSenders;
   }
 
   // Admin operations
@@ -312,41 +368,24 @@ export class DatabaseStorage implements IStorage {
     activeChats: number;
     totalSales: number;
   }> {
-    const [vehicleCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(vehicles)
-      .where(eq(vehicles.isActive, true));
-
-    const [userCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(users);
-
-    const [chatCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(chatRooms)
-      .where(eq(chatRooms.isActive, true));
-
-    // For demo purposes, calculate total sales based on vehicle prices
-    const [salesTotal] = await db
-      .select({ total: sql<number>`sum(price)` })
-      .from(vehicles)
-      .where(eq(vehicles.isActive, false)); // Assuming inactive vehicles are sold
-
+    const [totalVehicles, totalUsers, activeChats] = await Promise.all([
+      Vehicle.countDocuments(),
+      User.countDocuments(),
+      ChatRoom.countDocuments({ isActive: true })
+    ]);
+    
+    // For now, we don't track sales directly, so we'll just return 0
     return {
-      totalVehicles: vehicleCount?.count || 0,
-      totalUsers: userCount?.count || 0,
-      activeChats: chatCount?.count || 0,
-      totalSales: salesTotal?.total || 0,
+      totalVehicles,
+      totalUsers,
+      activeChats,
+      totalSales: 0
     };
   }
 
   async hasAdminUsers(): Promise<boolean> {
-    const [adminCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(users)
-      .where(eq(users.isAdmin, true));
-
-    return (adminCount?.count || 0) > 0;
+    const adminCount = await User.countDocuments({ isAdmin: true });
+    return adminCount > 0;
   }
 }
 

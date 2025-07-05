@@ -5,18 +5,17 @@ import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
-import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import MongoStore from "connect-mongo";
 
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
-}
+// Make REPLIT_DOMAINS optional for local development
+const REPLIT_DOMAINS = process.env.REPLIT_DOMAINS || "localhost:5000";
 
 const getOidcConfig = memoize(
   async () => {
     return await client.discovery(
       new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID!
+      process.env.REPL_ID || "local-dev"
     );
   },
   { maxAge: 3600 * 1000 }
@@ -24,18 +23,28 @@ const getOidcConfig = memoize(
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
+  
+  let sessionStore;
+  
+  // Use in-memory session store for development if MongoDB URI is not available
+  if (!process.env.MONGODB_URI) {
+    console.log('Using in-memory session store for development');
+    sessionStore = new session.MemoryStore();
+  } else {
+    // Use MongoDB for session storage
+    sessionStore = MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      ttl: sessionTtl / 1000, // convert from ms to seconds
+      collectionName: 'sessions',
+      autoRemove: 'native',
+    });
+  }
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       httpOnly: true,
       secure: false, // Set to false for development
@@ -60,12 +69,17 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
+  // Generate a random password for OAuth users
+  const randomPassword = Math.random().toString(36).slice(-10);
+  
   await storage.upsertUser({
     id: claims["sub"],
     email: claims["email"],
+    password: randomPassword, // Adding required password field
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
+    isEmailVerified: true, // OAuth users are considered verified
   });
 }
 
@@ -87,8 +101,7 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
-  for (const domain of process.env
-    .REPLIT_DOMAINS!.split(",")) {
+  for (const domain of REPLIT_DOMAINS.split(",")) {
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
@@ -106,7 +119,7 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/login", (req, res, next) => {
     // Get the first domain from REPLIT_DOMAINS as fallback
-    const domain = process.env.REPLIT_DOMAINS!.split(",")[0];
+    const domain = REPLIT_DOMAINS.split(",")[0];
     const strategyName = `replitauth:${domain}`;
     
     console.log(`Attempting login with strategy: ${strategyName}`);
@@ -120,7 +133,7 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/callback", (req, res, next) => {
     // Get the first domain from REPLIT_DOMAINS as fallback
-    const domain = process.env.REPLIT_DOMAINS!.split(",")[0];
+    const domain = REPLIT_DOMAINS.split(",")[0];
     const strategyName = `replitauth:${domain}`;
     
     console.log(`Attempting callback with strategy: ${strategyName}`);
