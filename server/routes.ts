@@ -8,6 +8,8 @@ import { AuthService } from "./auth";
 import { insertVehicleSchema, insertChatRoomSchema, insertMessageSchema } from "@shared/schema";
 import { createSampleData } from "./sampleData";
 import { createTestUsers } from "./testUsers";
+import { clearAllChatData } from "./clearChatData";
+import { setupFreshChatSystem } from "./freshSetup";
 
 // Extend Express session to include userId
 declare module 'express-session' {
@@ -521,6 +523,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating test users:", error);
       res.status(500).json({ message: "Failed to create test users" });
+    }
+  });
+
+  app.post('/api/admin/clear-chat-data', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      console.log("Admin requested chat data clearing");
+      const success = await clearAllChatData();
+      
+      if (success) {
+        res.json({ message: "All chat data cleared successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to clear chat data" });
+      }
+    } catch (error) {
+      console.error("Error clearing chat data:", error);
+      res.status(500).json({ message: "Failed to clear chat data" });
+    }
+  });
+
+  app.post('/api/admin/setup-fresh-chat', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      console.log("Admin requested fresh chat system setup");
+      const result = await setupFreshChatSystem();
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(500).json({ message: "Failed to setup fresh chat system", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error setting up fresh chat system:", error);
+      res.status(500).json({ message: "Failed to setup fresh chat system" });
     }
   });
 

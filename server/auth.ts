@@ -94,9 +94,10 @@ export class AuthService {
 
     console.log("Admin user created successfully");
     
-    // Initialize sample data after admin creation
-    console.log("Setting up sample data...");
-    await createSampleData();
+    // Initialize fresh chat system after admin creation
+    console.log("Setting up fresh chat system...");
+    const { setupFreshChatSystem } = await import('./freshSetup');
+    await setupFreshChatSystem();
     
     return adminUser;
   }
