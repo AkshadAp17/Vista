@@ -314,6 +314,7 @@ export class DatabaseStorage implements IStorage {
         
         return {
           ...roomObj,
+          id: roomObj._id.toString(),
           vehicle: vehicle ? vehicle.toObject() : null,
           buyer: buyer ? buyer.toObject() : null,
           seller: seller ? seller.toObject() : null,
@@ -337,6 +338,7 @@ export class DatabaseStorage implements IStorage {
     
     return {
       ...roomObj,
+      id: roomObj._id.toString(),
       vehicle: vehicle ? vehicle.toObject() : null,
       buyer: buyer ? buyer.toObject() : null,
       seller: seller ? seller.toObject() : null,
