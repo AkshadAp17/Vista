@@ -41,7 +41,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search by brand, model, vehicle ID..."
-            className="pl-10 py-3 border-gray-300 focus:ring-2 focus:ring-hema-orange focus:border-transparent"
+            className="pl-10 py-3 border-gray-300 focus:ring-2 focus:ring-hema-orange focus:border-transparent text-black dark:text-white"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -50,10 +50,10 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
           <Select onValueChange={setLocation}>
-            <SelectTrigger className="pl-10 py-3 border-gray-300">
+            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white">
               <SelectValue placeholder="Location" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
               <SelectItem value="mumbai">Mumbai</SelectItem>
               <SelectItem value="delhi">Delhi</SelectItem>
               <SelectItem value="bangalore">Bangalore</SelectItem>
@@ -67,10 +67,10 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <div className="relative">
           <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
           <Select onValueChange={setPriceRange}>
-            <SelectTrigger className="pl-10 py-3 border-gray-300">
+            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white">
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
               <SelectItem value="0-50000">Under ₹50,000</SelectItem>
               <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
               <SelectItem value="100000-200000">
@@ -101,7 +101,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
             setVehicleType(vehicleType === "motorcycle" ? "" : "motorcycle")
           }
           className={
-            vehicleType === "motorcycle" ? "bg-hema-orange text-black" : ""
+            vehicleType === "motorcycle" ? "bg-hema-orange text-white" : ""
           }
         >
           Motorcycles

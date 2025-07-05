@@ -73,16 +73,16 @@ export default function Landing() {
                   <Search className="absolute left-4 top-4 h-5 w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
                   <Input 
                     placeholder="Search by brand, model..." 
-                    className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 rounded-xl text-lg transition-all duration-300"
+                    className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 rounded-xl text-lg transition-all duration-300 text-black dark:text-white"
                   />
                 </div>
                 <div className="relative group">
                   <MapPin className="absolute left-4 top-4 h-5 w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
                   <Select>
-                    <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-lg">
+                    <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-lg text-black dark:text-white">
                       <SelectValue placeholder="Select Location" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
                       <SelectItem value="mumbai">Mumbai</SelectItem>
                       <SelectItem value="delhi">Delhi</SelectItem>
                       <SelectItem value="bangalore">Bangalore</SelectItem>
@@ -95,10 +95,10 @@ export default function Landing() {
                 <div className="relative group">
                   <IndianRupee className="absolute left-4 top-4 h-5 w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
                   <Select>
-                    <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-lg">
+                    <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-lg text-black dark:text-white">
                       <SelectValue placeholder="Price Range" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
                       <SelectItem value="0-50000">Under ₹50,000</SelectItem>
                       <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
                       <SelectItem value="100000-200000">₹1,00,000 - ₹2,00,000</SelectItem>
