@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, MapPin, IndianRupee } from "lucide-react";
 
 interface SearchBarProps {
@@ -16,15 +22,15 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
 
   const handleSearch = () => {
     const filters: any = {};
-    
+
     if (search) filters.search = search;
     if (location) filters.location = location;
     if (priceRange) {
-      const [min, max] = priceRange.split('-').map(Number);
+      const [min, max] = priceRange.split("-").map(Number);
       filters.priceRange = `${min},${max}`;
     }
     if (vehicleType) filters.vehicleType = vehicleType;
-    
+
     onFiltersChange(filters);
   };
 
@@ -33,14 +39,14 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div className="relative md:col-span-2">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input 
-            placeholder="Search by brand, model, vehicle ID..." 
+          <Input
+            placeholder="Search by brand, model, vehicle ID..."
             className="pl-10 py-3 border-gray-300 focus:ring-2 focus:ring-hema-orange focus:border-transparent"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        
+
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
           <Select onValueChange={setLocation}>
@@ -57,7 +63,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="relative">
           <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
           <Select onValueChange={setPriceRange}>
@@ -67,14 +73,18 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
             <SelectContent>
               <SelectItem value="0-50000">Under ₹50,000</SelectItem>
               <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
-              <SelectItem value="100000-200000">₹1,00,000 - ₹2,00,000</SelectItem>
-              <SelectItem value="200000-500000">₹2,00,000 - ₹5,00,000</SelectItem>
+              <SelectItem value="100000-200000">
+                ₹1,00,000 - ₹2,00,000
+              </SelectItem>
+              <SelectItem value="200000-500000">
+                ₹2,00,000 - ₹5,00,000
+              </SelectItem>
               <SelectItem value="500000-999999">Above ₹5,00,000</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        
-        <Button 
+
+        <Button
           className="bg-hema-orange text-white py-3 px-6 hover:bg-hema-orange/90 font-medium"
           onClick={handleSearch}
         >
@@ -82,29 +92,41 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
           Search
         </Button>
       </div>
-      
+
       <div className="mt-4 flex flex-wrap gap-2">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
-          onClick={() => setVehicleType(vehicleType === 'motorcycle' ? '' : 'motorcycle')}
-          className={vehicleType === 'motorcycle' ? 'bg-hema-orange text-white' : ''}
+          onClick={() =>
+            setVehicleType(vehicleType === "motorcycle" ? "" : "motorcycle")
+          }
+          className={
+            vehicleType === "motorcycle" ? "bg-hema-orange text-black" : ""
+          }
         >
           Motorcycles
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
-          onClick={() => setVehicleType(vehicleType === 'scooter' ? '' : 'scooter')}
-          className={vehicleType === 'scooter' ? 'bg-hema-orange text-white' : ''}
+          onClick={() =>
+            setVehicleType(vehicleType === "scooter" ? "" : "scooter")
+          }
+          className={
+            vehicleType === "scooter" ? "bg-hema-orange text-white" : ""
+          }
         >
           Scooters
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
-          onClick={() => setVehicleType(vehicleType === 'electric' ? '' : 'electric')}
-          className={vehicleType === 'electric' ? 'bg-hema-orange text-white' : ''}
+          onClick={() =>
+            setVehicleType(vehicleType === "electric" ? "" : "electric")
+          }
+          className={
+            vehicleType === "electric" ? "bg-hema-orange text-white" : ""
+          }
         >
           Electric
         </Button>
