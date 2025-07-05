@@ -123,7 +123,19 @@ export default function SettingsForm({ isAdmin }: SettingsFormProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => {
+            // Reset form with current user data when opening
+            profileForm.reset({
+              firstName: user?.firstName || "",
+              lastName: user?.lastName || "",
+              email: user?.email || "",
+              phoneNumber: user?.phoneNumber || "",
+            });
+          }}
+        >
           <Settings className="h-4 w-4 mr-2" />
           Settings
         </Button>

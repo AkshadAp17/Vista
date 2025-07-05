@@ -84,10 +84,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/auth/profile', isAuth, async (req: any, res) => {
     try {
       const userId = req.session.userId;
-      const { firstName, lastName, email } = req.body;
+      const { firstName, lastName, email, phoneNumber } = req.body;
       
       if (!firstName || !lastName || !email) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({ message: "First name, last name, and email are required" });
       }
 
       // Check if email is already used by another user
@@ -96,7 +96,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Email is already in use" });
       }
 
-      const updatedUser = await storage.updateUser(userId, { firstName, lastName, email });
+      const updateData: any = { firstName, lastName, email };
+      if (phoneNumber !== undefined) {
+        updateData.phoneNumber = phoneNumber;
+      }
+
+      const updatedUser = await storage.updateUser(userId, updateData);
       res.json({ message: "Profile updated successfully", user: updatedUser });
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -182,7 +187,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin, isEmailVerified: user.isEmailVerified });
+      res.json({ 
+        id: user.id, 
+        email: user.email, 
+        firstName: user.firstName, 
+        lastName: user.lastName, 
+        phoneNumber: user.phoneNumber,
+        isAdmin: user.isAdmin, 
+        isEmailVerified: user.isEmailVerified 
+      });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
