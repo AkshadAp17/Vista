@@ -29,6 +29,8 @@ export const insertVehicleSchema = z.object({
   condition: z.string().default("good"),
   isActive: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
+  status: z.enum(["available", "pending", "sold"]).default("available"),
+  soldAt: z.date().optional(),
   vehicleType: z.string(),
 });
 
@@ -80,6 +82,8 @@ export interface Vehicle {
   condition: string;
   isActive: boolean;
   isFeatured: boolean;
+  status: "available" | "pending" | "sold";
+  soldAt?: Date;
   vehicleType: string;
   createdAt: Date;
   updatedAt: Date;

@@ -209,6 +209,10 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 06, 2025. Added 10 diverse sample vehicles including motorcycles, scooters, and electric vehicles across different price ranges
 - July 06, 2025. Redesigned login and signup pages with attractive split-screen layout featuring visual branding elements and motorcycle graphics
 - July 06, 2025. Enhanced authentication forms with professional visual design, improved mobile responsiveness, and branded left panel
+- July 06, 2025. Implemented comprehensive vehicle status system with "available", "pending", and "sold" states
+- July 06, 2025. Added vehicle status management interface for owners and admins with dropdown controls and visual indicators
+- July 06, 2025. Enhanced vehicle cards and detail pages to display status badges with icons and conditional button states
+- July 06, 2025. Disabled chat functionality for sold vehicles and added "Sold Out" button state for better user experience
 
 ## Admin Credentials
 

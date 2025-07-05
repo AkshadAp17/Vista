@@ -26,7 +26,10 @@ import {
   Shield,
   Camera,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Check,
+  Clock,
+  X
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -274,9 +277,28 @@ export default function VehicleDetail() {
                   <span className="text-3xl font-bold text-hema-orange">
                     ₹{parseFloat(vehicle.price.toString()).toLocaleString()}
                   </span>
-                  <Badge variant={vehicle.isActive ? "default" : "secondary"}>
-                    {vehicle.isActive ? "Available" : "Sold"}
-                  </Badge>
+                  {(() => {
+                    const getStatusInfo = (status: "available" | "pending" | "sold") => {
+                      switch (status) {
+                        case 'available':
+                          return { label: 'Available', color: 'bg-green-100 text-green-800', icon: Check };
+                        case 'pending':
+                          return { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock };
+                        case 'sold':
+                          return { label: 'Sold', color: 'bg-red-100 text-red-800', icon: X };
+                        default:
+                          return { label: 'Available', color: 'bg-green-100 text-green-800', icon: Check };
+                      }
+                    };
+                    const statusInfo = getStatusInfo(vehicle.status);
+                    const StatusIcon = statusInfo.icon;
+                    return (
+                      <div className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+                        <StatusIcon className="h-4 w-4" />
+                        <span>{statusInfo.label}</span>
+                      </div>
+                    );
+                  })()}
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 text-sm">

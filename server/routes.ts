@@ -349,6 +349,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update vehicle status (mark as sold, pending, etc.)
+  app.patch('/api/vehicles/:id/status', isAuth, async (req: any, res) => {
+    try {
+      const id = req.params.id;
+      const userId = req.session.userId;
+      const { status } = req.body;
+      
+      if (!['available', 'pending', 'sold'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status. Must be 'available', 'pending', or 'sold'" });
+      }
+      
+      // Check if user owns the vehicle or is admin
+      const existingVehicle = await storage.getVehicle(id);
+      if (!existingVehicle) {
+        return res.status(404).json({ message: "Vehicle not found" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (existingVehicle.sellerId !== userId && !user?.isAdmin) {
+        return res.status(403).json({ message: "Unauthorized to update this vehicle" });
+      }
+
+      const updateData: any = { status };
+      if (status === 'sold') {
+        updateData.soldAt = new Date();
+      } else if (status === 'available') {
+        updateData.soldAt = null;
+      }
+
+      const vehicle = await storage.updateVehicle(id, updateData);
+      res.json(vehicle);
+    } catch (error) {
+      console.error("Error updating vehicle status:", error);
+      res.status(500).json({ message: "Failed to update vehicle status" });
+    }
+  });
+
   app.delete('/api/vehicles/:id', isAuth, async (req: any, res) => {
     try {
       const id = req.params.id;

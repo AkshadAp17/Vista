@@ -54,6 +54,16 @@ const vehicleSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  status: {
+    type: String,
+    enum: ['available', 'pending', 'sold'],
+    default: 'available',
+    required: true,
+  },
+  soldAt: {
+    type: Date,
+    default: null,
+  },
   vehicleType: {
     type: String,
     required: true,
