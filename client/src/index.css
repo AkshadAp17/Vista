@@ -6,7 +6,7 @@
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(222, 84%, 4.9%);
   --muted: hsl(210, 40%, 98%);
-  --muted-foreground: hsl(215, 16%, 47%);
+  --muted-foreground: hsl(215, 16%, 35%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(222, 84%, 4.9%);
   --card: hsl(0, 0%, 100%);
@@ -97,6 +97,15 @@
   
   .bg-hema-orange {
     background-color: hsl(14, 100%, 57%);
+  }
+  
+  /* Fix placeholder text visibility */
+  [data-placeholder] {
+    color: hsl(0, 0%, 20%) !important;
+  }
+  
+  .dark [data-placeholder] {
+    color: hsl(0, 0%, 80%) !important;
   }
   
   .bg-hema-secondary {

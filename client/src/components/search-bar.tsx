@@ -50,7 +50,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
           <Select onValueChange={setLocation}>
-            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white">
+            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200">
               <SelectValue placeholder="Location" />
             </SelectTrigger>
             <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
@@ -67,7 +67,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <div className="relative">
           <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
           <Select onValueChange={setPriceRange}>
-            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white">
+            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200">
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
