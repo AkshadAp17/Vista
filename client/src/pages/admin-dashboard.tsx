@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +43,7 @@ export default function AdminDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isAddVehicleDialogOpen, setIsAddVehicleDialogOpen] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -233,7 +234,7 @@ export default function AdminDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Vehicle Management</CardTitle>
-                  <Dialog>
+                  <Dialog open={isAddVehicleDialogOpen} onOpenChange={setIsAddVehicleDialogOpen}>
                     <DialogTrigger asChild>
                       <Button className="bg-hema-orange hover:bg-hema-orange/90">
                         <Plus className="h-4 w-4 mr-2" />
@@ -245,7 +246,10 @@ export default function AdminDashboard() {
                         <DialogTitle>Add New Vehicle</DialogTitle>
                       </DialogHeader>
                       <div className="overflow-y-auto max-h-[calc(90vh-8rem)] pr-2">
-                        <VehicleForm onSuccess={() => window.location.reload()} />
+                        <VehicleForm onSuccess={() => {
+                          setIsAddVehicleDialogOpen(false);
+                          queryClient.invalidateQueries({ queryKey: ["/api/vehicles"] });
+                        }} />
                       </div>
                     </DialogContent>
                   </Dialog>
