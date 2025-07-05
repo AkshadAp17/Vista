@@ -179,7 +179,7 @@ export default function UserDashboard() {
                             Seller: {chat.seller?.firstName} {chat.seller?.lastName}
                           </p>
                           <p className="text-sm text-hema-orange font-medium">
-                            ₹{chat.vehicle?.price?.toLocaleString()}
+                            ₹{chat.vehicle?.price ? parseFloat(chat.vehicle.price.toString()).toLocaleString() : 'N/A'}
                           </p>
                           {chat.messages?.length > 0 && (
                             <p className="text-sm text-gray-500 mt-2">

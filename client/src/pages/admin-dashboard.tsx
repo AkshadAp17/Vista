@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                               </div>
                             </TableCell>
                             <TableCell>{vehicle.vehicleNumber}</TableCell>
-                            <TableCell>₹{vehicle.price.toLocaleString()}</TableCell>
+                            <TableCell>₹{parseFloat(vehicle.price.toString()).toLocaleString()}</TableCell>
                             <TableCell>{vehicle.location}</TableCell>
                             <TableCell>
                               <Badge variant={vehicle.isActive ? "default" : "secondary"}>

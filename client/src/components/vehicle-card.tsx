@@ -81,7 +81,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
     if (navigator.share) {
       navigator.share({
         title: `${vehicle.brand} ${vehicle.model}`,
-        text: `Check out this ${vehicle.brand} ${vehicle.model} for ₹${vehicle.price.toLocaleString()}`,
+        text: `Check out this ${vehicle.brand} ${vehicle.model} for ₹${parseFloat(vehicle.price.toString()).toLocaleString()}`,
         url: vehicleUrl,
       });
     } else {
@@ -131,7 +131,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
         
         <div className="flex items-center justify-between mb-3">
           <span className="text-2xl font-bold text-hema-orange">
-            ₹{vehicle.price.toLocaleString()}
+            ₹{parseFloat(vehicle.price.toString()).toLocaleString()}
           </span>
           <span className="text-gray-600 text-sm flex items-center">
             <MapPin className="h-3 w-3 mr-1" />

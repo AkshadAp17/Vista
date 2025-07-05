@@ -264,7 +264,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xl font-bold text-green-600">₹{vehicle.price.toLocaleString()}</p>
+            <p className="text-xl font-bold text-green-600">₹{parseFloat(vehicle.price.toString()).toLocaleString()}</p>
             <p className="text-sm text-gray-600">{vehicle.vehicleNumber}</p>
           </div>
         </div>

@@ -165,6 +165,8 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 05, 2025. Fixed critical vehicle form dialog issue - replaced page reload with proper state management to prevent white page
 - July 05, 2025. Fixed admin dashboard white page issue - added null checks for vehicle data and WebSocket error handling
 - July 05, 2025. Fixed vehicle chat dialog undefined messages error - added proper null checks for messages array
+- July 05, 2025. Fixed vehicle price display showing "{object Object}" - added parseFloat conversion for MongoDB Decimal128 objects
+- July 05, 2025. Fixed WebSocket connection issues in chat system - improved host detection and error handling
 
 ## Admin Credentials
 

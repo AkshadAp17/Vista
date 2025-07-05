@@ -272,7 +272,7 @@ export default function VehicleDetail() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-3xl font-bold text-hema-orange">
-                    ₹{vehicle.price.toLocaleString()}
+                    ₹{parseFloat(vehicle.price.toString()).toLocaleString()}
                   </span>
                   <Badge variant={vehicle.isActive ? "default" : "secondary"}>
                     {vehicle.isActive ? "Available" : "Sold"}
@@ -505,7 +505,7 @@ export default function VehicleDetail() {
                   className="w-full"
                   onClick={() => {
                     const subject = `Inquiry about ${vehicle?.brand} ${vehicle?.model}`;
-                    const body = `Hi ${vehicle?.seller?.firstName},\n\nI'm interested in your ${vehicle?.brand} ${vehicle?.model} listed for ₹${vehicle?.price}. Could you please provide more details?\n\nThanks!`;
+                    const body = `Hi ${vehicle?.seller?.firstName},\n\nI'm interested in your ${vehicle?.brand} ${vehicle?.model} listed for ₹${parseFloat(vehicle?.price.toString()).toLocaleString()}. Could you please provide more details?\n\nThanks!`;
                     window.open(`mailto:${vehicle?.seller?.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_self');
                     setShowSellerProfile(false);
                   }}
