@@ -193,10 +193,18 @@ export class DatabaseStorage implements IStorage {
     let query: any = { isActive: true };
 
     if (filters?.search) {
-      query.$or = [
+      const searchConditions = [
         { brand: { $regex: filters.search, $options: 'i' } },
-        { model: { $regex: filters.search, $options: 'i' } }
+        { model: { $regex: filters.search, $options: 'i' } },
+        { vehicleNumber: { $regex: filters.search, $options: 'i' } }
       ];
+      
+      // If search looks like a MongoDB ObjectId, include exact ID match
+      if (filters.search.match(/^[0-9a-fA-F]{24}$/)) {
+        searchConditions.push({ _id: filters.search });
+      }
+      
+      query.$or = searchConditions;
     }
 
     if (filters?.location) {
@@ -315,7 +323,7 @@ export class DatabaseStorage implements IStorage {
         return {
           ...roomObj,
           id: roomObj._id.toString(),
-          vehicle: vehicle ? vehicle.toObject() : null,
+          vehicle: vehicle ? this.transformVehicle(vehicle.toObject()) : null,
           buyer: buyer ? buyer.toObject() : null,
           seller: seller ? seller.toObject() : null,
           messages
@@ -339,7 +347,7 @@ export class DatabaseStorage implements IStorage {
     return {
       ...roomObj,
       id: roomObj._id.toString(),
-      vehicle: vehicle ? vehicle.toObject() : null,
+      vehicle: vehicle ? this.transformVehicle(vehicle.toObject()) : null,
       buyer: buyer ? buyer.toObject() : null,
       seller: seller ? seller.toObject() : null,
       messages
