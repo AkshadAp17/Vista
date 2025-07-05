@@ -161,6 +161,15 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     }
   }, [open, isAuthenticated, user]);
 
+  // Debug effect to log chat room state
+  useEffect(() => {
+    if (chatRoom) {
+      console.log("Chat room state updated:", chatRoom);
+      console.log("Number of messages:", chatRoom.messages?.length || 0);
+      console.log("Messages:", chatRoom.messages);
+    }
+  }, [chatRoom]);
+
   // Setup WebSocket connection
   useEffect(() => {
     if (!isAuthenticated || !user || !chatRoom) return;
