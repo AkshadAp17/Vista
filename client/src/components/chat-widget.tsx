@@ -326,7 +326,7 @@ export default function ChatWidget() {
                                 </h4>
                               </div>
                               <p className="text-xs text-gray-600 truncate">
-                                {chat.vehicle?.brand} {chat.vehicle?.model} • ID: #{chat.vehicle?.id}
+                                {chat.vehicle?.brand} {chat.vehicle?.model} • {chat.vehicle?.vehicleNumber || `VH${String((chat.vehicle?.id || '').slice(-3)).padStart(3, '0')}`}
                               </p>
                               {lastMessage && (
                                 <p className="text-xs text-gray-500 truncate mt-1">
@@ -357,7 +357,7 @@ export default function ChatWidget() {
                             {selectedChat.vehicle.brand} {selectedChat.vehicle.model}
                           </h3>
                           <p className="text-sm text-gray-600">
-                            {selectedChat.vehicle.vehicleNumber} • ₹{parseFloat(selectedChat.vehicle.price.toString()).toLocaleString()}
+                            {selectedChat.vehicle.vehicleNumber || `VH${String((selectedChat.vehicle.id || '').slice(-3)).padStart(3, '0')}`} • ₹{parseFloat(selectedChat.vehicle.price.toString()).toLocaleString()}
                           </p>
                         </div>
                       </div>
