@@ -97,6 +97,7 @@ export interface IStorage {
   // User operations
   getUser(id: string): Promise<any | undefined>;
   getUserByEmail(email: string): Promise<any | undefined>;
+  getAllUsers(): Promise<any[]>;
   upsertUser(user: UpsertUser): Promise<any>;
   updateUser(id: string, updates: Partial<UpsertUser>): Promise<any>;
   
@@ -166,6 +167,13 @@ export class DatabaseStorage implements IStorage {
       { new: true, upsert: true }
     );
     return user.toObject();
+  }
+
+  async getAllUsers(): Promise<any[]> {
+    const users = await User.find({})
+      .select('-password -verificationCode')
+      .sort({ createdAt: -1 });
+    return users.map(user => user.toObject());
   }
 
   async updateUser(id: string, updates: Partial<UpsertUser>): Promise<any> {

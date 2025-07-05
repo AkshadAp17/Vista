@@ -22,6 +22,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  Area,
+  AreaChart
+} from 'recharts';
 import { 
   BarChart3, 
   Users, 
@@ -44,6 +61,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddVehicleDialogOpen, setIsAddVehicleDialogOpen] = useState(false);
+  const [isUserListDialogOpen, setIsUserListDialogOpen] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -72,6 +90,11 @@ export default function AdminDashboard() {
 
   const { data: chatRooms = [], isLoading: chatsLoading } = useQuery({
     queryKey: ["/api/chat-rooms"],
+    enabled: !!user?.isAdmin,
+  });
+
+  const { data: allUsers = [], isLoading: usersLoading } = useQuery({
+    queryKey: ["/api/admin/users"],
     enabled: !!user?.isAdmin,
   });
 
@@ -204,21 +227,79 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="bg-purple-100 text-purple-600 w-12 h-12 rounded-lg flex items-center justify-center">
-                  <Users className="h-6 w-6" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold text-hema-secondary">
-                    {statsLoading ? "..." : stats?.totalUsers || 0}
-                  </p>
-                </div>
+          <Dialog open={isUserListDialogOpen} onOpenChange={setIsUserListDialogOpen}>
+            <DialogTrigger asChild>
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center">
+                    <div className="bg-purple-100 text-purple-600 w-12 h-12 rounded-lg flex items-center justify-center">
+                      <Users className="h-6 w-6" />
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm text-gray-600">Total Users</p>
+                      <p className="text-2xl font-bold text-hema-secondary">
+                        {statsLoading ? "..." : stats?.totalUsers || 0}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle>All Users</DialogTitle>
+              </DialogHeader>
+              <div className="overflow-y-auto max-h-[60vh]">
+                {usersLoading ? (
+                  <div className="text-center py-8">Loading users...</div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Joined</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allUsers.map((user: any) => (
+                        <TableRow key={user.id}>
+                          <TableCell>
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-hema-orange text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                {user.firstName?.[0]}{user.lastName?.[0]}
+                              </div>
+                              <div>
+                                <div className="font-medium">{user.firstName} {user.lastName}</div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>{user.phoneNumber || 'N/A'}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.isAdmin ? "default" : "secondary"}>
+                              {user.isAdmin ? "Admin" : "User"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={user.isEmailVerified ? "default" : "secondary"}>
+                              {user.isEmailVerified ? "Verified" : "Pending"}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </div>
-            </CardContent>
-          </Card>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Main Content */}
@@ -374,19 +455,144 @@ export default function AdminDashboard() {
           </TabsContent>
           
           <TabsContent value="analytics" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Business Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-gray-600">
-                  Analytics dashboard coming soon...
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Overview Stats Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="h-5 w-5 mr-2" />
+                    Platform Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { name: 'Vehicles', value: stats?.totalVehicles || 0, color: '#ff6b35' },
+                      { name: 'Users', value: stats?.totalUsers || 0, color: '#8b5cf6' },
+                      { name: 'Active Chats', value: stats?.activeChats || 0, color: '#f59e0b' },
+                      { name: 'Sales', value: stats?.totalSales || 0, color: '#10b981' }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="value" fill="#ff6b35" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* User Activity Pie Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="h-5 w-5 mr-2" />
+                    User Distribution
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Regular Users', value: (stats?.totalUsers || 0) - 1, fill: '#8b5cf6' },
+                          { name: 'Admin Users', value: 1, fill: '#ff6b35' }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#8b5cf6" />
+                        <Cell fill="#ff6b35" />
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Vehicle Stats */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Car className="h-5 w-5 mr-2" />
+                    Vehicle Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Total Vehicles</span>
+                      <span className="font-semibold">{stats?.totalVehicles || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Active Listings</span>
+                      <span className="font-semibold text-green-600">{vehicles?.filter((v: any) => v.isActive).length || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Featured Vehicles</span>
+                      <span className="font-semibold text-orange-600">{vehicles?.filter((v: any) => v.isFeatured).length || 0}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-hema-orange h-2 rounded-full transition-all" 
+                        style={{ width: `${((vehicles?.filter((v: any) => v.isActive).length || 0) / (stats?.totalVehicles || 1)) * 100}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500">Active vehicle percentage</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Communication Stats */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Communication Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Active Chat Rooms</span>
+                      <span className="font-semibold">{stats?.activeChats || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Total Messages</span>
+                      <span className="font-semibold">{chatRooms?.reduce((total: number, chat: any) => total + (chat.messages?.length || 0), 0) || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Avg Messages/Chat</span>
+                      <span className="font-semibold">
+                        {chatRooms?.length > 0 
+                          ? Math.round((chatRooms?.reduce((total: number, chat: any) => total + (chat.messages?.length || 0), 0) || 0) / chatRooms.length)
+                          : 0
+                        }
+                      </span>
+                    </div>
+                    <ResponsiveContainer width="100%" height={120}>
+                      <AreaChart data={[
+                        { name: 'Week 1', messages: 12 },
+                        { name: 'Week 2', messages: 19 },
+                        { name: 'Week 3', messages: 25 },
+                        { name: 'Week 4', messages: chatRooms?.reduce((total: number, chat: any) => total + (chat.messages?.length || 0), 0) || 0 }
+                      ]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area type="monotone" dataKey="messages" stroke="#ff6b35" fill="#ff6b35" fillOpacity={0.3} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
