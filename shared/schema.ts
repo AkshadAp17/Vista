@@ -1,124 +1,180 @@
+import { pgTable, text, serial, integer, boolean, timestamp, decimal } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Schema definitions for validation
-export const insertUserSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  password: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  phoneNumber: z.string().optional(),
-  profileImageUrl: z.string().optional(),
-  isAdmin: z.boolean().default(false),
-  isEmailVerified: z.boolean().default(false),
-  verificationCode: z.string().optional(),
-  verificationCodeExpiry: z.date().optional(),
+// Users table
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  email: text('email').unique().notNull(),
+  password: text('password').notNull(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  phoneNumber: text('phone_number'),
+  profileImageUrl: text('profile_image_url'),
+  isAdmin: boolean('is_admin').default(false).notNull(),
+  isEmailVerified: boolean('is_email_verified').default(false).notNull(),
+  verificationCode: text('verification_code'),
+  verificationCodeExpiry: timestamp('verification_code_expiry'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const insertVehicleSchema = z.object({
-  sellerId: z.string(),
-  brand: z.string(),
-  model: z.string(),
-  year: z.number(),
-  price: z.number(),
-  vehicleNumber: z.string(),
-  engineCapacity: z.string().optional(),
-  fuelType: z.string(),
-  kmDriven: z.number(),
-  location: z.string(),
-  description: z.string().optional(),
-  images: z.array(z.string()).optional(),
-  condition: z.string().default("good"),
-  isActive: z.boolean().default(true),
-  isFeatured: z.boolean().default(false),
-  vehicleType: z.string(),
+// Vehicles table
+export const vehicles = pgTable('vehicles', {
+  id: serial('id').primaryKey(),
+  sellerId: integer('seller_id').references(() => users.id).notNull(),
+  brand: text('brand').notNull(),
+  model: text('model').notNull(),
+  year: integer('year').notNull(),
+  price: decimal('price', { precision: 10, scale: 2 }).notNull(),
+  vehicleNumber: text('vehicle_number').notNull(),
+  engineCapacity: text('engine_capacity'),
+  fuelType: text('fuel_type').notNull(),
+  kmDriven: integer('km_driven').notNull(),
+  location: text('location').notNull(),
+  description: text('description'),
+  images: text('images').array(),
+  condition: text('condition').default('good').notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  isFeatured: boolean('is_featured').default(false).notNull(),
+  vehicleType: text('vehicle_type').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const insertChatRoomSchema = z.object({
-  vehicleId: z.string(),
-  buyerId: z.string(),
-  sellerId: z.string(),
-  isActive: z.boolean().default(true),
+// Chat rooms table
+export const chatRooms = pgTable('chat_rooms', {
+  id: serial('id').primaryKey(),
+  vehicleId: integer('vehicle_id').references(() => vehicles.id).notNull(),
+  buyerId: integer('buyer_id').references(() => users.id).notNull(),
+  sellerId: integer('seller_id').references(() => users.id).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const insertMessageSchema = z.object({
-  chatRoomId: z.string(),
-  senderId: z.string(),
-  content: z.string(),
-  messageType: z.string().default("text"),
+// Messages table
+export const messages = pgTable('messages', {
+  id: serial('id').primaryKey(),
+  chatRoomId: integer('chat_room_id').references(() => chatRooms.id).notNull(),
+  senderId: integer('sender_id').references(() => users.id).notNull(),
+  content: text('content').notNull(),
+  messageType: text('message_type').default('text').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-// Types for API responses
-export interface User {
-  _id: string;
-  id: string;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
-  profileImageUrl?: string;
-  isAdmin: boolean;
-  isEmailVerified: boolean;
-  verificationCode?: string;
-  verificationCodeExpiry?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Notifications table
+export const notifications = pgTable('notifications', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  type: text('type').notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  data: text('data'),
+  isRead: boolean('is_read').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
 
-export interface Vehicle {
-  _id: string;
-  sellerId: string;
-  brand: string;
-  model: string;
-  year: number;
-  price: number;
-  vehicleNumber: string;
-  engineCapacity?: string;
-  fuelType: string;
-  kmDriven: number;
-  location: string;
-  description?: string;
-  images?: string[];
-  condition: string;
-  isActive: boolean;
-  isFeatured: boolean;
-  vehicleType: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  vehicles: many(vehicles),
+  sentMessages: many(messages),
+  buyerChatRooms: many(chatRooms, { relationName: "buyer" }),
+  sellerChatRooms: many(chatRooms, { relationName: "seller" }),
+  notifications: many(notifications),
+}));
 
-export interface ChatRoom {
-  _id: string;
-  vehicleId: string;
-  buyerId: string;
-  sellerId: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+export const vehiclesRelations = relations(vehicles, ({ one, many }) => ({
+  seller: one(users, {
+    fields: [vehicles.sellerId],
+    references: [users.id],
+  }),
+  chatRooms: many(chatRooms),
+}));
 
-export interface Message {
-  _id: string;
-  chatRoomId: string;
-  senderId: string;
-  content: string;
-  messageType: string;
-  createdAt: Date;
-}
+export const chatRoomsRelations = relations(chatRooms, ({ one, many }) => ({
+  vehicle: one(vehicles, {
+    fields: [chatRooms.vehicleId],
+    references: [vehicles.id],
+  }),
+  buyer: one(users, {
+    fields: [chatRooms.buyerId],
+    references: [users.id],
+    relationName: "buyer",
+  }),
+  seller: one(users, {
+    fields: [chatRooms.sellerId],
+    references: [users.id],
+    relationName: "seller",
+  }),
+  messages: many(messages),
+}));
 
-export interface Notification {
-  _id: string;
-  userId: string;
-  type: string;
-  title: string;
-  message: string;
-  data?: string;
-  isRead: boolean;
-  createdAt: Date;
-}
+export const messagesRelations = relations(messages, ({ one }) => ({
+  chatRoom: one(chatRooms, {
+    fields: [messages.chatRoomId],
+    references: [chatRooms.id],
+  }),
+  sender: one(users, {
+    fields: [messages.senderId],
+    references: [users.id],
+  }),
+}));
 
-// Extended types for API responses
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));
+
+// Insert schemas
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertVehicleSchema = createInsertSchema(vehicles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMessageSchema = createInsertSchema(messages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof insertUserSchema._type;
+
+export type Vehicle = typeof vehicles.$inferSelect;
+export type InsertVehicle = typeof insertVehicleSchema._type;
+
+export type ChatRoom = typeof chatRooms.$inferSelect;
+export type InsertChatRoom = typeof insertChatRoomSchema._type;
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof insertMessageSchema._type;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof insertNotificationSchema._type;
+
+// Extended types with relations
 export interface VehicleWithSeller extends Vehicle {
   seller: User;
 }
@@ -129,9 +185,3 @@ export interface ChatRoomWithDetails extends ChatRoom {
   seller: User;
   messages: (Message & { sender: User })[];
 }
-
-// Types for input data
-export type UpsertUser = z.infer<typeof insertUserSchema>;
-export type InsertVehicle = z.infer<typeof insertVehicleSchema>;
-export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
-export type InsertMessage = z.infer<typeof insertMessageSchema>;
