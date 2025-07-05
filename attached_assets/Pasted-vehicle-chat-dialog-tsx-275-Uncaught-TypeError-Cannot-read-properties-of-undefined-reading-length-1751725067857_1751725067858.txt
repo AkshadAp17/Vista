@@ -1,0 +1,33 @@
+vehicle-chat-dialog.tsx:275 Uncaught TypeError: Cannot read properties of undefined (reading 'length')
+    at VehicleChatDialog (vehicle-chat-dialog.tsx:275:34)
+
+useAuth.ts:12 Auth state: 
+{user: {…}, isLoading: false, error: null, isAuthenticated: true}
+useAuth.ts:12 Auth state: 
+{user: {…}, isLoading: false, error: null, isAuthenticated: true}
+vehicle-chat-dialog.tsx:275 Uncaught TypeError: Cannot read properties of undefined (reading 'length')
+    at VehicleChatDialog (vehicle-chat-dialog.tsx:275:34)
+chunk-WERSD76P.js?v=d50fde70:14032 The above error occurred in the <VehicleChatDialog> component:
+
+    at VehicleChatDialog (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/components/vehicle-chat-dialog.tsx:34:45)
+    at div
+    at _c (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at VehicleCard (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/components/vehicle-card.tsx:27:39)
+    at div
+    at div
+    at section
+    at div
+    at Home (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/pages/home.tsx:30:20)
+    at Route (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d50fde70:323:16)
+    at Switch (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d50fde70:379:17)
+    at Router (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/App.tsx?v=gB8BOBJTfpdzT1EN2RuUB:32:48)
+    at Provider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.…unner/workspace/node_modules/.vite/deps/chunk-VJRUVGTI.js?v=d50fde70:38:15)
+    at TooltipProvider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.…rkspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=d50fde70:63:5)
+    at QueryClientProvider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=d50fde70:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+chunk-WERSD76P.js?v=d50fde70:19413 Uncaught TypeError: Cannot read properties of undefined (reading 'length')
+    at VehicleChatDialog (vehicle-chat-dialog.tsx:275:34)
+chat-widget.tsx:145 WebSocket disconnected

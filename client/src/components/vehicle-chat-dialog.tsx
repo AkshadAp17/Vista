@@ -272,13 +272,13 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
         {chatRoom && (
           <>
             <ScrollArea className="flex-1 p-4 border rounded-lg">
-              {chatRoom.messages.length === 0 ? (
+              {!chatRoom.messages || chatRoom.messages.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <p>No messages yet. Start the conversation!</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {chatRoom.messages.map((message) => {
+                  {chatRoom.messages?.map((message) => {
                     const isOwnMessage = message.senderId === (user as any)?.id;
                     return (
                       <div
