@@ -299,8 +299,8 @@ export default function ChatWidget() {
 
       {/* Chat Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl h-[600px] p-0">
-          <div className="flex h-full">
+        <DialogContent className="max-w-4xl h-[600px] p-0 overflow-hidden">
+          <div className="flex h-full overflow-hidden">
             {/* Chat List Sidebar */}
             <div className="w-1/3 border-r flex flex-col">
               <DialogHeader className="p-4 border-b">
@@ -397,8 +397,8 @@ export default function ChatWidget() {
                   </div>
 
                   {/* Messages */}
-                  <ScrollArea className="flex-1 p-4">
-                    <div className="space-y-4">
+                  <ScrollArea className="flex-1 p-4 overflow-hidden">
+                    <div className="space-y-4 overflow-y-auto">
                       {selectedChat.messages && selectedChat.messages.length > 0 ? (
                         selectedChat.messages.map((message: any) => {
                         const isOwnMessage = message.senderId === (user as any)?.id;
@@ -417,13 +417,13 @@ export default function ChatWidget() {
                               </AvatarFallback>
                             </Avatar>
                             <div
-                              className={`rounded-lg p-3 max-w-xs chat-bubble ${
+                              className={`rounded-lg p-3 max-w-[70%] chat-bubble ${
                                 isOwnMessage
                                   ? "bg-hema-orange text-white"
                                   : "bg-gray-100 text-gray-900"
                               }`}
                             >
-                              <p className="text-sm">{message.content}</p>
+                              <p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
                               <p
                                 className={`text-xs mt-1 ${
                                   isOwnMessage ? "text-white/75" : "text-gray-500"

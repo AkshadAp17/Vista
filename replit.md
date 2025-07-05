@@ -193,6 +193,9 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 05, 2025. CRITICAL FIX: Added WebSocket broadcasting to HTTP message endpoint - messages now appear instantly in real-time
 - July 05, 2025. Changed chat widget to use HTTP API for message sending instead of pure WebSocket for better reliability
 - July 05, 2025. Enhanced WebSocket authentication to prevent multiple connection issues
+- July 05, 2025. Fixed message overflow issue in chat room - messages now wrap properly within dialog boundaries
+- July 05, 2025. Added proper word wrapping and overflow handling to chat messages with max-width constraints
+- July 05, 2025. Enhanced chat dialog container with overflow protection for better user experience
 
 ## Admin Credentials
 
