@@ -11,11 +11,11 @@ import VehicleChatDialog from "./vehicle-chat-dialog";
 
 interface VehicleCardProps {
   vehicle: {
-    id: number;
+    id: string;
     brand: string;
     model: string;
     year: number;
-    price: string;
+    price: number;
     vehicleNumber: string;
     location: string;
     kmDriven: number;

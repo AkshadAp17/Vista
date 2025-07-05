@@ -132,6 +132,15 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  
+  private transformVehicle(vehicleObj: any, seller: any = null): VehicleWithSeller {
+    return {
+      ...vehicleObj,
+      id: vehicleObj._id.toString(),
+      price: parseFloat(vehicleObj.price.toString()),
+      seller: seller ? seller : null
+    } as unknown as VehicleWithSeller;
+  }
   // User operations
   async getUser(id: string): Promise<any | undefined> {
     const user = await User.findOne({ id });
@@ -208,10 +217,7 @@ export class DatabaseStorage implements IStorage {
       vehicles.map(async (vehicle) => {
         const seller = await User.findOne({ id: vehicle.sellerId.toString() });
         const vehicleObj = vehicle.toObject();
-        return {
-          ...vehicleObj,
-          seller: seller ? seller.toObject() : null
-        } as unknown as VehicleWithSeller;
+        return this.transformVehicle(vehicleObj, seller ? seller.toObject() : null);
       })
     );
     
@@ -225,10 +231,7 @@ export class DatabaseStorage implements IStorage {
     const seller = await User.findOne({ id: vehicle.sellerId.toString() });
     const vehicleObj = vehicle.toObject();
     
-    return {
-      ...vehicleObj,
-      seller: seller ? seller.toObject() : null
-    } as unknown as VehicleWithSeller;
+    return this.transformVehicle(vehicleObj, seller ? seller.toObject() : null);
   }
 
   async createVehicle(vehicle: InsertVehicle): Promise<any> {
@@ -264,10 +267,7 @@ export class DatabaseStorage implements IStorage {
       vehicles.map(async (vehicle) => {
         const seller = await User.findOne({ id: vehicle.sellerId.toString() });
         const vehicleObj = vehicle.toObject();
-        return {
-          ...vehicleObj,
-          seller: seller ? seller.toObject() : null
-        } as unknown as VehicleWithSeller;
+        return this.transformVehicle(vehicleObj, seller ? seller.toObject() : null);
       })
     );
     

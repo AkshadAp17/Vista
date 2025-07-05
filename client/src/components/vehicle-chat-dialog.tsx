@@ -30,16 +30,16 @@ interface Message {
 }
 
 interface ChatRoom {
-  id: number;
-  vehicleId: number;
+  id: string;
+  vehicleId: string;
   buyerId: string;
   sellerId: string;
   vehicle: {
-    id: number;
+    id: string;
     brand: string;
     model: string;
     vehicleNumber: string;
-    price: string;
+    price: number;
   };
   buyer: {
     id: string;
@@ -60,11 +60,11 @@ interface VehicleChatDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   vehicle: {
-    id: number;
+    id: string;
     brand: string;
     model: string;
     year: number;
-    price: string;
+    price: number;
     vehicleNumber: string;
     location: string;
     kmDriven: number;
