@@ -41,6 +41,11 @@ export default function UserDashboard() {
     enabled: !!user,
   });
 
+  const { data: favoriteVehicles = [], isLoading: favoritesLoading } = useQuery({
+    queryKey: ["/api/favorites"],
+    enabled: !!user,
+  });
+
   if (isLoading || !isAuthenticated) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
@@ -112,7 +117,7 @@ export default function UserDashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm text-gray-600">Favorites</p>
-                  <p className="text-2xl font-bold text-hema-secondary">0</p>
+                  <p className="text-2xl font-bold text-hema-secondary">{favoriteVehicles.length}</p>
                 </div>
               </div>
             </CardContent>
@@ -225,17 +230,27 @@ export default function UserDashboard() {
                 <CardTitle>Your Favorite Vehicles</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Heart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No favorites yet</h3>
-                  <p className="text-gray-600 mb-4">Save vehicles you're interested in to view them later</p>
-                  <Button 
-                    className="bg-hema-orange hover:bg-hema-orange/90"
-                    onClick={() => window.location.href = '/'}
-                  >
-                    Browse Vehicles
-                  </Button>
-                </div>
+                {favoritesLoading ? (
+                  <div className="text-center py-8">Loading favorites...</div>
+                ) : favoriteVehicles.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Heart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No favorites yet</h3>
+                    <p className="text-gray-600 mb-4">Save vehicles you're interested in to view them later</p>
+                    <Button 
+                      className="bg-hema-orange hover:bg-hema-orange/90"
+                      onClick={() => window.location.href = '/'}
+                    >
+                      Browse Vehicles
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {favoriteVehicles.map((vehicle: any) => (
+                      <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -262,9 +277,7 @@ export default function UserDashboard() {
                         {user?.firstName} {user?.lastName}
                       </h3>
                       <p className="text-gray-600">{user?.email}</p>
-                      <Button variant="outline" size="sm" className="mt-2">
-                        Edit Profile
-                      </Button>
+                      <SettingsForm isAdmin={false} />
                     </div>
                   </div>
                   
@@ -281,9 +294,17 @@ export default function UserDashboard() {
                           <span className="ml-2">{user?.email}</span>
                         </div>
                         <div>
+                          <span className="text-gray-600">Phone:</span>
+                          <span className="ml-2">{(user as any)?.phoneNumber || 'Not provided'}</span>
+                        </div>
+                        <div>
                           <span className="text-gray-600">Member since:</span>
                           <span className="ml-2">
-                            {new Date(user?.createdAt || '').toLocaleDateString()}
+                            {(user as any)?.createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            }) : 'Recent member'}
                           </span>
                         </div>
                       </div>

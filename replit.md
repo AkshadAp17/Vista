@@ -196,6 +196,11 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 05, 2025. Fixed message overflow issue in chat room - messages now wrap properly within dialog boundaries
 - July 05, 2025. Added proper word wrapping and overflow handling to chat messages with max-width constraints
 - July 05, 2025. Enhanced chat dialog container with overflow protection for better user experience
+- July 05, 2025. Fixed favorites functionality - now properly displays liked vehicles in user dashboard
+- July 05, 2025. Added dynamic favorites query to fetch and display user's favorite vehicles
+- July 05, 2025. Enhanced profile section with phone number field and improved member since date formatting
+- July 05, 2025. Made profile settings fully functional by connecting Edit Profile button to settings form
+- July 05, 2025. Fixed favorites count in dashboard stats to show actual number of liked vehicles
 
 ## Admin Credentials
 
