@@ -323,7 +323,7 @@ export default function ChatWidget() {
                             {selectedChat.vehicle.brand} {selectedChat.vehicle.model}
                           </h3>
                           <p className="text-sm text-gray-600">
-                            {selectedChat.vehicle.vehicleNumber} • ₹{selectedChat.vehicle.price.toLocaleString()}
+                            {selectedChat.vehicle.vehicleNumber} • ₹{parseFloat(selectedChat.vehicle.price.toString()).toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -344,12 +344,12 @@ export default function ChatWidget() {
                   {/* Messages */}
                   <ScrollArea className="flex-1 p-4">
                     <div className="space-y-4">
-                      {selectedChat.messages.map((message) => {
-                        const isOwnMessage = message.senderId === user?.id;
+                      {selectedChat.messages.map((message: any) => {
+                        const isOwnMessage = message.senderId === (user as any)?.id;
                         
                         return (
                           <div
-                            key={message.id}
+                            key={message._id || message.id}
                             className={`flex items-start space-x-3 ${
                               isOwnMessage ? "flex-row-reverse space-x-reverse" : ""
                             }`}

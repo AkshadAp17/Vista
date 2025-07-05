@@ -241,7 +241,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xl font-bold text-green-600">₹{vehicle.price}</p>
+            <p className="text-xl font-bold text-green-600">₹{vehicle.price.toLocaleString()}</p>
             <p className="text-sm text-gray-600">{vehicle.vehicleNumber}</p>
           </div>
         </div>
@@ -270,7 +270,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
                     const isOwnMessage = message.senderId === (user as any)?.id;
                     return (
                       <div
-                        key={message.id}
+                        key={message._id || message.id}
                         className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
                       >
                         <div
