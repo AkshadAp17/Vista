@@ -5,9 +5,9 @@ import { AuthService } from "./auth";
 import { connectDB } from "./db";
 import { setupAdminUser } from "./setupAdmin";
 
-// Set default session secret if not provided
+// Set default session secret if not provided - use environment variable in production
 if (!process.env.SESSION_SECRET) {
-  process.env.SESSION_SECRET = "your-super-secret-session-key-for-development";
+  process.env.SESSION_SECRET = "dev-session-secret-change-in-production";
 }
 
 const app = express();

@@ -3,8 +3,9 @@ import { User } from './models';
 
 export const setupAdminUser = async () => {
   try {
-    const adminEmail = 'akshadapastambh37@gmail.com';
-    const adminPassword = 'Akshad@11';
+    // Use environment variables for admin credentials
+    const adminEmail = process.env.ADMIN_EMAIL || 'akshadapastambh37@gmail.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Akshad@11';
 
     // Check if admin already exists
     const existingAdmin = await User.findOne({ email: adminEmail });

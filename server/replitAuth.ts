@@ -26,19 +26,9 @@ export function getSession() {
   
   let sessionStore;
   
-  // Use in-memory session store for development if MongoDB URI is not available
-  if (!process.env.MONGODB_URI) {
-    console.log('Using in-memory session store for development');
-    sessionStore = new session.MemoryStore();
-  } else {
-    // Use MongoDB for session storage
-    sessionStore = MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      ttl: sessionTtl / 1000, // convert from ms to seconds
-      collectionName: 'sessions',
-      autoRemove: 'native',
-    });
-  }
+  // Use in-memory session store for development
+  console.log('Using in-memory session store for development');
+  sessionStore = new session.MemoryStore();
   
   return session({
     secret: process.env.SESSION_SECRET!,

@@ -502,8 +502,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Get chat room details to notify both buyer and seller
           const chatRoom = await storage.getChatRoomWithMessages(message.chatRoomId);
           if (chatRoom) {
-            const buyerWs = clients.get(chatRoom.buyerId);
-            const sellerWs = clients.get(chatRoom.sellerId);
+            const buyerId = typeof chatRoom.buyerId === 'string' ? chatRoom.buyerId : chatRoom.buyerId.toString();
+            const sellerId = typeof chatRoom.sellerId === 'string' ? chatRoom.sellerId : chatRoom.sellerId.toString();
+            const buyerWs = clients.get(buyerId);
+            const sellerWs = clients.get(sellerId);
             
             const broadcastMessage = {
               type: 'new_message',
