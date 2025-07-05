@@ -207,18 +207,9 @@ export default function ChatWidget() {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: (messageData: { chatRoomId: string; content: string }) => {
-      if (!socket || socket.readyState !== WebSocket.OPEN) {
-        throw new Error("WebSocket connection not available");
-      }
-      
-      socket.send(JSON.stringify({
-        type: "chat_message",
-        chatRoomId: messageData.chatRoomId,
-        senderId: (user as any)?.id,
+      return apiRequest("POST", `/api/chat-rooms/${messageData.chatRoomId}/messages`, {
         content: messageData.content,
-      }));
-      
-      return Promise.resolve();
+      });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {

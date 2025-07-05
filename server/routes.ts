@@ -448,6 +448,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...message,
         sender: await storage.getUser(userId),
       };
+
+      // Broadcast message to WebSocket clients
+      const buyerId = typeof chatRoom.buyerId === 'string' ? chatRoom.buyerId : chatRoom.buyerId.toString();
+      const sellerId = typeof chatRoom.sellerId === 'string' ? chatRoom.sellerId : chatRoom.sellerId.toString();
+      const buyerWs = clients.get(buyerId);
+      const sellerWs = clients.get(sellerId);
+      
+      const broadcastMessage = {
+        type: 'new_message',
+        message: messageWithSender,
+        chatRoomId: chatRoomId,
+      };
+      
+      if (buyerWs && buyerWs.readyState === WebSocket.OPEN) {
+        buyerWs.send(JSON.stringify(broadcastMessage));
+      }
+      
+      if (sellerWs && sellerWs.readyState === WebSocket.OPEN) {
+        sellerWs.send(JSON.stringify(broadcastMessage));
+      }
       
       res.json(messageWithSender);
     } catch (error) {
