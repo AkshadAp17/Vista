@@ -3,7 +3,8 @@ import {
   Vehicle,
   ChatRoom,
   Message,
-  Notification
+  Notification,
+  Favorite
 } from "./models";
 import mongoose from 'mongoose';
 
@@ -120,6 +121,12 @@ export interface IStorage {
   getChatRoomWithMessages(id: string): Promise<ChatRoomWithDetails | undefined>;
   addMessage(message: InsertMessage): Promise<any>;
   getMessages(chatRoomId: string): Promise<any[]>;
+  
+  // Favorites operations
+  addToFavorites(userId: string, vehicleId: string): Promise<any>;
+  removeFromFavorites(userId: string, vehicleId: string): Promise<void>;
+  getUserFavorites(userId: string): Promise<VehicleWithSeller[]>;
+  isFavorite(userId: string, vehicleId: string): Promise<boolean>;
   
   // Admin operations
   getStats(): Promise<{
@@ -381,6 +388,57 @@ export class DatabaseStorage implements IStorage {
       activeChats,
       totalSales: 0
     };
+  }
+
+  // Favorites operations
+  async addToFavorites(userId: string, vehicleId: string): Promise<any> {
+    try {
+      const favorite = new Favorite({
+        userId,
+        vehicleId: new mongoose.Types.ObjectId(vehicleId)
+      });
+      return await favorite.save();
+    } catch (error: any) {
+      if (error.code === 11000) {
+        // Duplicate key error - already favorited
+        throw new Error('Vehicle already in favorites');
+      }
+      throw error;
+    }
+  }
+
+  async removeFromFavorites(userId: string, vehicleId: string): Promise<void> {
+    await Favorite.deleteOne({
+      userId,
+      vehicleId: new mongoose.Types.ObjectId(vehicleId)
+    });
+  }
+
+  async getUserFavorites(userId: string): Promise<VehicleWithSeller[]> {
+    const favorites = await Favorite.find({ userId }).populate({
+      path: 'vehicleId',
+      model: 'Vehicle'
+    });
+    
+    const results = await Promise.all(
+      favorites.map(async (favorite: any) => {
+        if (favorite.vehicleId) {
+          const seller = await User.findOne({ id: favorite.vehicleId.sellerId.toString() });
+          return this.transformVehicle(favorite.vehicleId.toObject(), seller ? seller.toObject() : null);
+        }
+        return null;
+      })
+    );
+    
+    return results.filter(Boolean) as VehicleWithSeller[];
+  }
+
+  async isFavorite(userId: string, vehicleId: string): Promise<boolean> {
+    const favorite = await Favorite.findOne({
+      userId,
+      vehicleId: new mongoose.Types.ObjectId(vehicleId)
+    });
+    return !!favorite;
   }
 
   async hasAdminUsers(): Promise<boolean> {

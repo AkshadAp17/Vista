@@ -85,6 +85,20 @@ export default function ChatWidget() {
     enabled: isAuthenticated && isOpen,
   });
 
+  // Check for selected chat ID from localStorage when opening
+  useEffect(() => {
+    if (isOpen && chatRooms.length > 0) {
+      const selectedChatId = localStorage.getItem('selectedChatId');
+      if (selectedChatId) {
+        const targetChat = chatRooms.find((chat: ChatRoom) => chat.id === selectedChatId);
+        if (targetChat) {
+          setSelectedChat(targetChat);
+          localStorage.removeItem('selectedChatId'); // Clear after use
+        }
+      }
+    }
+  }, [isOpen, chatRooms]);
+
   // WebSocket connection
   useEffect(() => {
     if (!isAuthenticated || !user || !(user as any)?.id) return;
@@ -239,6 +253,7 @@ export default function ChatWidget() {
         <Button
           className="bg-hema-orange text-white w-14 h-14 rounded-full shadow-lg hover:bg-hema-orange/90 transition flex items-center justify-center"
           onClick={() => setIsOpen(true)}
+          data-chat-widget
         >
           <MessageCircle className="h-6 w-6" />
           {chatRooms.length > 0 && (

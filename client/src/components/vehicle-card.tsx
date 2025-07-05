@@ -5,9 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Eye, MessageCircle, MapPin, Calendar, Gauge, Camera, Share2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import VehicleChatDialog from "./vehicle-chat-dialog";
+
+interface FavoriteStatus {
+  isFavorite: boolean;
+}
 
 interface VehicleCardProps {
   vehicle: {
@@ -38,7 +42,50 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [chatOpen, setChatOpen] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+
+  // Check if vehicle is favorited
+  const { data: favoriteStatus } = useQuery<FavoriteStatus>({
+    queryKey: [`/api/favorites/${vehicle.id}/status`],
+    enabled: isAuthenticated,
+  });
+
+  const addToFavoritesMutation = useMutation({
+    mutationFn: () => apiRequest('POST', `/api/favorites/${vehicle.id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/favorites'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/favorites/${vehicle.id}/status`] });
+      toast({
+        title: "Added to favorites",
+        description: "Vehicle added to your favorites.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add to favorites",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const removeFromFavoritesMutation = useMutation({
+    mutationFn: () => apiRequest('DELETE', `/api/favorites/${vehicle.id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/favorites'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/favorites/${vehicle.id}/status`] });
+      toast({
+        title: "Removed from favorites",
+        description: "Vehicle removed from your favorites.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove from favorites",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleViewDetails = () => {
     window.location.href = `/vehicle/${vehicle.id}`;
@@ -68,11 +115,13 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
       return;
     }
 
-    setIsLiked(!isLiked);
-    toast({
-      title: isLiked ? "Removed from favorites" : "Added to favorites",
-      description: isLiked ? "Vehicle removed from your favorites." : "Vehicle added to your favorites.",
-    });
+    const isCurrentlyFavorited = favoriteStatus?.isFavorite;
+    
+    if (isCurrentlyFavorited) {
+      removeFromFavoritesMutation.mutate();
+    } else {
+      addToFavoritesMutation.mutate();
+    }
   };
 
   const handleShare = () => {
@@ -108,8 +157,11 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           </div>
         )}
         
-        <div className="absolute top-3 right-3 bg-white text-red-500 p-2 rounded-full hover:bg-red-50 cursor-pointer">
-          <Heart className="h-4 w-4" />
+        <div 
+          className={`absolute top-3 right-3 bg-white p-2 rounded-full hover:bg-red-50 cursor-pointer ${favoriteStatus?.isFavorite ? 'text-red-500' : 'text-gray-400'}`}
+          onClick={handleLike}
+        >
+          <Heart className={`h-4 w-4 ${favoriteStatus?.isFavorite ? 'fill-current' : ''}`} />
         </div>
       </div>
       
@@ -171,11 +223,12 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           <Button 
             variant="outline"
             size="sm"
-            className={`flex-1 ${isLiked ? 'text-red-500 border-red-500' : 'text-gray-600'}`}
+            className={`flex-1 ${favoriteStatus?.isFavorite ? 'text-red-500 border-red-500' : 'text-gray-600'}`}
             onClick={handleLike}
+            disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
           >
-            <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-current' : ''}`} />
-            {isLiked ? 'Liked' : 'Like'}
+            <Heart className={`h-4 w-4 mr-1 ${favoriteStatus?.isFavorite ? 'fill-current' : ''}`} />
+            {favoriteStatus?.isFavorite ? 'Liked' : 'Like'}
           </Button>
           <Button 
             variant="outline"

@@ -469,6 +469,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Favorites API routes
+  app.post('/api/favorites/:vehicleId', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { vehicleId } = req.params;
+      
+      await storage.addToFavorites(userId, vehicleId);
+      res.json({ message: "Added to favorites" });
+    } catch (error: any) {
+      if (error.message === 'Vehicle already in favorites') {
+        return res.status(400).json({ message: error.message });
+      }
+      console.error("Error adding to favorites:", error);
+      res.status(500).json({ message: "Failed to add to favorites" });
+    }
+  });
+
+  app.delete('/api/favorites/:vehicleId', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { vehicleId } = req.params;
+      
+      await storage.removeFromFavorites(userId, vehicleId);
+      res.json({ message: "Removed from favorites" });
+    } catch (error) {
+      console.error("Error removing from favorites:", error);
+      res.status(500).json({ message: "Failed to remove from favorites" });
+    }
+  });
+
+  app.get('/api/favorites', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const favorites = await storage.getUserFavorites(userId);
+      res.json(favorites);
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+      res.status(500).json({ message: "Failed to fetch favorites" });
+    }
+  });
+
+  app.get('/api/favorites/:vehicleId/status', isAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { vehicleId } = req.params;
+      
+      const isFavorite = await storage.isFavorite(userId, vehicleId);
+      res.json({ isFavorite });
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+      res.status(500).json({ message: "Failed to check favorite status" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   // WebSocket setup for real-time chat

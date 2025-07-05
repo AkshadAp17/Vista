@@ -198,6 +198,15 @@ export default function UserDashboard() {
                           <Button 
                             size="sm"
                             className="bg-hema-orange hover:bg-hema-orange/90"
+                            onClick={() => {
+                              // Open chat widget and navigate to this specific chat
+                              const chatWidget = document.querySelector('[data-chat-widget]') as HTMLElement;
+                              if (chatWidget) {
+                                chatWidget.click();
+                              }
+                              // Store the selected chat ID for the widget to open
+                              localStorage.setItem('selectedChatId', chat.id);
+                            }}
                           >
                             Continue Chat
                           </Button>
