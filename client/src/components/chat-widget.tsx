@@ -211,6 +211,34 @@ export default function ChatWidget() {
         content: messageData.content,
       });
     },
+    onSuccess: (data, variables) => {
+      // The API returns the message directly, not wrapped in data.message
+      const newMessage = data as any;
+      
+      // Update the selected chat with the new message (replace optimistic message)
+      if (selectedChat && selectedChat.id === variables.chatRoomId) {
+        setSelectedChat(prev => prev ? {
+          ...prev,
+          messages: [...(prev.messages || []).filter(msg => !msg._id.startsWith('temp-')), newMessage],
+        } : null);
+      }
+      
+      // Also update the chat rooms cache
+      queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
+        return oldData.map(chat => {
+          if (chat.id === variables.chatRoomId) {
+            return {
+              ...chat,
+              messages: [...(chat.messages || []).filter(msg => !msg._id.startsWith('temp-')), newMessage],
+            };
+          }
+          return chat;
+        });
+      });
+      
+      // Refresh chat rooms to get latest state
+      queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
+    },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
         toast({
@@ -240,7 +268,7 @@ export default function ChatWidget() {
     if (!newMessage.trim() || !selectedChat || !user) return;
 
     // Ensure we have a valid chat room ID
-    const chatRoomId = selectedChat.id || selectedChat._id;
+    const chatRoomId = selectedChat.id || (selectedChat as any)._id;
     if (!chatRoomId) {
       toast({
         title: "Error",
@@ -250,12 +278,34 @@ export default function ChatWidget() {
       return;
     }
 
+    // Create optimistic message to show immediately
+    const optimisticMessage = {
+      _id: `temp-${Date.now()}`,
+      content: newMessage.trim(),
+      senderId: (user as any).id,
+      createdAt: new Date().toISOString(),
+      sender: {
+        id: (user as any).id,
+        firstName: (user as any).firstName,
+        lastName: (user as any).lastName,
+        profileImageUrl: (user as any).profileImageUrl,
+      },
+    };
+
+    // Immediately add the message to the selected chat
+    setSelectedChat(prev => prev ? {
+      ...prev,
+      messages: [...(prev.messages || []), optimisticMessage],
+    } : null);
+
+    // Clear the input immediately
+    setNewMessage("");
+
+    // Send the message to the server
     sendMessageMutation.mutate({
       chatRoomId: chatRoomId,
-      content: newMessage.trim(),
+      content: optimisticMessage.content,
     });
-
-    setNewMessage("");
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
