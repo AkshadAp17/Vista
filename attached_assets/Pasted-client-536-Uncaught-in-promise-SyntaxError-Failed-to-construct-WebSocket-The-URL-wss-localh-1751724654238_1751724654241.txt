@@ -1,0 +1,90 @@
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=vyIkcx19Hwwq' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)Understand this error
+chunk-WERSD76P.js?v=d50fde70:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+chat-widget.tsx:97 WebSocket connected
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+react_jsx-dev-runtime.js?v=d50fde70:64 Warning: Each child in a list should have a unique "key" prop.
+
+Check the render method of `AdminDashboard`. See https://reactjs.org/link/warning-keys for more information.
+    at div
+    at AdminDashboard (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/pages/admin-dashboard.tsx?t=1751724279796:59:48)
+    at Route (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d50fde70:323:16)
+    at Switch (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d50fde70:379:17)
+    at Router (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/App.tsx?t=1751724279796&v=4FgORzJMUs4-6J2kxqBlY:32:48)
+    at Provider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VJRUVGTI.js?v=d50fde70:38:15)
+    at TooltipProvider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=d50fde70:63:5)
+    at QueryClientProvider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=d50fde70:2805:3)
+    at App
+printWarning @ react_jsx-dev-runtime.js?v=d50fde70:64Understand this error
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+chat-widget.tsx:296 Uncaught TypeError: Cannot read properties of null (reading 'brand')
+    at chat-widget.tsx:296:47
+    at Array.map (<anonymous>)
+    at ChatWidget (chat-widget.tsx:270:32)
+    at renderWithHooks (chunk-WERSD76P.js?v=d50fde70:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=d50fde70:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=d50fde70:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=d50fde70:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=d50fde70:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=d50fde70:3733:39)
+    at beginWork$1 (chunk-WERSD76P.js?v=d50fde70:19765:15)Understand this error
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+useAuth.ts:12 Auth state: Object
+chat-widget.tsx:296 Uncaught TypeError: Cannot read properties of null (reading 'brand')
+    at chat-widget.tsx:296:47
+    at Array.map (<anonymous>)
+    at ChatWidget (chat-widget.tsx:270:32)
+    at renderWithHooks (chunk-WERSD76P.js?v=d50fde70:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=d50fde70:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=d50fde70:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=d50fde70:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=d50fde70:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=d50fde70:3733:39)
+    at beginWork$1 (chunk-WERSD76P.js?v=d50fde70:19765:15)Understand this error
+chunk-WERSD76P.js?v=d50fde70:14032 The above error occurred in the <ChatWidget> component:
+
+    at ChatWidget (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/components/chat-widget.tsx:41:37)
+    at div
+    at AdminDashboard (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/pages/admin-dashboard.tsx?t=1751724279796:59:48)
+    at Route (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d50fde70:323:16)
+    at Switch (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d50fde70:379:17)
+    at Router (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/src/App.tsx?t=1751724279796&v=4FgORzJMUs4-6J2kxqBlY:32:48)
+    at Provider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VJRUVGTI.js?v=d50fde70:38:15)
+    at TooltipProvider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=d50fde70:63:5)
+    at QueryClientProvider (https://d7438ab2-751b-4cfd-8cae-940a9836c321-00-13wjwur5zxj4v.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=d50fde70:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-WERSD76P.js?v=d50fde70:14032Understand this error
+chunk-WERSD76P.js?v=d50fde70:9129 Uncaught TypeError: Cannot read properties of null (reading 'brand')
+    at chat-widget.tsx:296:47
+    at Array.map (<anonymous>)
+    at ChatWidget (chat-widget.tsx:270:32)
+    at renderWithHooks (chunk-WERSD76P.js?v=d50fde70:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=d50fde70:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=d50fde70:15924:22)
+    at beginWork$1 (chunk-WERSD76P.js?v=d50fde70:19753:22)
+    at performUnitOfWork (chunk-WERSD76P.js?v=d50fde70:19198:20)
+    at workLoopSync (chunk-WERSD76P.js?v=d50fde70:19137:13)
+    at renderRootSync (chunk-WERSD76P.js?v=d50fde70:19116:15)Understand this error
+chat-widget.tsx:143 WebSocket disconnected

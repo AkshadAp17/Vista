@@ -89,68 +89,73 @@ export default function ChatWidget() {
   useEffect(() => {
     if (!isAuthenticated || !user || !(user as any)?.id) return;
 
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    const ws = new WebSocket(wsUrl);
+    try {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      console.log("Connecting to WebSocket:", wsUrl);
+      const ws = new WebSocket(wsUrl);
 
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-      if ((user as any)?.id) {
-        ws.send(JSON.stringify({
-          type: "authenticate",
-          userId: (user as any).id,
-        }));
-      }
-      setSocket(ws);
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      
-      if (data.type === "new_message") {
-        // Update chat rooms cache with new message
-        queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
-          return oldData.map(chat => {
-            if (chat.id === data.chatRoomId) {
-              return {
-                ...chat,
-                messages: [...chat.messages, data.message],
-              };
-            }
-            return chat;
-          });
-        });
-
-        // Update selected chat if it matches
-        if (selectedChat && selectedChat.id === data.chatRoomId) {
-          setSelectedChat(prev => prev ? {
-            ...prev,
-            messages: [...prev.messages, data.message],
-          } : null);
+      ws.onopen = () => {
+        console.log("WebSocket connected");
+        if ((user as any)?.id) {
+          ws.send(JSON.stringify({
+            type: "authenticate",
+            userId: (user as any).id,
+          }));
         }
+        setSocket(ws);
+      };
 
-        // Show notification if chat is not currently open
-        if (!isOpen || !selectedChat || selectedChat.id !== data.chatRoomId) {
-          toast({
-            title: "New Message",
-            description: `${data.message.sender.firstName}: ${data.message.content}`,
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === "new_message") {
+          // Update chat rooms cache with new message
+          queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
+            return oldData.map(chat => {
+              if (chat.id === data.chatRoomId) {
+                return {
+                  ...chat,
+                  messages: [...chat.messages, data.message],
+                };
+              }
+              return chat;
+            });
           });
+
+          // Update selected chat if it matches
+          if (selectedChat && selectedChat.id === data.chatRoomId) {
+            setSelectedChat(prev => prev ? {
+              ...prev,
+              messages: [...prev.messages, data.message],
+            } : null);
+          }
+
+          // Show notification if chat is not currently open
+          if (!isOpen || !selectedChat || selectedChat.id !== data.chatRoomId) {
+            toast({
+              title: "New Message",
+              description: `${data.message.sender.firstName}: ${data.message.content}`,
+            });
+          }
         }
-      }
-    };
+      };
 
-    ws.onclose = () => {
-      console.log("WebSocket disconnected");
-      setSocket(null);
-    };
+      ws.onclose = () => {
+        console.log("WebSocket disconnected");
+        setSocket(null);
+      };
 
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
 
-    return () => {
-      ws.close();
-    };
+      return () => {
+        ws.close();
+      };
+    } catch (error) {
+      console.error("Failed to create WebSocket connection:", error);
+    }
   }, [isAuthenticated, user, queryClient, isOpen, selectedChat, toast]);
 
   // Send message mutation
@@ -267,7 +272,7 @@ export default function ChatWidget() {
                   </div>
                 ) : (
                   <div className="space-y-1 p-2">
-                    {chatRooms.map((chat: ChatRoom) => {
+                    {chatRooms.filter((chat: ChatRoom) => chat.vehicle && chat.vehicle.brand).map((chat: ChatRoom) => {
                       const otherUser = getOtherUser(chat);
                       const lastMessage = chat.messages[chat.messages.length - 1];
                       
@@ -293,7 +298,7 @@ export default function ChatWidget() {
                                 </h4>
                               </div>
                               <p className="text-xs text-gray-600 truncate">
-                                {chat.vehicle.brand} {chat.vehicle.model} • ID: #{chat.vehicle.id}
+                                {chat.vehicle?.brand} {chat.vehicle?.model} • ID: #{chat.vehicle?.id}
                               </p>
                               {lastMessage && (
                                 <p className="text-xs text-gray-500 truncate mt-1">
