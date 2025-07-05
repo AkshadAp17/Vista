@@ -17,7 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Send, Car, Phone, User } from "lucide-react";
 
 interface Message {
-  id: number;
+  _id: string;
+  id?: number;
   content: string;
   senderId: string;
   createdAt: string;
@@ -100,6 +101,8 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       return response;
     },
     onSuccess: (data: any) => {
+      console.log("Chat room loaded:", data);
+      console.log("Messages in chat room:", data.messages?.length || 0);
       setChatRoom(data);
     },
     onError: (error) => {
@@ -270,7 +273,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
                     const isOwnMessage = message.senderId === (user as any)?.id;
                     return (
                       <div
-                        key={message._id || message.id}
+                        key={message._id}
                         className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
                       >
                         <div

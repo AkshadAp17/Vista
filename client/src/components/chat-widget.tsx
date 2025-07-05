@@ -27,7 +27,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
 interface Message {
-  id: number;
+  _id: string;
+  id?: number;
   content: string;
   senderId: string;
   createdAt: string;
