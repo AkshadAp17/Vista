@@ -103,20 +103,10 @@ export class AuthService {
         return;
       }
       
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Email Verification - Hema Motor",
-        html: `
-          <h2>Welcome to Hema Motor!</h2>
-          <p>Please verify your email address by using this verification code:</p>
-          <h3 style="color: #f97316; font-size: 24px; letter-spacing: 3px;">${verificationCode}</h3>
-          <p>This code will expire in 10 minutes.</p>
-          <p>If you didn't create an account with Hema Motor, please ignore this email.</p>
-        `,
-      };
-
-      await transporter.sendMail(mailOptions);
+      const { sendEmail, createVerificationEmail } = await import('./emailService');
+      const emailTemplate = createVerificationEmail(verificationCode);
+      
+      await sendEmail(email, emailTemplate.subject, emailTemplate.html);
     } catch (error) {
       console.error("Failed to send verification email:", error);
       // Log the verification code for development
