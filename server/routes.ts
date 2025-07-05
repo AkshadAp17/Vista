@@ -395,7 +395,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingChatRoom = await storage.getChatRoom(vehicleId, userId);
       if (existingChatRoom) {
         // Return existing chat room with messages
+        console.log("Found existing chat room:", existingChatRoom);
+        console.log("Existing chat room ID:", existingChatRoom._id);
+        
         const chatRoomWithMessages = await storage.getChatRoomWithMessages(existingChatRoom._id.toString());
+        console.log("Existing chat room with messages:", chatRoomWithMessages);
+        console.log("Existing final response ID:", chatRoomWithMessages?.id);
+        
         return res.json(chatRoomWithMessages);
       }
       
@@ -412,7 +418,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const chatRoom = await storage.createChatRoom(chatRoomData);
+      console.log("Created chat room:", chatRoom);
+      console.log("Chat room ID:", chatRoom._id);
+      
       const chatRoomWithMessages = await storage.getChatRoomWithMessages(chatRoom._id.toString());
+      console.log("Chat room with messages:", chatRoomWithMessages);
+      console.log("Final response ID:", chatRoomWithMessages?.id);
+      
       res.json(chatRoomWithMessages);
     } catch (error) {
       console.error("Error creating chat room:", error);
