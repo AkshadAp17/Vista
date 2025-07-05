@@ -185,6 +185,25 @@ export default function ChatWidget() {
     };
   }, [isAuthenticated, user, queryClient, isOpen, selectedChat, toast]);
 
+  // Listen for custom events to select specific chats
+  useEffect(() => {
+    const handleSelectChat = (event: CustomEvent) => {
+      const { chatRoomId } = event.detail;
+      if (chatRoomId && chatRooms.length > 0) {
+        const targetChat = chatRooms.find((chat: ChatRoom) => chat.id === chatRoomId);
+        if (targetChat) {
+          setSelectedChat(targetChat);
+          setIsOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener('selectChat', handleSelectChat as EventListener);
+    return () => {
+      window.removeEventListener('selectChat', handleSelectChat as EventListener);
+    };
+  }, [chatRooms]);
+
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: (messageData: { chatRoomId: string; content: string }) => {
@@ -229,8 +248,19 @@ export default function ChatWidget() {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedChat || !user) return;
 
+    // Ensure we have a valid chat room ID
+    const chatRoomId = selectedChat.id || selectedChat._id;
+    if (!chatRoomId) {
+      toast({
+        title: "Error",
+        description: "Invalid chat room. Please try refreshing the page.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     sendMessageMutation.mutate({
-      chatRoomId: selectedChat.id,
+      chatRoomId: chatRoomId,
       content: newMessage.trim(),
     });
 

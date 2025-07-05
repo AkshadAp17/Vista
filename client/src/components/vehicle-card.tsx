@@ -91,7 +91,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
     window.location.href = `/vehicle/${vehicle.id}`;
   };
 
-  const handleStartChat = () => {
+  const handleStartChat = async () => {
     if (!isAuthenticated) {
       toast({
         title: "Login Required",
@@ -101,8 +101,32 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
       return;
     }
 
-    // Open chat dialog
-    setChatOpen(true);
+    try {
+      // Create or get existing chat room
+      const response = await apiRequest('POST', '/api/chat-rooms', {
+        vehicleId: vehicle.id,
+      });
+
+      // Get the floating chat widget to open
+      const chatWidget = document.querySelector('[data-chat-widget]') as HTMLButtonElement;
+      if (chatWidget) {
+        chatWidget.click();
+        
+        // Wait a bit for the widget to open, then trigger a manual selection
+        setTimeout(() => {
+          // Trigger a custom event to select this chat
+          window.dispatchEvent(new CustomEvent('selectChat', { 
+            detail: { chatRoomId: (response as any).id } 
+          }));
+        }, 300);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start chat. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleLike = () => {
