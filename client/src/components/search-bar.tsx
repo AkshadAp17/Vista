@@ -101,7 +101,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
             setVehicleType(vehicleType === "motorcycle" ? "" : "motorcycle")
           }
           className={
-            vehicleType === "motorcycle" ? "bg-hema-orange text-white" : ""
+            vehicleType === "motorcycle" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
           }
         >
           Motorcycles
@@ -113,7 +113,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
             setVehicleType(vehicleType === "scooter" ? "" : "scooter")
           }
           className={
-            vehicleType === "scooter" ? "bg-hema-orange text-white" : ""
+            vehicleType === "scooter" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
           }
         >
           Scooters
@@ -125,7 +125,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
             setVehicleType(vehicleType === "electric" ? "" : "electric")
           }
           className={
-            vehicleType === "electric" ? "bg-hema-orange text-white" : ""
+            vehicleType === "electric" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
           }
         >
           Electric
