@@ -91,7 +91,8 @@ export default function ChatWidget() {
 
     try {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const host = window.location.host || 'localhost:5000';
+      const wsUrl = `${protocol}//${host}/ws`;
       console.log("Connecting to WebSocket:", wsUrl);
       const ws = new WebSocket(wsUrl);
 
@@ -116,7 +117,7 @@ export default function ChatWidget() {
               if (chat.id === data.chatRoomId) {
                 return {
                   ...chat,
-                  messages: [...chat.messages, data.message],
+                  messages: [...(chat.messages || []), data.message],
                 };
               }
               return chat;
@@ -127,7 +128,7 @@ export default function ChatWidget() {
           if (selectedChat && selectedChat.id === data.chatRoomId) {
             setSelectedChat(prev => prev ? {
               ...prev,
-              messages: [...prev.messages, data.message],
+              messages: [...(prev.messages || []), data.message],
             } : null);
           }
 
@@ -274,7 +275,7 @@ export default function ChatWidget() {
                   <div className="space-y-1 p-2">
                     {chatRooms.filter((chat: ChatRoom) => chat.vehicle && chat.vehicle.brand).map((chat: ChatRoom) => {
                       const otherUser = getOtherUser(chat);
-                      const lastMessage = chat.messages[chat.messages.length - 1];
+                      const lastMessage = chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
                       
                       return (
                         <div
@@ -350,7 +351,8 @@ export default function ChatWidget() {
                   {/* Messages */}
                   <ScrollArea className="flex-1 p-4">
                     <div className="space-y-4">
-                      {selectedChat.messages.map((message: any) => {
+                      {selectedChat.messages && selectedChat.messages.length > 0 ? (
+                        selectedChat.messages.map((message: any) => {
                         const isOwnMessage = message.senderId === (user as any)?.id;
                         
                         return (
@@ -384,7 +386,11 @@ export default function ChatWidget() {
                             </div>
                           </div>
                         );
-                      })}
+                      })) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <p>No messages yet. Start the conversation!</p>
+                        </div>
+                      )}
                       <div ref={messagesEndRef} />
                     </div>
                   </ScrollArea>

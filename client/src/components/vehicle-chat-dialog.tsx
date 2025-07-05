@@ -175,7 +175,11 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     if (!isAuthenticated || !user || !chatRoom) return;
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const host = window.location.host || 'localhost:5000';
+    const wsUrl = `${protocol}//${host}/ws`;
+    
+    console.log("Attempting WebSocket connection to:", wsUrl);
+    
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
@@ -203,8 +207,15 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       setSocket(null);
     };
 
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setSocket(null);
+    };
+
     return () => {
-      ws.close();
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
     };
   }, [isAuthenticated, user, chatRoom]);
 
