@@ -17,10 +17,10 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js REST API
-- **Database**: PostgreSQL with Drizzle ORM
-- **Database Provider**: Neon serverless PostgreSQL
-- **Authentication**: Replit Auth with OpenID Connect
-- **Session Management**: Express sessions with PostgreSQL store
+- **Database**: MongoDB with Mongoose ODM
+- **Database Provider**: MongoDB Memory Server for development
+- **Authentication**: Custom authentication system with bcrypt
+- **Session Management**: Express sessions with memory store
 - **Real-time Communication**: WebSocket support for chat functionality
 
 ## Key Components
@@ -136,6 +136,9 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 04, 2025. Enhanced Contact Seller button - now shows detailed seller profile modal with contact options
 - July 04, 2025. Added floating chat widget to admin dashboard for consistent UI experience across all pages
 - July 04, 2025. Completely redesigned landing page with modern visuals, dark gradients, animations, and attractive UI components
+- July 05, 2025. Migration completed from Replit Agent to Replit environment - maintained MongoDB setup as requested by user
+- July 05, 2025. Fixed vehicle creation validation error - added proper string-to-number conversion for price, year, and kmDriven fields
+- July 05, 2025. Application running successfully with MongoDB Memory Server, all core features functional
 
 ## Admin Credentials
 
