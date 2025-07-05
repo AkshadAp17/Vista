@@ -272,11 +272,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Convert string numbers to actual numbers
       const processedBody = {
         ...req.body,
-        price: parseFloat(req.body.price),
-        year: parseInt(req.body.year),
-        kmDriven: parseInt(req.body.kmDriven),
+        price: req.body.price ? parseFloat(req.body.price) : 0,
+        year: req.body.year ? parseInt(req.body.year) : new Date().getFullYear(),
+        kmDriven: req.body.kmDriven ? parseInt(req.body.kmDriven) : 0,
         sellerId: userId,
       };
+      
+      console.log("Processed body before validation:", processedBody);
+      console.log("Types:", {
+        price: typeof processedBody.price,
+        year: typeof processedBody.year,
+        kmDriven: typeof processedBody.kmDriven
+      });
       
       const vehicleData = insertVehicleSchema.parse(processedBody);
       console.log("Parsed vehicle data:", vehicleData);
