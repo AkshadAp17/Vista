@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 
 const vehicleSchema = new mongoose.Schema({
   sellerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   brand: {

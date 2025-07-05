@@ -2,18 +2,15 @@ import mongoose from 'mongoose';
 
 const chatRoomSchema = new mongoose.Schema({
   vehicleId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Vehicle',
+    type: String,
     required: true,
   },
   buyerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   sellerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   isActive: {

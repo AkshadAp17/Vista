@@ -2,13 +2,11 @@ import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
   chatRoomId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ChatRoom',
+    type: String,
     required: true,
   },
   senderId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   content: {
