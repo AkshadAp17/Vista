@@ -269,10 +269,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.session.userId;
       console.log("User ID:", userId);
       
-      const vehicleData = insertVehicleSchema.parse({
+      // Convert string numbers to actual numbers
+      const processedBody = {
         ...req.body,
+        price: parseFloat(req.body.price),
+        year: parseInt(req.body.year),
+        kmDriven: parseInt(req.body.kmDriven),
         sellerId: userId,
-      });
+      };
+      
+      const vehicleData = insertVehicleSchema.parse(processedBody);
       console.log("Parsed vehicle data:", vehicleData);
       
       const vehicle = await storage.createVehicle(vehicleData);
@@ -304,7 +310,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Unauthorized to update this vehicle" });
       }
 
-      const vehicleData = insertVehicleSchema.partial().parse(req.body);
+      // Convert string numbers to actual numbers if they exist
+      const processedUpdateBody = { ...req.body };
+      if (req.body.price) processedUpdateBody.price = parseFloat(req.body.price);
+      if (req.body.year) processedUpdateBody.year = parseInt(req.body.year);
+      if (req.body.kmDriven) processedUpdateBody.kmDriven = parseInt(req.body.kmDriven);
+      
+      const vehicleData = insertVehicleSchema.partial().parse(processedUpdateBody);
       const vehicle = await storage.updateVehicle(id, vehicleData);
       res.json(vehicle);
     } catch (error) {
