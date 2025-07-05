@@ -40,16 +40,16 @@ interface Message {
 }
 
 interface ChatRoom {
-  id: number;
-  vehicleId: number;
+  id: string;
+  vehicleId: string;
   buyerId: string;
   sellerId: string;
   vehicle: {
-    id: number;
+    id: string;
     brand: string;
     model: string;
     vehicleNumber: string;
-    price: string;
+    price: number;
   };
   buyer: {
     id: string;
@@ -79,14 +79,14 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch chat rooms
-  const { data: chatRooms = [], isLoading: chatsLoading } = useQuery({
+  const { data: chatRooms = [], isLoading: chatsLoading } = useQuery<ChatRoom[]>({
     queryKey: ["/api/chat-rooms"],
     enabled: isAuthenticated && isOpen,
   });
 
   // WebSocket connection
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    if (!isAuthenticated || !user || !(user as any)?.id) return;
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws`;
@@ -94,10 +94,12 @@ export default function ChatWidget() {
 
     ws.onopen = () => {
       console.log("WebSocket connected");
-      ws.send(JSON.stringify({
-        type: "authenticate",
-        userId: user.id,
-      }));
+      if ((user as any)?.id) {
+        ws.send(JSON.stringify({
+          type: "authenticate",
+          userId: (user as any).id,
+        }));
+      }
       setSocket(ws);
     };
 
@@ -152,7 +154,7 @@ export default function ChatWidget() {
 
   // Send message mutation
   const sendMessageMutation = useMutation({
-    mutationFn: (messageData: { chatRoomId: number; content: string }) => {
+    mutationFn: (messageData: { chatRoomId: string; content: string }) => {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         throw new Error("WebSocket connection not available");
       }
@@ -160,7 +162,7 @@ export default function ChatWidget() {
       socket.send(JSON.stringify({
         type: "chat_message",
         chatRoomId: messageData.chatRoomId,
-        senderId: user?.id,
+        senderId: (user as any)?.id,
         content: messageData.content,
       }));
       
@@ -218,7 +220,7 @@ export default function ChatWidget() {
   };
 
   const getOtherUser = (chat: ChatRoom) => {
-    return chat.buyerId === user?.id ? chat.seller : chat.buyer;
+    return chat.buyerId === (user as any)?.id ? chat.seller : chat.buyer;
   };
 
   if (!isAuthenticated) return null;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Eye, MessageCircle, MapPin, Calendar, Gauge, Camera } from "lucide-react";
+import { Heart, Eye, MessageCircle, MapPin, Calendar, Gauge, Camera, Share2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,6 +38,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [chatOpen, setChatOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleViewDetails = () => {
     window.location.href = `/vehicle/${vehicle.id}`;
@@ -55,6 +56,43 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
 
     // Open chat dialog
     setChatOpen(true);
+  };
+
+  const handleLike = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to like vehicles.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLiked(!isLiked);
+    toast({
+      title: isLiked ? "Removed from favorites" : "Added to favorites",
+      description: isLiked ? "Vehicle removed from your favorites." : "Vehicle added to your favorites.",
+    });
+  };
+
+  const handleShare = () => {
+    const vehicleUrl = `${window.location.origin}/vehicle/${vehicle.id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: `${vehicle.brand} ${vehicle.model}`,
+        text: `Check out this ${vehicle.brand} ${vehicle.model} for ₹${vehicle.price.toLocaleString()}`,
+        url: vehicleUrl,
+      });
+    } else {
+      // Fallback to clipboard
+      navigator.clipboard.writeText(vehicleUrl).then(() => {
+        toast({
+          title: "Link copied!",
+          description: "Vehicle link has been copied to your clipboard.",
+        });
+      });
+    }
   };
 
   return (
@@ -110,7 +148,8 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           </Badge>
         </div>
         
-        <div className="flex space-x-2">
+        {/* Action buttons */}
+        <div className="flex space-x-2 mb-3">
           <Button 
             className="flex-1 bg-hema-orange text-white hover:bg-hema-orange/90 text-sm"
             onClick={handleViewDetails}
@@ -124,6 +163,28 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           >
             <MessageCircle className="h-4 w-4 mr-1" />
             Chat
+          </Button>
+        </div>
+        
+        {/* Like and Share buttons */}
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline"
+            size="sm"
+            className={`flex-1 ${isLiked ? 'text-red-500 border-red-500' : 'text-gray-600'}`}
+            onClick={handleLike}
+          >
+            <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-current' : ''}`} />
+            {isLiked ? 'Liked' : 'Like'}
+          </Button>
+          <Button 
+            variant="outline"
+            size="sm"
+            className="flex-1 text-gray-600"
+            onClick={handleShare}
+          >
+            <Share2 className="h-4 w-4 mr-1" />
+            Share
           </Button>
         </div>
       </CardContent>

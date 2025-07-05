@@ -487,6 +487,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           clients.set(message.userId, ws);
           ws.send(JSON.stringify({ type: 'authenticated', userId: message.userId }));
         } else if (message.type === 'chat_message') {
+          // Validate required fields for chat messages
+          if (!message.chatRoomId || !message.senderId || !message.content) {
+            ws.send(JSON.stringify({ type: 'error', message: 'Missing required fields for chat message' }));
+            return;
+          }
+          
           const messageData = insertMessageSchema.parse({
             chatRoomId: message.chatRoomId,
             senderId: message.senderId,

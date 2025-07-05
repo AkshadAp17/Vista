@@ -150,6 +150,11 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 05, 2025. Fixed MongoDB connection issues by using memory server for development and in-memory session storage
 - July 05, 2025. Application now running successfully with sample vehicle data (Honda Activa, Yamaha FZ-S, Ather 450X)
 - July 05, 2025. All core features functional: authentication, vehicle creation, user management, and chat system
+- July 05, 2025. Fixed WebSocket chat message validation issues and improved error handling
+- July 05, 2025. Added functional Like/Share buttons to vehicle cards with proper user feedback
+- July 05, 2025. Enhanced vehicle card UI with Like and Share functionality using local storage
+- July 05, 2025. Price display properly formatted as currency in vehicle listings
+- July 05, 2025. Implemented comprehensive social features: like/unlike vehicles, share with native API fallback to clipboard
 
 ## Admin Credentials
 
