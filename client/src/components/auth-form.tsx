@@ -148,6 +148,10 @@ export default function AuthForm() {
   // Visual side component
   const VisualSide = ({ title, subtitle, features }: { title: string; subtitle: string; features: string[] }) => (
     <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 relative overflow-hidden">
+      {/* Floating Business Card */}
+      <div className="absolute top-6 left-6 z-20">
+        <FloatingBusinessCard />
+      </div>
       {/* Dynamic background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full bg-black/20"></div>
@@ -283,12 +287,7 @@ export default function AuthForm() {
         />
 
         {/* Right Side - Verification Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white dark:bg-slate-900 p-4 relative">
-          {/* Floating Business Card */}
-          <div className="absolute top-6 right-6 z-10">
-            <FloatingBusinessCard />
-          </div>
-          
+        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white dark:bg-slate-900 p-4">
           <Card className="w-full max-w-md border-none shadow-2xl">
             <CardHeader className="text-center space-y-4 pb-6">
               <div className="flex justify-center mb-4">
@@ -361,12 +360,7 @@ export default function AuthForm() {
       />
 
       {/* Right Side - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 p-6 relative">
-        {/* Floating Business Card */}
-        <div className="absolute top-6 right-6 z-10">
-          <FloatingBusinessCard />
-        </div>
-        
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 p-6">
         <Card className="w-full max-w-lg border border-gray-200 dark:border-slate-700 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
           <CardHeader className="text-center space-y-4 pb-6">
             <div className="flex justify-center mb-4">

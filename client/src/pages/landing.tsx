@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, IndianRupee, Bike, Users, Shield, Star, ArrowRight, CheckCircle, Zap, Award } from "lucide-react";
+import { Search, MapPin, IndianRupee, Bike, Users, Shield, Star, ArrowRight, CheckCircle, Zap, Award, Bell } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import BusinessCard from "@/components/business-card";
 import FloatingBusinessCard from "@/components/floating-business-card";
@@ -16,13 +16,30 @@ export default function Landing() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Logo size="lg" animated={true} className="animate-in fade-in-50 duration-500" />
-            <Button 
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 rounded-full font-semibold"
-              onClick={() => window.location.href = '/api/login'}
-            >
-              <Users className="w-4 h-4 mr-2" />
-              Join Now
-            </Button>
+            <div className="flex items-center space-x-4">
+              {/* Notification Bell */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors"
+                >
+                  <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                  {/* Notification Badge */}
+                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-[10px] text-white font-bold">3</span>
+                  </span>
+                </Button>
+              </div>
+              
+              <Button 
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 rounded-full font-semibold"
+                onClick={() => window.location.href = '/api/login'}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Join Now
+              </Button>
+            </div>
           </div>
         </div>
       </header>
