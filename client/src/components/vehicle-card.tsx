@@ -209,7 +209,19 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
   return (
     <Card className="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
       <div className="relative">
-        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+        {vehicle.images && vehicle.images.length > 0 ? (
+          <img 
+            src={vehicle.images[0]} 
+            alt={`${vehicle.brand} ${vehicle.model}`}
+            className="w-full h-48 object-cover"
+            onError={(e) => {
+              // Fallback to placeholder on image load error
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement!.querySelector('.fallback-placeholder')!.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        <div className={`w-full h-48 bg-gray-200 flex items-center justify-center ${vehicle.images && vehicle.images.length > 0 ? 'hidden fallback-placeholder' : ''}`}>
           <Camera className="h-12 w-12 text-gray-400" />
         </div>
         

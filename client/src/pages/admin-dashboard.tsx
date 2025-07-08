@@ -61,6 +61,8 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddVehicleDialogOpen, setIsAddVehicleDialogOpen] = useState(false);
+  const [isEditVehicleDialogOpen, setIsEditVehicleDialogOpen] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState<any>(null);
   const [isUserListDialogOpen, setIsUserListDialogOpen] = useState(false);
 
   // Redirect if not authenticated
@@ -334,6 +336,25 @@ export default function AdminDashboard() {
                       </div>
                     </DialogContent>
                   </Dialog>
+                  
+                  {/* Edit Vehicle Dialog */}
+                  <Dialog open={isEditVehicleDialogOpen} onOpenChange={setIsEditVehicleDialogOpen}>
+                    <DialogContent className="max-w-4xl max-h-[90vh]">
+                      <DialogHeader>
+                        <DialogTitle>Edit Vehicle</DialogTitle>
+                      </DialogHeader>
+                      <div className="overflow-y-auto max-h-[calc(90vh-8rem)] pr-2">
+                        <VehicleForm 
+                          vehicle={editingVehicle} 
+                          onSuccess={() => {
+                            setIsEditVehicleDialogOpen(false);
+                            setEditingVehicle(null);
+                            queryClient.invalidateQueries({ queryKey: ["/api/vehicles"] });
+                          }} 
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardHeader>
               <CardContent>
@@ -387,7 +408,8 @@ export default function AdminDashboard() {
                                   variant="outline" 
                                   size="sm"
                                   onClick={() => {
-                                    // Handle edit
+                                    setEditingVehicle(vehicle);
+                                    setIsEditVehicleDialogOpen(true);
                                   }}
                                 >
                                   <Edit className="h-4 w-4" />

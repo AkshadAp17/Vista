@@ -338,7 +338,12 @@ export default function ChatWidget() {
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString("en-US", {
+    if (!dateString) return "Invalid Date";
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date";
+    
+    return date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
@@ -420,7 +425,13 @@ export default function ChatWidget() {
                                   {otherUser.firstName} {otherUser.lastName}
                                 </h4>
                               </div>
-                              <p className="text-xs text-gray-600 truncate">
+                              <p 
+                                className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer hover:underline truncate"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.location.href = `/vehicle/${chat.vehicleId}`;
+                                }}
+                              >
                                 {chat.vehicle?.brand} {chat.vehicle?.model} • {chat.vehicle?.vehicleNumber || `VH${String((chat.vehicle?.id || '').slice(-3)).padStart(3, '0')}`}
                               </p>
                               {lastMessage && (
@@ -448,7 +459,10 @@ export default function ChatWidget() {
                       <div className="flex items-center space-x-3">
                         <Car className="h-5 w-5 text-orange-500" />
                         <div>
-                          <h3 className="font-medium">
+                          <h3 
+                            className="font-medium text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
+                            onClick={() => window.location.href = `/vehicle/${selectedChat.vehicleId}`}
+                          >
                             {selectedChat.vehicle.brand} {selectedChat.vehicle.model}
                           </h3>
                           <p className="text-sm text-gray-600">
