@@ -12,6 +12,7 @@ import VehicleCard from "@/components/vehicle-card";
 import ChatWidget from "@/components/chat-widget";
 import FloatingBusinessCard from "@/components/floating-business-card";
 import SettingsForm from "@/components/settings-form";
+import logoIcon from "@assets/image_1752002668870.png";
 
 export default function UserDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -58,6 +59,7 @@ export default function UserDashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              <img src={logoIcon} alt="Hema Motor" className="h-10 w-10" />
               <Avatar className="w-12 h-12">
                 <AvatarImage src={user?.profileImageUrl || ""} />
                 <AvatarFallback>

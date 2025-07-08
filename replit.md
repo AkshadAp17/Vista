@@ -242,6 +242,9 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 08, 2025. Added live status indicator and improved spacing in business card modal for better user experience
 - July 08, 2025. Updated login page business card icon with new orange icon asset
 - July 08, 2025. Added favicon to website browser tab using the same orange icon for brand consistency
+- July 08, 2025. Added orange icon to vehicle cards in the header section next to vehicle title for brand consistency
+- July 08, 2025. Added company logo to main website pages including home page hero section, admin dashboard, and user dashboard headers
+- July 08, 2025. Enhanced brand presence across all pages with consistent logo and icon placement
 
 ## Admin Credentials
 

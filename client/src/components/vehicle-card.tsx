@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import VehicleChatDialog from "./vehicle-chat-dialog";
+import vehicleIcon from "@assets/image_1752002668870.png";
 
 interface FavoriteStatus {
   isFavorite: boolean;
@@ -240,9 +241,12 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
       </div>
       
       <CardContent className="p-4">
-        <h4 className="font-semibold text-lg text-hema-secondary mb-2">
-          {vehicle.brand} {vehicle.model}
-        </h4>
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="font-semibold text-lg text-hema-secondary">
+            {vehicle.brand} {vehicle.model}
+          </h4>
+          <img src={vehicleIcon} alt="Hema Motor" className="h-6 w-6 opacity-80" />
+        </div>
         
         <div className="flex items-center text-gray-600 text-sm mb-3 space-x-4">
           <span className="flex items-center">

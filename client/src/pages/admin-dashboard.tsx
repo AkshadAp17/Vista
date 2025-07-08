@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import logoIcon from "@assets/image_1752002668870.png";
 import {
   Table,
   TableBody,
@@ -156,9 +157,12 @@ export default function AdminDashboard() {
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-hema-secondary">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.firstName || 'Admin'}</p>
+            <div className="flex items-center space-x-4">
+              <img src={logoIcon} alt="Hema Motor" className="h-10 w-10" />
+              <div>
+                <h1 className="text-2xl font-bold text-hema-secondary">Admin Dashboard</h1>
+                <p className="text-gray-600">Welcome back, {user?.firstName || 'Admin'}</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <SettingsForm isAdmin={true} />
