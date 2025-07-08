@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Bike, Plus, User, Settings, LogOut, Menu } from "lucide-react";
 import SettingsForm from "@/components/settings-form";
+import { Logo } from "@/components/ui/logo";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -27,10 +28,9 @@ export default function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
-              <Bike className="text-hema-orange h-8 w-8" />
-              <h1 className="text-2xl font-bold text-hema-secondary">Hema Motor</h1>
-            </div>
+            <a href="/" className="flex items-center space-x-2">
+              <Logo size="md" animated={true} />
+            </a>
             <nav className="hidden md:flex space-x-6">
               <a href="/" className="text-gray-700 hover:text-hema-orange font-medium">
                 Home

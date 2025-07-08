@@ -127,9 +127,20 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     },
     onSuccess: (newMessage: any) => {
       if (chatRoom && newMessage) {
+        // Ensure proper message structure with sender data
+        const safeMessage = {
+          ...newMessage,
+          sender: {
+            id: newMessage.sender?.id || (user as any)?.id || "",
+            firstName: newMessage.sender?.firstName || (user as any)?.firstName || "",
+            lastName: newMessage.sender?.lastName || (user as any)?.lastName || "",
+            profileImageUrl: newMessage.sender?.profileImageUrl || (user as any)?.profileImageUrl || "",
+          }
+        };
+        
         setChatRoom(prev => prev ? {
           ...prev,
-          messages: [...prev.messages, newMessage]
+          messages: [...prev.messages, safeMessage]
         } : null);
       }
       setNewMessage("");
@@ -195,9 +206,20 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       const data = JSON.parse(event.data);
       
       if (data.type === "new_message" && data.chatRoomId === chatRoom?.id) {
+        // Ensure proper message structure with sender data
+        const safeMessage = {
+          ...data.message,
+          sender: {
+            id: data.message.sender?.id || "",
+            firstName: data.message.sender?.firstName || "",
+            lastName: data.message.sender?.lastName || "",
+            profileImageUrl: data.message.sender?.profileImageUrl || "",
+          }
+        };
+        
         setChatRoom(prev => prev ? {
           ...prev,
-          messages: [...prev.messages, data.message as Message]
+          messages: [...prev.messages, safeMessage]
         } : null);
       }
     };
@@ -250,13 +272,13 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       <DialogContent className="max-w-2xl h-[600px] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Car className="h-5 w-5" />
+            <Car className="h-5 w-5 text-orange-500" />
             Chat about {vehicle.brand} {vehicle.model}
           </DialogTitle>
         </DialogHeader>
 
         {/* Vehicle Info */}
-        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-100">
           <div className="flex-1">
             <h3 className="font-semibold">{vehicle.brand} {vehicle.model}</h3>
             <p className="text-sm text-gray-600">
@@ -264,7 +286,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xl font-bold text-green-600">₹{(vehicle.price || 0).toLocaleString()}</p>
+            <p className="text-xl font-bold text-orange-600">₹{(vehicle.price || 0).toLocaleString()}</p>
             <p className="text-sm text-gray-600">{vehicle.vehicleNumber || `VH${String((vehicle.id || '').slice(-3)).padStart(3, '0')}`}</p>
           </div>
         </div>
@@ -273,7 +295,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
         {createChatRoomMutation.isPending && (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
               <p className="mt-2 text-sm text-gray-600">Starting chat...</p>
             </div>
           </div>
@@ -302,23 +324,28 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
                           }`}
                         >
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={message.sender.profileImageUrl} />
+                            <AvatarImage src={message.sender?.profileImageUrl || ""} 
+                              alt={`${message.sender?.firstName || ""} ${message.sender?.lastName || ""}`}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }} 
+                            />
                             <AvatarFallback>
-                              {message.sender.firstName[0]}
-                              {message.sender.lastName[0]}
+                              {message.sender?.firstName?.[0] || ""}
+                              {message.sender?.lastName?.[0] || ""}
                             </AvatarFallback>
                           </Avatar>
                           <div
                             className={`rounded-lg px-3 py-2 ${
                               isOwnMessage
-                                ? "bg-blue-600 text-white"
+                                ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
                                 : "bg-gray-100 text-gray-900"
                             }`}
                           >
                             <p className="text-sm">{message.content}</p>
                             <p
                               className={`text-xs mt-1 ${
-                                isOwnMessage ? "text-blue-100" : "text-gray-500"
+                                isOwnMessage ? "text-white/75" : "text-gray-500"
                               }`}
                             >
                               {new Date(message.createdAt).toLocaleTimeString()}
@@ -341,10 +368,12 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 disabled={sendMessageMutation.isPending}
+                className="focus-visible:ring-orange-500"
               />
               <Button
                 onClick={handleSendMessage}
                 disabled={!newMessage.trim() || sendMessageMutation.isPending}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
               >
                 <Send className="h-4 w-4" />
               </Button>

@@ -129,13 +129,24 @@ export default function ChatWidget() {
           const data = JSON.parse(event.data);
           
           if (data.type === "new_message") {
+            // Ensure message has proper sender structure
+            const message = {
+              ...data.message,
+              sender: {
+                id: data.message.sender?.id || "",
+                firstName: data.message.sender?.firstName || "",
+                lastName: data.message.sender?.lastName || "",
+                profileImageUrl: data.message.sender?.profileImageUrl || "",
+              }
+            };
+            
             // Update chat rooms cache with new message
             queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
               return oldData.map(chat => {
                 if (chat.id === data.chatRoomId) {
                   return {
                     ...chat,
-                    messages: [...(chat.messages || []), data.message],
+                    messages: [...(chat.messages || []), message],
                   };
                 }
                 return chat;
@@ -146,7 +157,7 @@ export default function ChatWidget() {
             if (selectedChat && selectedChat.id === data.chatRoomId) {
               setSelectedChat(prev => prev ? {
                 ...prev,
-                messages: [...(prev.messages || []), data.message],
+                messages: [...(prev.messages || []), message],
               } : null);
             }
 
@@ -154,7 +165,7 @@ export default function ChatWidget() {
             if (!isOpen || !selectedChat || selectedChat.id !== data.chatRoomId) {
               toast({
                 title: "New Message",
-                description: `${data.message.sender.firstName}: ${data.message.content}`,
+                description: `${message.sender.firstName || "User"}: ${message.content}`,
               });
             }
           }
@@ -215,11 +226,22 @@ export default function ChatWidget() {
       // The API returns the message directly, not wrapped in data.message
       const newMessage = data as any;
       
+      // Ensure message has proper sender structure
+      const safeMessage = {
+        ...newMessage,
+        sender: {
+          id: newMessage.sender?.id || "",
+          firstName: newMessage.sender?.firstName || "",
+          lastName: newMessage.sender?.lastName || "",
+          profileImageUrl: newMessage.sender?.profileImageUrl || "",
+        }
+      };
+      
       // Update the selected chat with the new message (replace optimistic message)
       if (selectedChat && selectedChat.id === variables.chatRoomId) {
         setSelectedChat(prev => prev ? {
           ...prev,
-          messages: [...(prev.messages || []).filter(msg => !msg._id.startsWith('temp-')), newMessage],
+          messages: [...(prev.messages || []).filter(msg => !msg._id.startsWith('temp-')), safeMessage],
         } : null);
       }
       
@@ -229,7 +251,7 @@ export default function ChatWidget() {
           if (chat.id === variables.chatRoomId) {
             return {
               ...chat,
-              messages: [...(chat.messages || []).filter(msg => !msg._id.startsWith('temp-')), newMessage],
+              messages: [...(chat.messages || []).filter(msg => !msg._id.startsWith('temp-')), safeMessage],
             };
           }
           return chat;
@@ -285,10 +307,10 @@ export default function ChatWidget() {
       senderId: (user as any).id,
       createdAt: new Date().toISOString(),
       sender: {
-        id: (user as any).id,
-        firstName: (user as any).firstName,
-        lastName: (user as any).lastName,
-        profileImageUrl: (user as any).profileImageUrl,
+        id: (user as any).id || "",
+        firstName: (user as any).firstName || "",
+        lastName: (user as any).lastName || "",
+        profileImageUrl: (user as any).profileImageUrl || "",
       },
     };
 
@@ -334,7 +356,7 @@ export default function ChatWidget() {
       {/* Chat Toggle Button */}
       <div className="fixed bottom-4 right-4 z-50">
         <Button
-          className="bg-hema-orange text-white w-14 h-14 rounded-full shadow-lg hover:bg-hema-orange/90 transition flex items-center justify-center"
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-14 h-14 rounded-full shadow-lg transition flex items-center justify-center"
           onClick={() => setIsOpen(true)}
           data-chat-widget
         >
@@ -353,9 +375,9 @@ export default function ChatWidget() {
           <div className="flex h-full overflow-hidden">
             {/* Chat List Sidebar */}
             <div className="w-1/3 border-r flex flex-col">
-              <DialogHeader className="p-4 border-b">
+              <DialogHeader className="p-4 border-b bg-gradient-to-r from-orange-50 to-red-50">
                 <DialogTitle className="flex items-center">
-                  <MessageCircle className="h-5 w-5 mr-2" />
+                  <MessageCircle className="h-5 w-5 mr-2 text-orange-500" />
                   Messages
                 </DialogTitle>
               </DialogHeader>
@@ -378,16 +400,18 @@ export default function ChatWidget() {
                       return (
                         <div
                           key={chat.id}
-                          className={`p-3 rounded-lg cursor-pointer hover:bg-gray-50 ${
-                            selectedChat?.id === chat.id ? "bg-hema-orange/10 border border-hema-orange" : ""
+                          className={`p-3 rounded-lg cursor-pointer hover:bg-orange-50 ${
+                            selectedChat?.id === chat.id ? "bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200" : ""
                           }`}
                           onClick={() => setSelectedChat(chat)}
                         >
                           <div className="flex items-center space-x-3">
                             <Avatar className="w-10 h-10">
-                              <AvatarImage src={otherUser.profileImageUrl || ""} />
+                              <AvatarImage src={otherUser.profileImageUrl || ""} alt={`${otherUser.firstName} ${otherUser.lastName}`} onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }} />
                               <AvatarFallback>
-                                {otherUser.firstName[0]}{otherUser.lastName[0]}
+                                {otherUser.firstName?.[0] || ""}{otherUser.lastName?.[0] || ""}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
@@ -419,24 +443,26 @@ export default function ChatWidget() {
               {selectedChat ? (
                 <>
                   {/* Chat Header */}
-                  <div className="p-4 border-b bg-gray-50">
+                  <div className="p-4 border-b bg-gradient-to-r from-orange-50 to-red-50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <Car className="h-5 w-5 text-hema-orange" />
+                        <Car className="h-5 w-5 text-orange-500" />
                         <div>
                           <h3 className="font-medium">
                             {selectedChat.vehicle.brand} {selectedChat.vehicle.model}
                           </h3>
                           <p className="text-sm text-gray-600">
-                            {selectedChat.vehicle.vehicleNumber || `VH${String((selectedChat.vehicle.id || '').slice(-3)).padStart(3, '0')}`} • ₹{parseFloat(selectedChat.vehicle.price.toString()).toLocaleString()}
+                            {selectedChat.vehicle.vehicleNumber || `VH${String((selectedChat.vehicle.id || '').slice(-3)).padStart(3, '0')}`} • <span className="text-orange-600 font-medium">₹{parseFloat(selectedChat.vehicle.price.toString()).toLocaleString()}</span>
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Avatar className="w-8 h-8">
-                          <AvatarImage src={getOtherUser(selectedChat).profileImageUrl || ""} />
+                          <AvatarImage src={getOtherUser(selectedChat).profileImageUrl || ""} alt={`${getOtherUser(selectedChat).firstName} ${getOtherUser(selectedChat).lastName}`} onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }} />
                           <AvatarFallback className="text-xs">
-                            {getOtherUser(selectedChat).firstName[0]}{getOtherUser(selectedChat).lastName[0]}
+                            {getOtherUser(selectedChat).firstName?.[0] || ""}{getOtherUser(selectedChat).lastName?.[0] || ""}
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-sm font-medium">
@@ -461,15 +487,21 @@ export default function ChatWidget() {
                             }`}
                           >
                             <Avatar className="w-8 h-8">
-                              <AvatarImage src={message.sender.profileImageUrl || ""} />
+                              <AvatarImage 
+                                src={(message.sender?.profileImageUrl) || ""} 
+                                alt={message.sender?.firstName ? `${message.sender.firstName} ${message.sender.lastName}` : "User"} 
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }} 
+                              />
                               <AvatarFallback className="text-xs">
-                                {message.sender.firstName[0]}{message.sender.lastName[0]}
+                                {message.sender?.firstName?.[0] || ""}{message.sender?.lastName?.[0] || ""}
                               </AvatarFallback>
                             </Avatar>
                             <div
                               className={`rounded-lg p-3 max-w-[70%] chat-bubble ${
                                 isOwnMessage
-                                  ? "bg-hema-orange text-white"
+                                  ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
                                   : "bg-gray-100 text-gray-900"
                               }`}
                             >
@@ -501,13 +533,13 @@ export default function ChatWidget() {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        className="flex-1"
+                        className="flex-1 focus-visible:ring-orange-500"
                         disabled={sendMessageMutation.isPending}
                       />
                       <Button
                         onClick={handleSendMessage}
                         disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                        className="bg-hema-orange hover:bg-hema-orange/90"
+                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
                       >
                         <Send className="h-4 w-4" />
                       </Button>

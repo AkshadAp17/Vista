@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Bike } from "lucide-react";
 import { useLocation } from "wouter";
+import { Logo } from "@/components/ui/logo";
 
 interface LoginData {
   email: string;
@@ -144,17 +145,69 @@ export default function AuthForm() {
   // Visual side component
   const VisualSide = ({ title, subtitle, features }: { title: string; subtitle: string; features: string[] }) => (
     <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-hema-orange to-orange-600 relative overflow-hidden">
-      <div className="absolute inset-0 bg-black/20"></div>
+      {/* Dynamic background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-black/20"></div>
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-orange-500/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+      
+      {/* Animated motorcycle path */}
+      <div className="absolute w-full h-full">
+        <div className="absolute top-[15%] left-0 w-full opacity-20 animate-[slideRight_15s_linear_infinite]">
+          <svg viewBox="0 0 800 120" className="w-full">
+            <path d="M-200,80 C100,120 300,50 800,100" stroke="white" strokeWidth="1" fill="none" />
+            <circle cx="0" cy="80" r="10" fill="white" className="animate-ping">
+              <animateMotion
+                dur="15s"
+                repeatCount="indefinite"
+                path="M-200,80 C100,120 300,50 800,100"
+              />
+            </circle>
+            <path d="M0,0 L-30,0 L-20,-15 L0,-15 Z" fill="white">
+              <animateMotion
+                dur="15s"
+                repeatCount="indefinite"
+                path="M-200,80 C100,120 300,50 800,100"
+                rotate="auto"
+              />
+            </path>
+          </svg>
+        </div>
+        <div className="absolute top-[65%] left-0 w-full opacity-20 animate-[slideLeft_20s_linear_infinite]" style={{ animationDelay: '5s' }}>
+          <svg viewBox="0 0 800 120" className="w-full">
+            <path d="M800,40 C500,0 300,80 -200,30" stroke="white" strokeWidth="1" fill="none" />
+            <circle cx="800" cy="40" r="8" fill="white" className="animate-ping" style={{ animationDelay: '1s' }}>
+              <animateMotion
+                dur="20s"
+                repeatCount="indefinite"
+                path="M800,40 C500,0 300,80 -200,30"
+              />
+            </circle>
+            <path d="M0,0 L-25,0 L-15,-12 L0,-12 Z" fill="white">
+              <animateMotion
+                dur="20s"
+                repeatCount="indefinite"
+                path="M800,40 C500,0 300,80 -200,30"
+                rotate="auto"
+              />
+            </path>
+          </svg>
+        </div>
+      </div>
+      
       <div className="relative z-10 flex flex-col justify-center items-center text-white p-12">
-        <div className="text-center space-y-6 max-w-md">
-          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-full w-24 h-24 flex items-center justify-center mx-auto">
-            <Bike className="h-12 w-12" />
+        <div className="text-center space-y-6 max-w-md backdrop-blur-sm bg-black/10 p-8 rounded-3xl border border-white/10 shadow-2xl animate-in fade-in-50 duration-700">
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-full w-28 h-28 flex items-center justify-center mx-auto relative group">
+            <div className="absolute inset-0 bg-white/5 rounded-full animate-ping opacity-50 duration-1000 group-hover:opacity-100"></div>
+            <Logo size="lg" variant="white" animated={true} showTagline={false} />
           </div>
-          <h1 className="text-4xl font-bold">{title}</h1>
-          <p className="text-xl text-white/90">{subtitle}</p>
-          <div className="space-y-4 text-white/80">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent animate-in slide-in-from-bottom-4 duration-700">{title}</h1>
+          <p className="text-xl text-white/90 animate-in slide-in-from-bottom-5 duration-700 delay-150">{subtitle}</p>
+          <div className="space-y-4 text-white/80 animate-in slide-in-from-bottom-6 duration-700 delay-300">
             {features.map((feature, index) => (
-              <div key={index} className="flex items-center space-x-3">
+              <div key={index} className="flex items-center space-x-3 transition-all hover:translate-x-1 duration-300">
                 <div className="w-2 h-2 bg-white rounded-full"></div>
                 <span>{feature}</span>
               </div>
@@ -164,7 +217,7 @@ export default function AuthForm() {
       </div>
       
       {/* Decorative motorcycle silhouettes */}
-      <div className="absolute bottom-10 right-10 opacity-10">
+      <div className="absolute bottom-10 right-10 opacity-10 animate-in slide-in-from-right duration-1000 delay-500">
         <svg viewBox="0 0 400 200" className="w-96 h-48">
           <path d="M50 150 Q100 120 150 130 Q200 140 250 120 Q300 100 350 110" 
                 stroke="white" strokeWidth="3" fill="none"/>
@@ -172,16 +225,38 @@ export default function AuthForm() {
           <circle cx="280" cy="130" r="25" fill="white"/>
           <path d="M80 140 L120 110 L180 110 L220 130 L280 130" 
                 stroke="white" strokeWidth="4" fill="none"/>
+          <path d="M180 110 L190 90 L210 90 L220 110" 
+                stroke="white" strokeWidth="3" fill="white"/>
         </svg>
       </div>
       
-      <div className="absolute top-20 left-20 opacity-10">
+      <div className="absolute top-20 left-20 opacity-10 animate-in slide-in-from-left duration-1000 delay-700">
         <svg viewBox="0 0 300 150" className="w-72 h-36">
           <circle cx="60" cy="120" r="20" fill="white"/>
           <circle cx="200" cy="110" r="20" fill="white"/>
           <path d="M60 100 L90 80 L140 80 L170 100 L200 100" 
                 stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M140 80 L145 60 L165 60 L170 80"
+                stroke="white" strokeWidth="2" fill="white"/>
         </svg>
+      </div>
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <div 
+            key={i}
+            className="absolute rounded-full bg-white/30 animate-float"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              width: `${Math.random() * 6 + 2}px`,
+              height: `${Math.random() * 6 + 2}px`,
+              animationDuration: `${Math.random() * 10 + 10}s`,
+              animationDelay: `${Math.random() * 5}s`
+            }}
+          />
+        ))}
       </div>
     </div>
   );
@@ -204,9 +279,8 @@ export default function AuthForm() {
         <div className="w-full lg:w-1/2 flex items-center justify-center bg-white dark:bg-slate-900 p-4">
           <Card className="w-full max-w-md border-none shadow-2xl">
             <CardHeader className="text-center">
-              <div className="lg:hidden flex items-center justify-center space-x-2 mb-4">
-                <Bike className="text-hema-orange h-8 w-8" />
-                <h1 className="text-2xl font-bold text-hema-secondary">Hema Motor</h1>
+              <div className="lg:hidden flex justify-center mb-4">
+                <Logo size="md" animated={true} />
               </div>
               <CardTitle className="text-2xl lg:text-3xl font-bold">Email Verification</CardTitle>
               <CardDescription className="text-base">
@@ -277,9 +351,8 @@ export default function AuthForm() {
         <Card className="w-full max-w-md border-none shadow-2xl">
           <CardHeader className="text-center">
             {/* Mobile header for small screens */}
-            <div className="lg:hidden flex items-center justify-center space-x-2 mb-4">
-              <Bike className="text-hema-orange h-8 w-8" />
-              <span className="text-2xl font-bold text-hema-secondary">Hema Motor</span>
+            <div className="lg:hidden flex justify-center mb-4">
+              <Logo size="md" animated={true} />
             </div>
             <CardTitle className="text-2xl lg:text-3xl font-bold">Welcome</CardTitle>
             <CardDescription className="text-base">

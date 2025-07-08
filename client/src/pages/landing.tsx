@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, IndianRupee, Bike, Users, Shield, Star, ArrowRight, CheckCircle, Zap, Award } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 export default function Landing() {
   return (
@@ -12,18 +13,7 @@ export default function Landing() {
       <header className="bg-white/95 backdrop-blur-sm shadow-2xl sticky top-0 z-50 border-b border-orange-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <Bike className="text-orange-500 h-10 w-10 transform rotate-12" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full animate-pulse"></div>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                  Hema Motor
-                </h1>
-                <p className="text-xs text-gray-500 font-medium">Your Dream Ride Awaits</p>
-              </div>
-            </div>
+            <Logo size="lg" animated={true} className="animate-in fade-in-50 duration-500" />
             <Button 
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 rounded-full font-semibold"
               onClick={() => window.location.href = '/api/login'}
@@ -229,9 +219,8 @@ export default function Landing() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-6">
-                <Bike className="text-orange-500 h-8 w-8" />
-                <h4 className="text-2xl font-bold">Hema Motor</h4>
+              <div className="mb-6">
+                <Logo size="md" variant="white" animated={true} />
               </div>
               <p className="text-gray-400 leading-relaxed">
                 India's most trusted two-wheeler marketplace. Find, buy, and sell with confidence.

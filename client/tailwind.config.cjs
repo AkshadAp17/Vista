@@ -1,8 +1,10 @@
-import type { Config } from "tailwindcss";
-
-export default {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   darkMode: ["class"],
-  content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
     extend: {
       borderRadius: {
@@ -11,6 +13,9 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {
@@ -41,9 +46,6 @@ export default {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
         },
-        border: "var(--border)",
-        input: "var(--input)",
-        ring: "var(--ring)",
         chart: {
           "1": "var(--chart-1)",
           "2": "var(--chart-2)",
@@ -64,47 +66,19 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
         },
-        "slideRight": {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(100%)" }
-        },
-        "slideLeft": {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(-100%)" }
-        },
-        "float": {
-          "0%, 100%": { transform: "translateY(0) translateX(0)" },
-          "25%": { transform: "translateY(-10px) translateX(10px)" },
-          "50%": { transform: "translateY(-20px) translateX(-10px)" },
-          "75%": { transform: "translateY(-10px) translateX(-20px)" }
-        },
-        "glow": {
-          "0%, 100%": { opacity: "0.5", filter: "blur(2px)" },
-          "50%": { opacity: "1", filter: "blur(0)" }
-        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "float": "float 10s ease infinite",
-        "glow": "glow 3s ease-in-out infinite"
       },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-} satisfies Config;
+} 
