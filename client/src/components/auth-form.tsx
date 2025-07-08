@@ -271,26 +271,17 @@ export default function AuthForm() {
   // Show verification form if needed
   if (showVerification) {
     return (
-      <div className="min-h-screen flex">
-        <VisualSide 
-          title="Email Verification"
-          subtitle="Almost there! Just verify your email to get started"
-          features={[
-            "Check your email for the verification code",
-            "Enter the 6-digit code to activate your account",
-            "Start buying and selling immediately"
-          ]}
-        />
-
-        {/* Right Side - Verification Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white dark:bg-slate-900 p-4">
-          <Card className="w-full max-w-md border-none shadow-2xl">
-            <CardHeader className="text-center">
-              <div className="lg:hidden flex justify-center mb-4">
-                <Logo size="md" animated={true} />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 p-6">
+        <div className="w-full max-w-md">
+          <Card className="border border-gray-200 dark:border-slate-700 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+            <CardHeader className="text-center space-y-4 pb-6">
+              <div className="flex justify-center mb-4">
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
+                  <Bike className="h-10 w-10 text-white" />
+                </div>
               </div>
-              <CardTitle className="text-2xl lg:text-3xl font-bold">Email Verification</CardTitle>
-              <CardDescription className="text-base">
+              <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Email Verification</CardTitle>
+              <CardDescription className="text-base text-gray-600 dark:text-gray-300">
                 We sent a verification code to {verificationEmail}
               </CardDescription>
             </CardHeader>
@@ -342,28 +333,16 @@ export default function AuthForm() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      <VisualSide 
-        title="Hema Motor"
-        subtitle="Your trusted two-wheeler marketplace"
-        features={[
-          "Buy & Sell motorcycles, scooters, and electric vehicles",
-          "Real-time chat with sellers and buyers",
-          "Secure transactions and verified listings"
-        ]}
-      />
-
-      {/* Right Side - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 p-6">
-        <Card className="w-full max-w-lg border border-gray-200 dark:border-slate-700 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 p-6">
+      <div className="w-full max-w-md">
+        <Card className="border border-gray-200 dark:border-slate-700 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
           <CardHeader className="text-center space-y-4 pb-6">
-            {/* Mobile header for small screens */}
-            <div className="lg:hidden flex justify-center mb-4">
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-full">
-                <Bike className="h-8 w-8 text-white" />
+            <div className="flex justify-center mb-4">
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
+                <Bike className="h-10 w-10 text-white" />
               </div>
             </div>
-            <CardTitle className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Welcome</CardTitle>
+            <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Welcome</CardTitle>
             <CardDescription className="text-base text-gray-600 dark:text-gray-300">
               Sign in to your account or create a new one
               <br />
