@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, IndianRupee, Bike, Users, Shield, Star, ArrowRight, CheckCircle, Zap, Award } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import BusinessCard from "@/components/business-card";
+import FloatingBusinessCard from "@/components/floating-business-card";
 
 export default function Landing() {
   return (
@@ -283,6 +284,9 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+      
+      {/* Floating Business Card */}
+      <FloatingBusinessCard />
     </div>
   );
 }

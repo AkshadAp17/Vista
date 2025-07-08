@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, MapPin, Mail, User, Building2 } from "lucide-react";
+import { Phone, MapPin, Mail, User, Building2, Crown } from "lucide-react";
 
 interface BusinessCardProps {
   variant?: 'compact' | 'full';
@@ -10,29 +10,39 @@ export default function BusinessCard({ variant = 'full', className = '' }: Busin
   const compactMode = variant === 'compact';
 
   return (
-    <Card className={`bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
-      <CardContent className={`${compactMode ? 'p-4' : 'p-6'} text-center`}>
-        {/* Company Logo/Icon */}
-        <div className={`bg-gradient-to-r from-orange-500 to-red-500 rounded-full ${compactMode ? 'w-12 h-12' : 'w-16 h-16'} flex items-center justify-center mx-auto mb-4`}>
-          <Building2 className={`${compactMode ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
+    <Card className={`bg-gradient-to-br from-orange-50 via-white to-red-50 border-2 border-orange-300 shadow-2xl hover:shadow-3xl transition-all duration-300 backdrop-blur-sm mx-auto ${className}`}>
+      <CardContent className={`${compactMode ? 'p-6' : 'p-8'} text-center space-y-4`}>
+        {/* Live Status Indicator */}
+        <div className="flex items-center justify-center space-x-2 mb-2">
+          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-xs text-green-600 font-medium">● LIVE</span>
+        </div>
+        
+        {/* Company Logo/Icon with Premium Look */}
+        <div className={`relative bg-gradient-to-r from-orange-500 to-red-500 rounded-full ${compactMode ? 'w-16 h-16' : 'w-20 h-20'} flex items-center justify-center mx-auto mb-6 shadow-lg`}>
+          <div className="absolute inset-0 bg-white/20 rounded-full animate-ping opacity-75"></div>
+          <Building2 className={`${compactMode ? 'h-8 w-8' : 'h-10 w-10'} text-white relative z-10`} />
+          <Crown className="absolute -top-1 -right-1 h-4 w-4 text-yellow-400" />
         </div>
 
         {/* Company Name */}
-        <h2 className={`font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent ${compactMode ? 'text-lg' : 'text-xl'} mb-2`}>
-          Hema Motor
-        </h2>
-        
-        {/* Owner Details */}
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center justify-center space-x-2">
-            <User className={`${compactMode ? 'h-3 w-3' : 'h-4 w-4'} text-orange-600`} />
-            <span className={`font-semibold text-gray-800 ${compactMode ? 'text-sm' : 'text-base'}`}>
-              Shubham Pujari
-            </span>
+        <div className="space-y-3 mb-6">
+          <h2 className={`font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent ${compactMode ? 'text-xl' : 'text-2xl'} tracking-wide`}>
+            Hema Motor
+          </h2>
+          
+          {/* Owner Details */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-center space-x-3 bg-gradient-to-r from-orange-100 to-red-100 rounded-full py-2 px-4">
+              <User className={`${compactMode ? 'h-4 w-4' : 'h-5 w-5'} text-orange-600`} />
+              <span className={`font-bold text-gray-800 ${compactMode ? 'text-base' : 'text-lg'}`}>
+                Shubham Pujari
+              </span>
+            </div>
+            <p className={`text-orange-700 ${compactMode ? 'text-sm' : 'text-base'} font-semibold italic`}>
+              Owner & Managing Director
+            </p>
           </div>
-          <p className={`text-gray-600 ${compactMode ? 'text-xs' : 'text-sm'} font-medium`}>
-            Owner & Managing Director
-          </p>
         </div>
 
         {/* Contact Information */}
