@@ -122,6 +122,8 @@ export default function Home() {
       </section>
 
       <ChatWidget />
+      
+
     </div>
   );
 }
