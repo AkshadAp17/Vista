@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, IndianRupee, Bike, Users, Shield, Star, ArrowRight, CheckCircle, Zap, Award } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import BusinessCard from "@/components/business-card";
 
 export default function Landing() {
   return (
@@ -210,6 +211,21 @@ export default function Landing() {
               <Users className="h-5 w-5 mr-2" />
               Join as Seller
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Business Card Section */}
+      <section className="py-16 bg-gradient-to-r from-slate-800 to-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-white mb-4">Meet Our Founder</h3>
+            <p className="text-gray-300 text-lg">
+              Connecting buyers and sellers with trust and excellence
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <BusinessCard variant="full" className="max-w-md animate-in fade-in-50 duration-700" />
           </div>
         </div>
       </section>

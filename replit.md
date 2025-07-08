@@ -223,6 +223,8 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 08, 2025. Fixed search bar functionality - vehicle type filters (Motorcycles/Scooters/Electric) now work with case-insensitive matching
 - July 08, 2025. Enhanced login page styling with centered visuals, improved background gradients, and proper orange theme integration
 - July 08, 2025. Updated form styling with better input fields, placeholders, and consistent button designs matching website theme
+- July 08, 2025. Created professional business card component for company owner Shubham Pujari with contact details and company information
+- July 08, 2025. Added business card to landing page and login page to showcase company credentials and build trust
 - July 08, 2025. Successfully migrated from Replit Agent to Replit environment - all functionality preserved
 - July 08, 2025. Fixed edit button functionality in admin dashboard - now opens edit dialog with vehicle form
 - July 08, 2025. Enhanced vehicle image display in cards - now shows actual uploaded images with fallback placeholder

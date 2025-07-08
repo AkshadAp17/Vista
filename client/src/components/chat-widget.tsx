@@ -535,10 +535,7 @@ export default function ChatWidget() {
                                   isOwnMessage ? "text-white/75" : "text-gray-500"
                                 }`}
                               >
-                                {(() => {
-                                  console.log('Message createdAt:', message.createdAt, typeof message.createdAt);
-                                  return formatTime(message.createdAt);
-                                })()}
+                                {formatTime(message.createdAt)}
                               </p>
                             </div>
                           </div>
