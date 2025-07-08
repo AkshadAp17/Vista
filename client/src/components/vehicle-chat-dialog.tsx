@@ -91,6 +91,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatRoomIdRef = useRef<string | null>(null);
 
   // Get or create chat room
   const createChatRoomMutation = useMutation({
@@ -104,6 +105,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       console.log("Chat room loaded:", data);
       console.log("Messages in chat room:", data.messages?.length || 0);
       setChatRoom(data);
+      chatRoomIdRef.current = data.id;
     },
     onError: (error) => {
       console.error("Error creating chat room:", error);
@@ -144,6 +146,11 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
         } : null);
       }
       setNewMessage("");
+      
+      // Scroll to bottom immediately after sending a message
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     },
     onError: (error) => {
       console.error("Error sending message:", error);
@@ -178,12 +185,18 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       console.log("Chat room state updated:", chatRoom);
       console.log("Number of messages:", chatRoom.messages?.length || 0);
       console.log("Messages:", chatRoom.messages);
+      
+      // Update the ref with the current chat room ID
+      chatRoomIdRef.current = chatRoom.id;
+      
+      // Scroll to bottom when messages change
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatRoom]);
 
-  // Setup WebSocket connection
+  // Setup WebSocket connection - only when user or authentication changes
   useEffect(() => {
-    if (!isAuthenticated || !user || !chatRoom) return;
+    if (!isAuthenticated || !user) return;
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = window.location.host || 'localhost:5000';
@@ -205,7 +218,8 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       
-      if (data.type === "new_message" && data.chatRoomId === chatRoom?.id) {
+      if (data.type === "new_message" && chatRoomIdRef.current && data.chatRoomId === chatRoomIdRef.current) {
+        console.log("Received new message via WebSocket:", data.message);
         // Ensure proper message structure with sender data
         const safeMessage = {
           ...data.message,
@@ -217,10 +231,27 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
           }
         };
         
-        setChatRoom(prev => prev ? {
-          ...prev,
-          messages: [...prev.messages, safeMessage]
-        } : null);
+        setChatRoom(prev => {
+          if (!prev) return null;
+          
+          // Check if message already exists to prevent duplicates
+          const messageExists = prev.messages.some(m => m._id === safeMessage._id);
+          if (messageExists) {
+            return prev;
+          }
+          
+          const updatedRoom = {
+            ...prev,
+            messages: [...prev.messages, safeMessage]
+          };
+          
+          // Scroll to bottom after adding a new message
+          setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+          
+          return updatedRoom;
+        });
       }
     };
 
@@ -235,16 +266,11 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     };
 
     return () => {
-      if (ws.readyState === WebSocket.OPEN) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close();
       }
     };
-  }, [isAuthenticated, user, chatRoom]);
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatRoom?.messages]);
+  }, [isAuthenticated, user]); // Only depend on auth status and user, not chatRoom
 
   const handleSendMessage = () => {
     if (!newMessage.trim() || !chatRoom) return;

@@ -17,11 +17,43 @@ import {
 import { Bike, Plus, User, Settings, LogOut, Menu, Bell } from "lucide-react";
 import SettingsForm from "@/components/settings-form";
 import { Logo } from "@/components/ui/logo";
+import { apiRequest } from "@/lib/queryClient";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest("GET", "/api/auth/logout");
+      
+      // Clear the user data from the cache
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Redirect to home page
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account",
+      });
+      
+      // Small delay to allow the toast to show
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        title: "Logout failed",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
@@ -85,7 +117,7 @@ export default function Header() {
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.location.href = '/api/auth/logout'}>
+                    <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
                     </DropdownMenuItem>

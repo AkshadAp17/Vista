@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Bike, Eye, EyeOff, User } from "lucide-react";
+import { Car, Eye, EyeOff, User } from "lucide-react";
 import orangeIcon from "@assets/image_1752002668870.png";
 import BusinessCard from "@/components/business-card";
 import { useLocation } from "wouter";
@@ -219,7 +219,7 @@ export default function AuthForm() {
           <div className="bg-white/15 backdrop-blur-sm p-8 rounded-full w-32 h-32 flex items-center justify-center mx-auto relative group shadow-2xl">
             <div className="absolute inset-0 bg-white/10 rounded-full animate-ping opacity-50 duration-2000 group-hover:opacity-100"></div>
             <div className="relative z-10 flex items-center justify-center">
-              <Bike className="h-12 w-12 text-white" />
+              <Car className="h-12 w-12 text-white" />
             </div>
           </div>
           <div className="space-y-4">
@@ -302,7 +302,7 @@ export default function AuthForm() {
             <CardHeader className="text-center space-y-4 pb-6">
               <div className="flex justify-center mb-4">
                 <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
-                  <Bike className="h-10 w-10 text-white" />
+                  <Car className="h-10 w-10 text-white" />
                 </div>
               </div>
               <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Email Verification</CardTitle>
@@ -357,193 +357,179 @@ export default function AuthForm() {
     );
   }
 
+  // Show business card if needed
+  if (showBusinessCard) {
+    return (
+      <BusinessCard onClose={() => setShowBusinessCard(false)} />
+    );
+  }
+
+  // Main login/signup form
   return (
     <div className="min-h-screen flex">
       <VisualSide 
-        title="Hema Motor"
-        subtitle="Your trusted two-wheeler marketplace"
+        title="Vista Motors"
+        subtitle="Your gateway to premium vehicles"
         features={[
-          "Buy & Sell motorcycles, scooters, and electric vehicles",
-          "Real-time chat with sellers and buyers",
-          "Secure transactions and verified listings"
+          "Browse thousands of premium vehicles",
+          "Connect directly with sellers",
+          "Secure and transparent transactions",
+          "Verified vehicle listings",
+          "Real-time chat with sellers"
         ]}
       />
 
       {/* Right Side - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 p-6">
-        <Card className="w-full max-w-lg border border-gray-200 dark:border-slate-700 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white dark:bg-slate-900 p-4">
+        <Card className="w-full max-w-md border-none shadow-2xl">
           <CardHeader className="text-center space-y-4 pb-6">
             <div className="flex justify-center mb-4">
               <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
-                <Bike className="h-10 w-10 text-white" />
+                <Car className="h-10 w-10 text-white" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Welcome</CardTitle>
+            <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Welcome to Vista Motors</CardTitle>
             <CardDescription className="text-base text-gray-600 dark:text-gray-300">
               Sign in to your account or create a new one
-              <br />
-              <small className="text-xs text-gray-500 dark:text-gray-400 mt-2 block">
-                Note: The first user to sign up will automatically become an admin
-              </small>
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
-            <Tabs defaultValue="login" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-slate-800 p-1 rounded-xl">
-                <TabsTrigger 
-                  value="login" 
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-lg transition-all duration-300"
-                >
-                  Login
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="signup"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-lg transition-all duration-300"
-                >
-                  Sign Up
-                </TabsTrigger>
+          <CardContent>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               
+              {/* Login Tab */}
               <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-5">
+                <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email" className="text-gray-700 dark:text-gray-300 font-medium">Email</Label>
+                    <Label htmlFor="login-email">Email</Label>
                     <Input
                       id="login-email"
                       type="email"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                      placeholder="your.email@example.com"
                       required
-                      className="h-11 border-gray-300 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg transition-all duration-300"
-                      placeholder="Enter your email address"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="login-password" className="text-gray-700 dark:text-gray-300 font-medium">Password</Label>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="login-password">Password</Label>
+                      <Button variant="link" className="text-xs p-0 h-auto" type="button">
+                        Forgot Password?
+                      </Button>
+                    </div>
                     <div className="relative">
                       <Input
                         id="login-password"
                         type={showLoginPassword ? "text" : "password"}
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                        placeholder="••••••••"
                         required
-                        className="h-11 pr-12 border-gray-300 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg transition-all duration-300"
-                        placeholder="Enter your password"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowLoginPassword(!showLoginPassword)}
                       >
                         {showLoginPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-500 hover:text-orange-500 transition-colors" />
+                          <EyeOff className="h-4 w-4 text-gray-500" />
                         ) : (
-                          <Eye className="h-4 w-4 text-gray-500 hover:text-orange-500 transition-colors" />
+                          <Eye className="h-4 w-4 text-gray-500" />
                         )}
                       </Button>
                     </div>
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full h-11 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] rounded-lg font-semibold"
+                    className="w-full bg-hema-orange hover:bg-hema-orange/90"
                     disabled={loginMutation.isPending}
                   >
-                    {loginMutation.isPending ? "Logging in..." : "Login"}
+                    {loginMutation.isPending ? "Signing In..." : "Sign In"}
                   </Button>
                 </form>
               </TabsContent>
               
+              {/* Signup Tab */}
               <TabsContent value="signup">
-                <form onSubmit={handleSignup} className="space-y-5">
+                <form onSubmit={handleSignup} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signup-first-name" className="text-gray-700 dark:text-gray-300 font-medium">First Name</Label>
+                      <Label htmlFor="signup-firstname">First Name</Label>
                       <Input
-                        id="signup-first-name"
+                        id="signup-firstname"
                         value={signupData.firstName}
                         onChange={(e) => setSignupData({ ...signupData, firstName: e.target.value })}
+                        placeholder="John"
                         required
-                        className="h-11 border-gray-300 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg transition-all duration-300"
-                        placeholder="Enter your first name"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="signup-last-name" className="text-gray-700 dark:text-gray-300 font-medium">Last Name</Label>
+                      <Label htmlFor="signup-lastname">Last Name</Label>
                       <Input
-                        id="signup-last-name"
+                        id="signup-lastname"
                         value={signupData.lastName}
                         onChange={(e) => setSignupData({ ...signupData, lastName: e.target.value })}
+                        placeholder="Doe"
                         required
-                        className="h-11 border-gray-300 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg transition-all duration-300"
-                        placeholder="Enter your last name"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-gray-700 dark:text-gray-300 font-medium">Email</Label>
+                    <Label htmlFor="signup-email">Email</Label>
                     <Input
                       id="signup-email"
                       type="email"
                       value={signupData.email}
                       onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                      placeholder="your.email@example.com"
                       required
-                      className="h-11 border-gray-300 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg transition-all duration-300"
-                      placeholder="Enter your email address"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-gray-700 dark:text-gray-300 font-medium">Password</Label>
+                    <Label htmlFor="signup-password">Password</Label>
                     <div className="relative">
                       <Input
                         id="signup-password"
                         type={showSignupPassword ? "text" : "password"}
                         value={signupData.password}
                         onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                        placeholder="••••••••"
                         required
-                        className="h-11 pr-12 border-gray-300 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg transition-all duration-300"
-                        placeholder="Enter your password"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowSignupPassword(!showSignupPassword)}
                       >
                         {showSignupPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-500 hover:text-orange-500 transition-colors" />
+                          <EyeOff className="h-4 w-4 text-gray-500" />
                         ) : (
-                          <Eye className="h-4 w-4 text-gray-500 hover:text-orange-500 transition-colors" />
+                          <Eye className="h-4 w-4 text-gray-500" />
                         )}
                       </Button>
                     </div>
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full h-11 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] rounded-lg font-semibold"
+                    className="w-full bg-hema-orange hover:bg-hema-orange/90"
                     disabled={signupMutation.isPending}
                   >
-                    {signupMutation.isPending ? "Creating account..." : "Sign Up"}
+                    {signupMutation.isPending ? "Creating Account..." : "Create Account"}
                   </Button>
                 </form>
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
-        
       </div>
-      
-      {/* Business Card Modal */}
-      {showBusinessCard && (
-        <BusinessCard 
-          variant="full" 
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" 
-          onClose={() => setShowBusinessCard(false)}
-        />
-      )}
-
     </div>
   );
 }

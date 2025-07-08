@@ -19,11 +19,16 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:5000",
         changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
       },
       "/ws": {
         target: "ws://localhost:5000",
         ws: true,
+        changeOrigin: true,
+        secure: false,
       },
     },
+    cors: true
   },
 }); 
