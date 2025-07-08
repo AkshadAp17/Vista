@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Bike, Plus, User, Settings, LogOut, Menu } from "lucide-react";
+import { Bike, Plus, User, Settings, LogOut, Menu, Bell } from "lucide-react";
 import SettingsForm from "@/components/settings-form";
 import { Logo } from "@/components/ui/logo";
 
@@ -50,6 +50,21 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
+                {/* Notification Bell */}
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors"
+                  >
+                    <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                    {/* Notification Badge */}
+                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-[10px] text-white font-bold">3</span>
+                    </span>
+                  </Button>
+                </div>
+                
                 {user && (user as any)?.isAdmin && (
                   <Button 
                     variant="outline"

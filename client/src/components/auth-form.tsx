@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Bike, Eye, EyeOff } from "lucide-react";
+import { Bike, Eye, EyeOff, User } from "lucide-react";
 import { useLocation } from "wouter";
 import { Logo } from "@/components/ui/logo";
 import FloatingBusinessCard from "@/components/floating-business-card";
@@ -148,9 +148,19 @@ export default function AuthForm() {
   // Visual side component
   const VisualSide = ({ title, subtitle, features }: { title: string; subtitle: string; features: string[] }) => (
     <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 relative overflow-hidden">
-      {/* Floating Business Card */}
+      {/* Business Card Button */}
       <div className="absolute top-6 left-6 z-20">
-        <FloatingBusinessCard />
+        <Button
+          className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 w-14 h-14 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+          title="Meet the Owner - Shubham Pujari"
+          onClick={() => {
+            // Open business card modal or navigate to contact
+            console.log('Business card clicked');
+          }}
+        >
+          <User className="h-6 w-6 group-hover:scale-110 transition-transform" />
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+        </Button>
       </div>
       {/* Dynamic background elements */}
       <div className="absolute inset-0">
