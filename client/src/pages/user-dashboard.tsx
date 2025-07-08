@@ -336,9 +336,7 @@ export default function UserDashboard() {
       <ChatWidget />
       
       {/* Business Card positioned opposite to chat button */}
-      <div className="fixed bottom-4 left-4 z-50">
-        <FloatingBusinessCard />
-      </div>
+      <FloatingBusinessCard className="fixed bottom-4 left-4 z-50" />
     </div>
   );
 }

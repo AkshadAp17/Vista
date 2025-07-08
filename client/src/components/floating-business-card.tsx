@@ -12,12 +12,12 @@ export default function FloatingBusinessCard({ className = '' }: FloatingBusines
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={`fixed bottom-20 left-4 z-40 ${className}`}>
+    <div className={`${className}`}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <div className="relative">
             <Button
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-16 h-16 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center group relative overflow-hidden"
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-14 h-14 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center group relative overflow-hidden"
               title="Meet the Owner - Shubham Pujari"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 animate-pulse"></div>

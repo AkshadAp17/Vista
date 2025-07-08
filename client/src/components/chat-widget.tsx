@@ -77,6 +77,7 @@ export default function ChatWidget() {
   const [selectedChat, setSelectedChat] = useState<ChatRoom | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch chat rooms
@@ -377,7 +378,7 @@ export default function ChatWidget() {
         >
           <MessageCircle className="h-6 w-6" />
           {chatRooms.length > 0 && (
-            <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-6 w-6 rounded-full flex items-center justify-center p-0">
+            <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-6 w-6 rounded-full flex items-center justify-center p-0 animate-pulse">
               {chatRooms.length}
             </Badge>
           )}
