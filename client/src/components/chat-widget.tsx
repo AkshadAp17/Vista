@@ -337,11 +337,21 @@ export default function ChatWidget() {
     }
   };
 
-  const formatTime = (dateString: string) => {
-    if (!dateString) return "Invalid Date";
+  const formatTime = (dateString: string | Date | number) => {
+    if (!dateString) return "--:--";
     
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Invalid Date";
+    let date: Date;
+    if (typeof dateString === 'string') {
+      date = new Date(dateString);
+    } else if (typeof dateString === 'number') {
+      date = new Date(dateString);
+    } else if (dateString instanceof Date) {
+      date = dateString;
+    } else {
+      return "--:--";
+    }
+    
+    if (isNaN(date.getTime())) return "--:--";
     
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
@@ -525,7 +535,10 @@ export default function ChatWidget() {
                                   isOwnMessage ? "text-white/75" : "text-gray-500"
                                 }`}
                               >
-                                {formatTime(message.createdAt)}
+                                {(() => {
+                                  console.log('Message createdAt:', message.createdAt, typeof message.createdAt);
+                                  return formatTime(message.createdAt);
+                                })()}
                               </p>
                             </div>
                           </div>
