@@ -240,6 +240,8 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 08, 2025. Updated login page business card icon with custom orange icon as requested
 - July 08, 2025. Enhanced business card component with modal functionality, clickable icon, and proper close button with X icon
 - July 08, 2025. Added live status indicator and improved spacing in business card modal for better user experience
+- July 08, 2025. Updated login page business card icon with new orange icon asset
+- July 08, 2025. Added favicon to website browser tab using the same orange icon for brand consistency
 
 ## Admin Credentials
 

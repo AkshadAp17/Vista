@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Bike, Eye, EyeOff, User } from "lucide-react";
-import orangeIcon from "@assets/image_1752002108258.png";
+import orangeIcon from "@assets/image_1752002668870.png";
 import BusinessCard from "@/components/business-card";
 import { useLocation } from "wouter";
 import { Logo } from "@/components/ui/logo";
