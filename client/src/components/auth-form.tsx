@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Bike, Eye, EyeOff, User } from "lucide-react";
 import orangeIcon from "@assets/image_1752002108258.png";
+import BusinessCard from "@/components/business-card";
 import { useLocation } from "wouter";
 import { Logo } from "@/components/ui/logo";
 
@@ -38,6 +39,7 @@ export default function AuthForm() {
   const [verificationCode, setVerificationCode] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showBusinessCard, setShowBusinessCard] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -154,10 +156,7 @@ export default function AuthForm() {
         <Button
           className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 w-14 h-14 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
           title="Meet the Owner - Shubham Pujari"
-          onClick={() => {
-            // Open business card modal or navigate to contact
-            console.log('Business card clicked');
-          }}
+          onClick={() => setShowBusinessCard(true)}
         >
           <img src={orangeIcon} alt="Profile" className="h-6 w-6 group-hover:scale-110 transition-transform" />
           <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
@@ -536,6 +535,14 @@ export default function AuthForm() {
         
       </div>
       
+      {/* Business Card Modal */}
+      {showBusinessCard && (
+        <BusinessCard 
+          variant="full" 
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" 
+          onClose={() => setShowBusinessCard(false)}
+        />
+      )}
 
     </div>
   );
