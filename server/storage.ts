@@ -363,7 +363,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async addMessage(message: InsertMessage): Promise<any> {
-    const newMessage = await Message.create(message);
+    const newMessage = await Message.create({
+      ...message,
+      createdAt: new Date(), // Ensure createdAt is set properly
+    });
     
     // Update the chat room's updatedAt timestamp
     await ChatRoom.findByIdAndUpdate(
@@ -371,7 +374,13 @@ export class DatabaseStorage implements IStorage {
       { updatedAt: new Date() }
     );
     
-    return newMessage.toObject();
+    const messageObj = newMessage.toObject();
+    // Ensure the ID field exists and is properly formatted
+    return {
+      ...messageObj,
+      id: messageObj._id.toString(),
+      createdAt: messageObj.createdAt || new Date()
+    };
   }
 
   async getMessages(chatRoomId: string): Promise<any[]> {
@@ -382,8 +391,11 @@ export class DatabaseStorage implements IStorage {
     const messagesWithSenders = await Promise.all(
       messages.map(async (message) => {
         const sender = await User.findOne({ id: message.senderId });
+        const messageObj = message.toObject();
         return {
-          ...message.toObject(),
+          ...messageObj,
+          id: messageObj._id.toString(),
+          createdAt: messageObj.createdAt || new Date(),
           sender: sender ? sender.toObject() : null
         };
       })

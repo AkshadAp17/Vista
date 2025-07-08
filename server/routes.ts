@@ -494,9 +494,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const message = await storage.addMessage(messageData);
+      const sender = await storage.getUser(userId);
       const messageWithSender = {
         ...message,
-        sender: await storage.getUser(userId),
+        id: message._id || message.id,
+        createdAt: message.createdAt || new Date().toISOString(),
+        sender: sender || null,
       };
 
       // Broadcast message to WebSocket clients
@@ -745,9 +748,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           
           const newMessage = await storage.addMessage(messageData);
+          const sender = await storage.getUser(message.senderId);
           const messageWithSender = {
             ...newMessage,
-            sender: await storage.getUser(message.senderId),
+            id: newMessage._id || newMessage.id,
+            createdAt: newMessage.createdAt || new Date().toISOString(),
+            sender: sender || null,
           };
           
           // Get chat room details to notify both buyer and seller
