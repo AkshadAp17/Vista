@@ -54,6 +54,7 @@ import {
 import VehicleForm from "@/components/vehicle-form";
 import SettingsForm from "@/components/settings-form";
 import ChatWidget from "@/components/chat-widget";
+import FloatingBusinessCard from "@/components/floating-business-card";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminDashboard() {
@@ -621,6 +622,11 @@ export default function AdminDashboard() {
       
       {/* Floating Chat Widget */}
       <ChatWidget />
+      
+      {/* Business Card positioned opposite to chat button */}
+      <div className="fixed bottom-4 left-4 z-50">
+        <FloatingBusinessCard />
+      </div>
     </div>
   );
 }

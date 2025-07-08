@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Bike, Eye, EyeOff, User } from "lucide-react";
 import { useLocation } from "wouter";
 import { Logo } from "@/components/ui/logo";
-import FloatingBusinessCard from "@/components/floating-business-card";
+
 
 interface LoginData {
   email: string;
@@ -535,8 +535,7 @@ export default function AuthForm() {
         
       </div>
       
-      {/* Floating Business Card */}
-      <FloatingBusinessCard />
+
     </div>
   );
 }

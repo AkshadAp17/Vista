@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageCircle, Heart, Car, Settings, Home } from "lucide-react";
 import VehicleCard from "@/components/vehicle-card";
 import ChatWidget from "@/components/chat-widget";
+import FloatingBusinessCard from "@/components/floating-business-card";
 import SettingsForm from "@/components/settings-form";
 
 export default function UserDashboard() {
@@ -333,6 +334,11 @@ export default function UserDashboard() {
       </div>
 
       <ChatWidget />
+      
+      {/* Business Card positioned opposite to chat button */}
+      <div className="fixed bottom-4 left-4 z-50">
+        <FloatingBusinessCard />
+      </div>
     </div>
   );
 }

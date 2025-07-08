@@ -234,6 +234,8 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 08, 2025. Updated login page design to simple centered layout per user preference - removed split-screen visual design
 - July 08, 2025. Moved business card to left side (visual panel) of login page as requested - now displays as prominent white circular button
 - July 08, 2025. Added notification bell icon to logged-in header with red badge showing message count
+- July 08, 2025. Fixed business card positioning - removed duplicates from login page and positioned single business card opposite to chat button
+- July 08, 2025. Added business card to all main pages (home, admin dashboard, user dashboard) positioned at bottom-left corner
 
 ## Admin Credentials
 

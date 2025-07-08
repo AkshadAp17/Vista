@@ -4,6 +4,7 @@ import Header from "@/components/header";
 import VehicleCard from "@/components/vehicle-card";
 import SearchBar from "@/components/search-bar";
 import ChatWidget from "@/components/chat-widget";
+import FloatingBusinessCard from "@/components/floating-business-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -123,6 +124,10 @@ export default function Home() {
 
       <ChatWidget />
       
+      {/* Business Card positioned opposite to chat button */}
+      <div className="fixed bottom-4 left-4 z-50">
+        <FloatingBusinessCard />
+      </div>
 
     </div>
   );
