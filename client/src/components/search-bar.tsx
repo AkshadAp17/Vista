@@ -97,9 +97,20 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            setVehicleType(vehicleType === "motorcycle" ? "" : "motorcycle")
-          }
+          onClick={() => {
+            const newType = vehicleType === "motorcycle" ? "" : "motorcycle";
+            setVehicleType(newType);
+            // Trigger search automatically when vehicle type changes
+            const filters: any = {};
+            if (search) filters.search = search;
+            if (location) filters.location = location;
+            if (priceRange) {
+              const [min, max] = priceRange.split("-").map(Number);
+              filters.priceRange = `${min},${max}`;
+            }
+            if (newType) filters.vehicleType = newType;
+            onFiltersChange(filters);
+          }}
           className={
             vehicleType === "motorcycle" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
           }
@@ -109,9 +120,20 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            setVehicleType(vehicleType === "scooter" ? "" : "scooter")
-          }
+          onClick={() => {
+            const newType = vehicleType === "scooter" ? "" : "scooter";
+            setVehicleType(newType);
+            // Trigger search automatically when vehicle type changes
+            const filters: any = {};
+            if (search) filters.search = search;
+            if (location) filters.location = location;
+            if (priceRange) {
+              const [min, max] = priceRange.split("-").map(Number);
+              filters.priceRange = `${min},${max}`;
+            }
+            if (newType) filters.vehicleType = newType;
+            onFiltersChange(filters);
+          }}
           className={
             vehicleType === "scooter" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
           }
@@ -121,9 +143,20 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            setVehicleType(vehicleType === "electric" ? "" : "electric")
-          }
+          onClick={() => {
+            const newType = vehicleType === "electric" ? "" : "electric";
+            setVehicleType(newType);
+            // Trigger search automatically when vehicle type changes
+            const filters: any = {};
+            if (search) filters.search = search;
+            if (location) filters.location = location;
+            if (priceRange) {
+              const [min, max] = priceRange.split("-").map(Number);
+              filters.priceRange = `${min},${max}`;
+            }
+            if (newType) filters.vehicleType = newType;
+            onFiltersChange(filters);
+          }}
           className={
             vehicleType === "electric" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
           }

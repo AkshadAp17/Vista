@@ -220,7 +220,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (filters?.vehicleType) {
-      query.vehicleType = filters.vehicleType;
+      query.vehicleType = { $regex: new RegExp(`^${filters.vehicleType}`, 'i') };
     }
 
     if (filters?.sellerId) {

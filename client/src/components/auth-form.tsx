@@ -146,13 +146,13 @@ export default function AuthForm() {
 
   // Visual side component
   const VisualSide = ({ title, subtitle, features }: { title: string; subtitle: string; features: string[] }) => (
-    <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-hema-orange to-orange-600 relative overflow-hidden">
+    <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 relative overflow-hidden">
       {/* Dynamic background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full bg-black/20"></div>
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-orange-500/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-orange-400/40 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-400/40 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-300/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
       
       {/* Animated motorcycle path */}
@@ -205,7 +205,7 @@ export default function AuthForm() {
             <div className="absolute inset-0 bg-white/5 rounded-full animate-ping opacity-50 duration-1000 group-hover:opacity-100"></div>
             <Logo size="lg" variant="white" animated={true} showTagline={false} />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent animate-in slide-in-from-bottom-4 duration-700">{title}</h1>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-orange-200 to-white bg-clip-text text-transparent animate-in slide-in-from-bottom-4 duration-700">{title}</h1>
           <p className="text-xl text-white/90 animate-in slide-in-from-bottom-5 duration-700 delay-150">{subtitle}</p>
           <div className="space-y-4 text-white/80 animate-in slide-in-from-bottom-6 duration-700 delay-300">
             {features.map((feature, index) => (
@@ -412,7 +412,7 @@ export default function AuthForm() {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-hema-orange hover:bg-hema-orange/90"
+                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
                     disabled={loginMutation.isPending}
                   >
                     {loginMutation.isPending ? "Logging in..." : "Login"}
@@ -480,7 +480,7 @@ export default function AuthForm() {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-hema-orange hover:bg-hema-orange/90"
+                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
                     disabled={signupMutation.isPending}
                   >
                     {signupMutation.isPending ? "Creating account..." : "Sign Up"}
