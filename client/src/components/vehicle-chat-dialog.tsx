@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Send, Car, Phone, User } from "lucide-react";
+import { Send, Bike, Phone, User } from "lucide-react";
 
 interface Message {
   _id: string;
@@ -329,7 +329,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       <DialogContent className="max-w-2xl h-[600px] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Car className="h-5 w-5 text-orange-500" />
+            <Bike className="h-5 w-5 text-orange-500" />
             Chat about {vehicle.brand} {vehicle.model}
           </DialogTitle>
         </DialogHeader>

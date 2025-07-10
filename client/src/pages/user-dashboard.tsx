@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle, Heart, Car, Settings, Home } from "lucide-react";
+import { MessageCircle, Heart, Bike, Settings, Home } from "lucide-react";
 import VehicleCard from "@/components/vehicle-card";
 import ChatWidget from "@/components/chat-widget";
 import FloatingBusinessCard from "@/components/floating-business-card";
@@ -130,7 +130,7 @@ export default function UserDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="bg-green-100 text-green-600 w-12 h-12 rounded-lg flex items-center justify-center">
-                  <Car className="h-6 w-6" />
+                  <Bike className="h-6 w-6" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm text-gray-600">Vehicles Viewed</p>
@@ -176,7 +176,7 @@ export default function UserDashboard() {
                     {chatRooms.map((chat: any) => (
                       <div key={chat.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50">
                         <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <Car className="h-8 w-8 text-gray-500" />
+                          <Bike className="h-8 w-8 text-gray-500" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">

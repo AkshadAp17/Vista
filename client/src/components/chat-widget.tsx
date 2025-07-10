@@ -18,7 +18,7 @@ import {
   Send, 
   X, 
   Minimize2,
-  Car,
+  Bike,
   Phone,
   User
 } from "lucide-react";
@@ -546,7 +546,7 @@ export default function ChatWidget() {
                   <div className="p-4 border-b bg-gradient-to-r from-orange-50 to-red-50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <Car className="h-5 w-5 text-orange-500" />
+                        <Bike className="h-5 w-5 text-orange-500" />
                         <div>
                           <h3 
                             className="font-medium text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"

@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Car, Eye, EyeOff, User } from "lucide-react";
+import { Bike, Eye, EyeOff, User } from "lucide-react";
 import orangeIcon from "@assets/image_1752002668870.png";
 import BusinessCard from "@/components/business-card";
 import { useLocation } from "wouter";
@@ -219,7 +219,7 @@ export default function AuthForm() {
           <div className="bg-white/15 backdrop-blur-sm p-8 rounded-full w-32 h-32 flex items-center justify-center mx-auto relative group shadow-2xl">
             <div className="absolute inset-0 bg-white/10 rounded-full animate-ping opacity-50 duration-2000 group-hover:opacity-100"></div>
             <div className="relative z-10 flex items-center justify-center">
-              <Car className="h-12 w-12 text-white" />
+              <Bike className="h-12 w-12 text-white" />
             </div>
           </div>
           <div className="space-y-4">
@@ -292,7 +292,7 @@ export default function AuthForm() {
           features={[
             "Check your email for the verification code",
             "Enter the 6-digit code to activate your account",
-            "Start buying and selling immediately"
+            "Start buying and selling bikes immediately"
           ]}
         />
 
@@ -302,7 +302,7 @@ export default function AuthForm() {
             <CardHeader className="text-center space-y-4 pb-6">
               <div className="flex justify-center mb-4">
                 <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
-                  <Car className="h-10 w-10 text-white" />
+                  <Bike className="h-10 w-10 text-white" />
                 </div>
               </div>
               <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Email Verification</CardTitle>
@@ -369,12 +369,12 @@ export default function AuthForm() {
     <div className="min-h-screen flex">
       <VisualSide 
         title="Hema Motors"
-        subtitle="Your gateway to premium vehicles"
+        subtitle="Your gateway to premium two-wheelers"
         features={[
-          "Browse thousands of premium vehicles",
-          "Connect directly with sellers",
+          "Browse thousands of premium motorcycles & bikes",
+          "Connect directly with bike sellers",
           "Secure and transparent transactions",
-          "Verified vehicle listings",
+          "Verified two-wheeler listings",
           "Real-time chat with sellers"
         ]}
       />
@@ -385,7 +385,7 @@ export default function AuthForm() {
           <CardHeader className="text-center space-y-4 pb-6">
             <div className="flex justify-center mb-4">
               <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
-                <Car className="h-10 w-10 text-white" />
+                <Bike className="h-10 w-10 text-white" />
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Welcome to Hema Motors</CardTitle>
@@ -410,7 +410,7 @@ export default function AuthForm() {
                       type="email"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                      placeholder="your.email@example.com"
+                      placeholder="rider@bikemail.com"
                       required
                     />
                   </div>
@@ -427,7 +427,7 @@ export default function AuthForm() {
                         type={showLoginPassword ? "text" : "password"}
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                        placeholder="••••••••"
+                        placeholder="Enter your password"
                         required
                       />
                       <Button
@@ -465,7 +465,7 @@ export default function AuthForm() {
                         id="signup-firstname"
                         value={signupData.firstName}
                         onChange={(e) => setSignupData({ ...signupData, firstName: e.target.value })}
-                        placeholder="John"
+                        placeholder="Bike"
                         required
                       />
                     </div>
@@ -475,7 +475,7 @@ export default function AuthForm() {
                         id="signup-lastname"
                         value={signupData.lastName}
                         onChange={(e) => setSignupData({ ...signupData, lastName: e.target.value })}
-                        placeholder="Doe"
+                        placeholder="Rider"
                         required
                       />
                     </div>
@@ -487,7 +487,7 @@ export default function AuthForm() {
                       type="email"
                       value={signupData.email}
                       onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                      placeholder="your.email@example.com"
+                      placeholder="bikerider@mail.com"
                       required
                     />
                   </div>
@@ -499,7 +499,7 @@ export default function AuthForm() {
                         type={showSignupPassword ? "text" : "password"}
                         value={signupData.password}
                         onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                        placeholder="••••••••"
+                        placeholder="Create strong password"
                         required
                       />
                       <Button
