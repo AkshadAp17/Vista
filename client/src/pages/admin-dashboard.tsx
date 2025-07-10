@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import logoIcon from "@assets/image_1752002668870.png";
+
 import {
   Table,
   TableBody,
@@ -43,7 +43,7 @@ import {
 import { 
   BarChart3, 
   Users, 
-  Car, 
+  Bike, 
   MessageCircle, 
   Plus,
   Edit,
@@ -158,7 +158,9 @@ export default function AdminDashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img src={logoIcon} alt="Hema Motor" className="h-10 w-10" />
+              <div className="bg-orange-500 text-white rounded-full p-2">
+                <Bike className="h-6 w-6" />
+              </div>
               <div>
                 <h1 className="text-2xl font-bold text-hema-secondary">Admin Dashboard</h1>
                 <p className="text-gray-600">Welcome back, {user?.firstName || 'Admin'}</p>
@@ -190,7 +192,7 @@ export default function AdminDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-lg flex items-center justify-center">
-                  <Car className="h-6 w-6" />
+                  <Bike className="h-6 w-6" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm text-gray-600">Total Vehicles</p>
@@ -384,7 +386,7 @@ export default function AdminDashboard() {
                             <TableCell>
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
-                                  <Car className="h-5 w-5 text-gray-500" />
+                                  <Bike className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <div>
                                   <div className="font-medium">{vehicle.brand} {vehicle.model}</div>
@@ -546,7 +548,7 @@ export default function AdminDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <Car className="h-5 w-5 mr-2" />
+                    <Bike className="h-5 w-5 mr-2" />
                     Vehicle Analytics
                   </CardTitle>
                 </CardHeader>

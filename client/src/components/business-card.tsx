@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, MapPin, Mail, User, Building2, Crown, X } from "lucide-react";
+import { Phone, MapPin, Mail, User, Bike, Crown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface BusinessCardProps {
@@ -45,7 +45,7 @@ export default function BusinessCard({ variant = 'full', className = '', onClose
             {/* Company Logo/Icon with Premium Look */}
             <div className={`relative bg-gradient-to-r from-orange-500 to-red-500 rounded-full ${compactMode ? 'w-16 h-16' : 'w-20 h-20'} flex items-center justify-center mx-auto mb-6 shadow-lg`}>
               <div className="absolute inset-0 bg-white/20 rounded-full animate-ping opacity-75"></div>
-              <Building2 className={`${compactMode ? 'h-8 w-8' : 'h-10 w-10'} text-white relative z-10`} />
+              <Bike className={`${compactMode ? 'h-8 w-8' : 'h-10 w-10'} text-white relative z-10`} />
               <Crown className="absolute -top-1 -right-1 h-4 w-4 text-yellow-400" />
             </div>
 
@@ -132,7 +132,7 @@ export default function BusinessCard({ variant = 'full', className = '', onClose
         {/* Company Logo/Icon with Premium Look */}
         <div className={`relative bg-gradient-to-r from-orange-500 to-red-500 rounded-full ${compactMode ? 'w-16 h-16' : 'w-20 h-20'} flex items-center justify-center mx-auto mb-6 shadow-lg`}>
           <div className="absolute inset-0 bg-white/20 rounded-full animate-ping opacity-75"></div>
-          <Building2 className={`${compactMode ? 'h-8 w-8' : 'h-10 w-10'} text-white relative z-10`} />
+          <Bike className={`${compactMode ? 'h-8 w-8' : 'h-10 w-10'} text-white relative z-10`} />
           <Crown className="absolute -top-1 -right-1 h-4 w-4 text-yellow-400" />
         </div>
 

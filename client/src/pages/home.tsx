@@ -8,8 +8,9 @@ import FloatingBusinessCard from "@/components/floating-business-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Bike } from "lucide-react";
 import { useState } from "react";
-import logoIcon from "@assets/image_1752002668870.png";
+
 
 export default function Home() {
   const { user } = useAuth();
@@ -32,7 +33,9 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-6">
-              <img src={logoIcon} alt="Hema Motor" className="h-16 w-16 mr-4" />
+              <div className="bg-orange-500 text-white rounded-full p-4 mr-4">
+                <Bike className="h-8 w-8" />
+              </div>
               <h1 className="text-3xl md:text-4xl font-bold text-white">Hema Motor</h1>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Find Your Perfect Ride</h2>

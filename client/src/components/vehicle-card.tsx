@@ -3,13 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Eye, MessageCircle, MapPin, Calendar, Gauge, Camera, Share2, Check, Clock, X } from "lucide-react";
+import { Heart, Eye, MessageCircle, MapPin, Calendar, Gauge, Camera, Share2, Check, Clock, X, Bike } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import VehicleChatDialog from "./vehicle-chat-dialog";
-import vehicleIcon from "@assets/image_1752002668870.png";
+
 
 interface FavoriteStatus {
   isFavorite: boolean;
@@ -245,7 +245,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           <h4 className="font-semibold text-lg text-hema-secondary">
             {vehicle.brand} {vehicle.model}
           </h4>
-          <img src={vehicleIcon} alt="Hema Motor" className="h-6 w-6 opacity-80" />
+          <Bike className="h-6 w-6 text-orange-500 opacity-80" />
         </div>
         
         <div className="flex items-center text-gray-600 text-sm mb-3 space-x-4">
