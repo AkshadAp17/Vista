@@ -111,13 +111,47 @@ NODE_ENV=production
 Your project structure should look like:
 ```
 hema-motor/
-├── server/           # Backend API
-├── client/           # React frontend
-├── shared/           # Shared types/schemas
-├── dist/            # Build output
-├── vercel.json      # Vercel configuration
-└── package.json     # Dependencies
+├── api/             # Vercel API routes (serverless functions)
+│   ├── index.ts     # Main API handler
+│   └── [...slug].ts # Catch-all API route
+├── server/          # Backend code (shared with API)
+├── client/          # React frontend
+├── shared/          # Shared types/schemas
+├── dist/           # Build output
+├── vercel.json     # Vercel configuration
+└── package.json    # Dependencies
 ```
+
+## Backend Architecture for Vercel
+
+Your backend is now configured as serverless functions for Vercel:
+
+1. **API Routes**: All backend functionality is accessible via `/api/*` endpoints
+2. **Serverless Functions**: Each API request spawns a new serverless function
+3. **Database Connection**: MongoDB connection is established per function call
+4. **Session Management**: Uses in-memory session storage (consider Redis for production)
+5. **WebSocket Support**: May need additional configuration for real-time features
+
+## Important Notes for Backend Deployment
+
+### WebSocket Limitations
+Vercel's serverless functions don't support WebSocket connections. For your chat system, you have two options:
+
+1. **HTTP-only Chat (Recommended for Vercel):**
+   - Use polling or Server-Sent Events instead of WebSockets
+   - Messages are sent via HTTP POST requests
+   - Frontend polls for new messages every few seconds
+
+2. **Separate WebSocket Service:**
+   - Deploy WebSocket server on a different platform (Railway, Render, etc.)
+   - Keep HTTP API on Vercel for all other functionality
+   - Update frontend to connect to separate WebSocket endpoint
+
+### Session Storage
+For production on Vercel, consider:
+- **Redis**: Use services like Upstash Redis for session storage
+- **JWT Tokens**: Replace sessions with JWT tokens for stateless authentication
+- **Database Sessions**: Store sessions in MongoDB (current setup uses memory)
 
 ## Performance Optimization
 
