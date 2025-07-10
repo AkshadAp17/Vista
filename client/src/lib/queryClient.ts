@@ -12,20 +12,25 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Ensure URL is absolute for API requests
-  const apiUrl = url.startsWith('http') ? url : `http://localhost:5000${url}`;
+  // Use relative URLs for same-origin requests in browser
+  const apiUrl = url.startsWith('/') ? url : `/${url}`;
   
   console.log(`Making API request to: ${apiUrl}`);
   
-  const res = await fetch(apiUrl, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(apiUrl, {
+      method,
+      headers: data ? { "Content-Type": "application/json" } : {},
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
 
-  await throwIfResNotOk(res);
-  return res;
+    await throwIfResNotOk(res);
+    return res;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -34,22 +39,31 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const queryUrl = (queryKey[0] as string).startsWith('http') 
+    // Use relative URLs for same-origin requests
+    const queryUrl = (queryKey[0] as string).startsWith('/') 
       ? (queryKey[0] as string) 
-      : `http://localhost:5000${queryKey[0]}`;
+      : `/${queryKey[0]}`;
     
     console.log(`Making query request to: ${queryUrl}`);
     
-    const res = await fetch(queryUrl, {
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(queryUrl, {
+        credentials: "include",
+      });
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+        return null;
+      }
+
+      await throwIfResNotOk(res);
+      return await res.json();
+    } catch (error) {
+      console.error('Query request failed:', error);
+      if (unauthorizedBehavior === "returnNull") {
+        return null;
+      }
+      throw error;
     }
-
-    await throwIfResNotOk(res);
-    return await res.json();
   };
 
 export const queryClient = new QueryClient({
