@@ -368,7 +368,7 @@ export default function AuthForm() {
   return (
     <div className="min-h-screen flex">
       <VisualSide 
-        title="Vista Motors"
+        title="Hema Motors"
         subtitle="Your gateway to premium vehicles"
         features={[
           "Browse thousands of premium vehicles",
@@ -388,7 +388,7 @@ export default function AuthForm() {
                 <Car className="h-10 w-10 text-white" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Welcome to Vista Motors</CardTitle>
+            <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Welcome to Hema Motors</CardTitle>
             <CardDescription className="text-base text-gray-600 dark:text-gray-300">
               Sign in to your account or create a new one
             </CardDescription>

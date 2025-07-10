@@ -92,6 +92,8 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatRoomIdRef = useRef<string | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
+  const processedMessageIds = useRef<Set<string>>(new Set());
 
   // Get or create chat room
   const createChatRoomMutation = useMutation({
@@ -106,6 +108,11 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       console.log("Messages in chat room:", data.messages?.length || 0);
       setChatRoom(data);
       chatRoomIdRef.current = data.id;
+      
+      // Scroll to bottom after loading messages
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     },
     onError: (error) => {
       console.error("Error creating chat room:", error);
@@ -140,6 +147,9 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
           }
         };
         
+        // Add message to processed set to prevent duplicates
+        processedMessageIds.current.add(safeMessage._id);
+        
         setChatRoom(prev => prev ? {
           ...prev,
           messages: [...prev.messages, safeMessage]
@@ -150,7 +160,10 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       // Scroll to bottom immediately after sending a message
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+      }, 50);
+      
+      // Invalidate chat rooms query to update the notification badge
+      queryClient.invalidateQueries({ queryKey: ['chat-rooms'] });
     },
     onError: (error) => {
       console.error("Error sending message:", error);
@@ -184,7 +197,6 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     if (chatRoom) {
       console.log("Chat room state updated:", chatRoom);
       console.log("Number of messages:", chatRoom.messages?.length || 0);
-      console.log("Messages:", chatRoom.messages);
       
       // Update the ref with the current chat room ID
       chatRoomIdRef.current = chatRoom.id;
@@ -198,6 +210,11 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
   useEffect(() => {
     if (!isAuthenticated || !user) return;
 
+    // Close any existing socket
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.close();
+    }
+
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = window.location.host || 'localhost:5000';
     const wsUrl = `${protocol}//${host}/ws`;
@@ -205,6 +222,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     console.log("Attempting WebSocket connection to:", wsUrl);
     
     const ws = new WebSocket(wsUrl);
+    socketRef.current = ws;
 
     ws.onopen = () => {
       console.log("WebSocket connected");
@@ -220,6 +238,16 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       
       if (data.type === "new_message" && chatRoomIdRef.current && data.chatRoomId === chatRoomIdRef.current) {
         console.log("Received new message via WebSocket:", data.message);
+        
+        // Check if we've already processed this message
+        if (processedMessageIds.current.has(data.message._id)) {
+          console.log("Skipping duplicate message:", data.message._id);
+          return;
+        }
+        
+        // Add to processed set
+        processedMessageIds.current.add(data.message._id);
+        
         // Ensure proper message structure with sender data
         const safeMessage = {
           ...data.message,
@@ -234,7 +262,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
         setChatRoom(prev => {
           if (!prev) return null;
           
-          // Check if message already exists to prevent duplicates
+          // Double check if message already exists to prevent duplicates
           const messageExists = prev.messages.some(m => m._id === safeMessage._id);
           if (messageExists) {
             return prev;
@@ -248,10 +276,13 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
           // Scroll to bottom after adding a new message
           setTimeout(() => {
             messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-          }, 100);
+          }, 50);
           
           return updatedRoom;
         });
+        
+        // Invalidate chat rooms query to update the notification badge
+        queryClient.invalidateQueries({ queryKey: ['chat-rooms'] });
       }
     };
 

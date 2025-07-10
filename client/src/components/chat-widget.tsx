@@ -79,6 +79,9 @@ export default function ChatWidget() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<WebSocket | null>(null);
+  const processedMessageIds = useRef<Set<string>>(new Set());
+  const viewedChatRooms = useRef<Set<string>>(new Set());
 
   // Fetch chat rooms
   const { data: chatRooms = [], isLoading: chatsLoading } = useQuery<ChatRoom[]>({
@@ -94,17 +97,55 @@ export default function ChatWidget() {
         const targetChat = chatRooms.find((chat: ChatRoom) => chat.id === selectedChatId);
         if (targetChat) {
           setSelectedChat(targetChat);
+          viewedChatRooms.current.add(targetChat.id);
           localStorage.removeItem('selectedChatId'); // Clear after use
         }
       }
     }
   }, [isOpen, chatRooms]);
 
+  // Update unread count
+  useEffect(() => {
+    if (chatRooms && chatRooms.length > 0) {
+      // Count chats with unread messages
+      const unreadChats = chatRooms.filter(chat => {
+        // Skip if this chat is currently selected and open
+        if (selectedChat && selectedChat.id === chat.id && isOpen) {
+          return false;
+        }
+        
+        // Skip if we've already viewed this chat in this session
+        if (viewedChatRooms.current.has(chat.id)) {
+          return false;
+        }
+        
+        // Check if there are any messages and if the last message is from the other user
+        return chat.messages && 
+               chat.messages.length > 0 && 
+               chat.messages[chat.messages.length - 1].senderId !== (user as any)?.id;
+      });
+      
+      setUnreadCount(unreadChats.length);
+    } else {
+      setUnreadCount(0);
+    }
+  }, [chatRooms, selectedChat, isOpen, user]);
+
+  // Mark current chat as viewed when selected
+  useEffect(() => {
+    if (selectedChat && isOpen) {
+      viewedChatRooms.current.add(selectedChat.id);
+    }
+  }, [selectedChat, isOpen]);
+
   // WebSocket connection
   useEffect(() => {
     if (!isAuthenticated || !user || !(user as any)?.id) return;
 
-    let ws: WebSocket;
+    // Close any existing socket
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.close();
+    }
     
     const connectWebSocket = () => {
       try {
@@ -113,7 +154,8 @@ export default function ChatWidget() {
         const wsUrl = `${protocol}//${host}/ws`;
         console.log("Connecting to WebSocket:", wsUrl);
         
-        ws = new WebSocket(wsUrl);
+        const ws = new WebSocket(wsUrl);
+        socketRef.current = ws;
 
         ws.onopen = () => {
           console.log("WebSocket connected");
@@ -130,6 +172,15 @@ export default function ChatWidget() {
           const data = JSON.parse(event.data);
           
           if (data.type === "new_message") {
+            // Check if we've already processed this message
+            if (processedMessageIds.current.has(data.message._id)) {
+              console.log("Skipping duplicate message:", data.message._id);
+              return;
+            }
+            
+            // Add to processed set
+            processedMessageIds.current.add(data.message._id);
+            
             // Ensure message has proper sender structure
             const message = {
               ...data.message,
@@ -160,15 +211,22 @@ export default function ChatWidget() {
                 ...prev,
                 messages: [...(prev.messages || []), message],
               } : null);
+              
+              // Mark this chat as viewed since we're currently looking at it
+              viewedChatRooms.current.add(data.chatRoomId);
+            } else {
+              // If the message is not from the current user and we're not viewing this chat,
+              // show a notification
+              if (message.senderId !== (user as any)?.id) {
+                toast({
+                  title: "New Message",
+                  description: `${message.sender.firstName || "User"}: ${message.content}`,
+                });
+              }
             }
-
-            // Show notification if chat is not currently open
-            if (!isOpen || !selectedChat || selectedChat.id !== data.chatRoomId) {
-              toast({
-                title: "New Message",
-                description: `${message.sender.firstName || "User"}: ${message.content}`,
-              });
-            }
+            
+            // Always invalidate the query to refresh the chat list
+            queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
           }
         };
 
@@ -191,11 +249,11 @@ export default function ChatWidget() {
     connectWebSocket();
 
     return () => {
-      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
-        ws.close();
+      if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
+        socketRef.current.close();
       }
     };
-  }, [isAuthenticated, user, queryClient, isOpen, selectedChat, toast]);
+  }, [isAuthenticated, user, queryClient, toast]);
 
   // Listen for custom events to select specific chats
   useEffect(() => {
@@ -205,6 +263,7 @@ export default function ChatWidget() {
         const targetChat = chatRooms.find((chat: ChatRoom) => chat.id === chatRoomId);
         if (targetChat) {
           setSelectedChat(targetChat);
+          viewedChatRooms.current.add(targetChat.id);
           setIsOpen(true);
         }
       }
@@ -226,6 +285,9 @@ export default function ChatWidget() {
     onSuccess: (data, variables) => {
       // The API returns the message directly, not wrapped in data.message
       const newMessage = data as any;
+      
+      // Add to processed set to prevent duplicates
+      processedMessageIds.current.add(newMessage._id);
       
       // Ensure message has proper sender structure
       const safeMessage = {
@@ -377,16 +439,22 @@ export default function ChatWidget() {
           data-chat-widget
         >
           <MessageCircle className="h-6 w-6" />
-          {chatRooms.length > 0 && (
+          {unreadCount > 0 && (
             <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-6 w-6 rounded-full flex items-center justify-center p-0 animate-pulse">
-              {chatRooms.length}
+              {unreadCount}
             </Badge>
           )}
         </Button>
       </div>
 
       {/* Chat Dialog */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        setIsOpen(open);
+        // When closing, refresh the chat rooms to update notification status
+        if (!open) {
+          queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
+        }
+      }}>
         <DialogContent className="max-w-4xl h-[600px] p-0 overflow-hidden">
           <div className="flex h-full overflow-hidden">
             {/* Chat List Sidebar */}
@@ -412,14 +480,21 @@ export default function ChatWidget() {
                     {chatRooms.filter((chat: ChatRoom) => chat.vehicle && chat.vehicle.brand).map((chat: ChatRoom) => {
                       const otherUser = getOtherUser(chat);
                       const lastMessage = chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+                      const isUnread = lastMessage && 
+                                      lastMessage.senderId !== (user as any)?.id && 
+                                      !(selectedChat && selectedChat.id === chat.id) &&
+                                      !viewedChatRooms.current.has(chat.id);
                       
                       return (
                         <div
                           key={chat.id}
                           className={`p-3 rounded-lg cursor-pointer hover:bg-orange-50 ${
                             selectedChat?.id === chat.id ? "bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200" : ""
-                          }`}
-                          onClick={() => setSelectedChat(chat)}
+                          } ${isUnread ? "bg-orange-50" : ""}`}
+                          onClick={() => {
+                            setSelectedChat(chat);
+                            viewedChatRooms.current.add(chat.id);
+                          }}
                         >
                           <div className="flex items-center space-x-3">
                             <Avatar className="w-10 h-10">
@@ -432,8 +507,11 @@ export default function ChatWidget() {
                             </Avatar>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center space-x-2">
-                                <h4 className="font-medium text-sm truncate">
+                                <h4 className={`font-medium text-sm truncate ${isUnread ? "font-bold" : ""}`}>
                                   {otherUser.firstName} {otherUser.lastName}
+                                  {isUnread && (
+                                    <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-red-500"></span>
+                                  )}
                                 </h4>
                               </div>
                               <p 
@@ -446,7 +524,7 @@ export default function ChatWidget() {
                                 {chat.vehicle?.brand} {chat.vehicle?.model} • {chat.vehicle?.vehicleNumber || `VH${String((chat.vehicle?.id || '').slice(-3)).padStart(3, '0')}`}
                               </p>
                               {lastMessage && (
-                                <p className="text-xs text-gray-500 truncate mt-1">
+                                <p className={`text-xs ${isUnread ? "font-semibold text-gray-700" : "text-gray-500"} truncate mt-1`}>
                                   {lastMessage.content}
                                 </p>
                               )}
