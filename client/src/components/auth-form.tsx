@@ -40,6 +40,11 @@ export default function AuthForm() {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showBusinessCard, setShowBusinessCard] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [showResetForm, setShowResetForm] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -146,6 +151,62 @@ export default function AuthForm() {
 
   const handleResendVerification = () => {
     resendVerificationMutation.mutate(verificationEmail);
+  };
+
+  // Forgot password mutations
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (email: string) => apiRequest("POST", "/api/auth/forgot-password", { email }),
+    onSuccess: () => {
+      toast({
+        title: "Reset code sent",
+        description: "If an account exists, a reset code will be sent to your email",
+      });
+      setShowResetForm(true);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send reset code",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: (data: { email: string; resetCode: string; newPassword: string }) => 
+      apiRequest("POST", "/api/auth/reset-password", data),
+    onSuccess: () => {
+      toast({
+        title: "Password reset successful",
+        description: "You can now log in with your new password",
+      });
+      setShowForgotPassword(false);
+      setShowResetForm(false);
+      setForgotEmail("");
+      setResetCode("");
+      setNewPassword("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Reset failed",
+        description: error.message || "Failed to reset password",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleForgotPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    forgotPasswordMutation.mutate(forgotEmail);
+  };
+
+  const handleResetPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    resetPasswordMutation.mutate({
+      email: forgotEmail,
+      resetCode,
+      newPassword,
+    });
   };
 
   // Visual side component
@@ -357,6 +418,118 @@ export default function AuthForm() {
     );
   }
 
+  // Show forgot password form if needed
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex">
+        <VisualSide 
+          title="Password Reset"
+          subtitle="Recover your account access quickly and securely"
+          features={[
+            "Enter your email address to receive a reset code",
+            "Check your email for the 6-digit verification code",
+            "Create a new secure password for your account"
+          ]}
+        />
+
+        {/* Right Side - Forgot Password Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white dark:bg-slate-900 p-4">
+          <Card className="w-full max-w-md border-none shadow-2xl">
+            <CardHeader className="text-center space-y-4 pb-6">
+              <div className="flex justify-center mb-4">
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
+                  <Bike className="h-10 w-10 text-white" />
+                </div>
+              </div>
+              <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                {showResetForm ? "Reset Password" : "Forgot Password"}
+              </CardTitle>
+              <CardDescription className="text-base text-gray-600 dark:text-gray-300">
+                {showResetForm 
+                  ? "Enter the reset code from your email and create a new password"
+                  : "Enter your email address and we'll send you a reset code"
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!showResetForm ? (
+                // Step 1: Email input
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="forgot-email">Email Address</Label>
+                    <Input
+                      id="forgot-email"
+                      type="email"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="rider@bikemail.com"
+                      required
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-hema-orange hover:bg-hema-orange/90"
+                    disabled={forgotPasswordMutation.isPending}
+                  >
+                    {forgotPasswordMutation.isPending ? "Sending Reset Code..." : "Send Reset Code"}
+                  </Button>
+                </form>
+              ) : (
+                // Step 2: Reset code and new password
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="reset-code">Reset Code</Label>
+                    <Input
+                      id="reset-code"
+                      value={resetCode}
+                      onChange={(e) => setResetCode(e.target.value)}
+                      placeholder="Enter 6-digit code"
+                      maxLength={6}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-password">New Password</Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Create a strong password"
+                      required
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-hema-orange hover:bg-hema-orange/90"
+                    disabled={resetPasswordMutation.isPending}
+                  >
+                    {resetPasswordMutation.isPending ? "Resetting Password..." : "Reset Password"}
+                  </Button>
+                </form>
+              )}
+              
+              <div className="mt-4 text-center">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowForgotPassword(false);
+                    setShowResetForm(false);
+                    setForgotEmail("");
+                    setResetCode("");
+                    setNewPassword("");
+                  }}
+                >
+                  Back to Login
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   // Show business card if needed
   if (showBusinessCard) {
     return (
@@ -417,7 +590,12 @@ export default function AuthForm() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <Label htmlFor="login-password">Password</Label>
-                      <Button variant="link" className="text-xs p-0 h-auto" type="button">
+                      <Button 
+                        variant="link" 
+                        className="text-xs p-0 h-auto" 
+                        type="button"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
                         Forgot Password?
                       </Button>
                     </div>

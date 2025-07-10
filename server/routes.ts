@@ -181,8 +181,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/auth/user', isAuth, async (req: any, res) => {
+  app.get('/api/auth/user', async (req: any, res) => {
     try {
+      // Check if user is authenticated
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
       const user = await storage.getUser(req.session.userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -230,6 +235,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error checking admin status:", error);
       res.status(500).json({ message: "Failed to check admin status" });
+    }
+  });
+
+  // Forgot password route
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if user exists for security
+        return res.json({ message: "If an account with this email exists, a reset code will be sent." });
+      }
+
+      // Generate password reset code
+      const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const resetCodeExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+      await storage.updateUser(user.id, {
+        verificationCode: resetCode,
+        verificationCodeExpiry: resetCodeExpiry,
+      });
+
+      // Send password reset email
+      try {
+        await AuthService.sendPasswordResetEmail(email, resetCode);
+      } catch (error) {
+        console.error("Failed to send reset email:", error);
+      }
+
+      res.json({ message: "If an account with this email exists, a reset code will be sent." });
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // Reset password route
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { email, resetCode, newPassword } = req.body;
+      if (!email || !resetCode || !newPassword) {
+        return res.status(400).json({ message: "Email, reset code, and new password are required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(400).json({ message: "Invalid reset code" });
+      }
+
+      if (user.verificationCode !== resetCode) {
+        return res.status(400).json({ message: "Invalid reset code" });
+      }
+
+      if (user.verificationCodeExpiry && new Date() > user.verificationCodeExpiry) {
+        return res.status(400).json({ message: "Reset code has expired" });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      
+      // Update password and clear reset code
+      await storage.updateUser(user.id, {
+        password: hashedPassword,
+        verificationCode: undefined,
+        verificationCodeExpiry: undefined,
+      });
+
+      res.json({ message: "Password reset successfully" });
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
     }
   });
 

@@ -6,6 +6,7 @@ export function useAuth() {
     retry: false,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Console log for debugging
@@ -14,6 +15,7 @@ export function useAuth() {
   return {
     user,
     isLoading,
+    error,
     isAuthenticated: !!user,
   };
 }

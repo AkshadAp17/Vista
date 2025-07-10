@@ -121,6 +121,25 @@ export class AuthService {
     }
   }
 
+  static async sendPasswordResetEmail(email: string, resetCode: string) {
+    try {
+      // Check if email credentials are available
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+        console.log(`[DEV MODE] Password reset code for ${email}: ${resetCode}`);
+        return;
+      }
+      
+      const { sendEmail, createPasswordResetEmail } = await import('./emailService');
+      const emailTemplate = createPasswordResetEmail(resetCode);
+      
+      await sendEmail(email, emailTemplate.subject, emailTemplate.html);
+    } catch (error) {
+      console.error("Failed to send password reset email:", error);
+      // Log the reset code for development
+      console.log(`[DEV MODE] Password reset code for ${email}: ${resetCode}`);
+    }
+  }
+
   static async verifyEmail(email: string, verificationCode: string) {
     const user = await storage.getUserByEmail(email);
     if (!user) {
