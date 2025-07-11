@@ -60,12 +60,9 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <img src={logoIcon} alt="Hema Motor" className="h-10 w-10" />
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={user?.profileImageUrl || ""} />
-                <AvatarFallback>
-                  {user?.firstName?.[0]}{user?.lastName?.[0]}
-                </AvatarFallback>
-              </Avatar>
+              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                <Bike className="h-6 w-6 text-white" />
+              </div>
               <div>
                 <h1 className="text-2xl font-bold text-hema-secondary">
                   Welcome, {user?.firstName || 'User'}

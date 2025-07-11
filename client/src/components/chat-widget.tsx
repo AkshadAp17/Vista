@@ -329,7 +329,7 @@ export default function ChatWidget() {
         setSelectedChat(prev => {
           if (!prev) return null;
           const updatedMessages = prev.messages.map(msg => 
-            msg._id.startsWith('temp-') ? {
+            msg._id && msg._id.startsWith('temp-') ? {
               ...realMessage,
               _id: realMessage._id || realMessage.id,
               sender: {
