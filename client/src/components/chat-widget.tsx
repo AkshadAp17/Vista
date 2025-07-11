@@ -82,6 +82,7 @@ export default function ChatWidget() {
   const socketRef = useRef<WebSocket | null>(null);
   const processedMessageIds = useRef<Set<string>>(new Set());
   const viewedChatRooms = useRef<Set<string>>(new Set());
+  const connectionTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch chat rooms
   const { data: chatRooms = [], isLoading: chatsLoading } = useQuery<ChatRoom[]>({
@@ -142,12 +143,21 @@ export default function ChatWidget() {
   useEffect(() => {
     if (!isAuthenticated || !user || !(user as any)?.id || !isOpen) return;
 
+    // Clear any existing connection timeout
+    if (connectionTimeout.current) {
+      clearTimeout(connectionTimeout.current);
+      connectionTimeout.current = null;
+    }
+
     // Close any existing socket
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+    if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
       socketRef.current.close();
+      socketRef.current = null;
     }
     
-    const connectWebSocket = () => {
+    // Debounce connection attempts
+    connectionTimeout.current = setTimeout(() => {
+      const connectWebSocket = () => {
       try {
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         const host = window.location.host;
@@ -234,8 +244,7 @@ export default function ChatWidget() {
         ws.onclose = () => {
           console.log("WebSocket disconnected");
           setSocket(null);
-          // Attempt to reconnect after 3 seconds
-          setTimeout(connectWebSocket, 3000);
+          socketRef.current = null;
         };
 
         ws.onerror = (error) => {
@@ -247,11 +256,17 @@ export default function ChatWidget() {
       }
     };
 
-    connectWebSocket();
+      connectWebSocket();
+    }, 300); // 300ms debounce
 
     return () => {
+      if (connectionTimeout.current) {
+        clearTimeout(connectionTimeout.current);
+        connectionTimeout.current = null;
+      }
       if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
         socketRef.current.close();
+        socketRef.current = null;
       }
     };
   }, [isAuthenticated, user, queryClient, toast, isOpen]);

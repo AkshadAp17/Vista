@@ -211,8 +211,9 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     if (!isAuthenticated || !user) return;
 
     // Close any existing socket
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+    if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
       socketRef.current.close();
+      socketRef.current = null;
     }
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -297,7 +298,7 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     };
 
     return () => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
+      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
         ws.close();
       }
     };
