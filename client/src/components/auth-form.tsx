@@ -8,7 +8,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Bike, Eye, EyeOff, User } from "lucide-react";
-import orangeIcon from "@assets/image_1752002668870.png";
 import BusinessCard from "@/components/business-card";
 import { useLocation } from "wouter";
 import { Logo } from "@/components/ui/logo";
@@ -219,7 +218,7 @@ export default function AuthForm() {
           title="Meet the Owner - Shubham Pujari"
           onClick={() => setShowBusinessCard(true)}
         >
-          <img src={orangeIcon} alt="Profile" className="h-6 w-6 group-hover:scale-110 transition-transform" />
+          <User className="h-6 w-6 group-hover:scale-110 transition-transform" />
           <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
         </Button>
       </div>
