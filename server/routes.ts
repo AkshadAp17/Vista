@@ -577,16 +577,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sender = await storage.getUser(userId);
       const messageWithSender = {
         ...message,
+        _id: message._id || message.id,
         id: message._id || message.id,
         createdAt: message.createdAt || new Date().toISOString(),
-        sender: sender || null,
+        sender: {
+          id: sender?.id || sender?._id || "",
+          firstName: sender?.firstName || "",
+          lastName: sender?.lastName || "",
+          profileImageUrl: sender?.profileImageUrl || "",
+        },
       };
 
-      // Broadcast message to WebSocket clients
+      // Broadcast message to WebSocket clients IMMEDIATELY
       const buyerId = typeof chatRoom.buyerId === 'string' ? chatRoom.buyerId : chatRoom.buyerId.toString();
       const sellerId = typeof chatRoom.sellerId === 'string' ? chatRoom.sellerId : chatRoom.sellerId.toString();
-      const buyerWs = clients.get(buyerId);
-      const sellerWs = clients.get(sellerId);
       
       const broadcastMessage = {
         type: 'new_message',
@@ -594,13 +598,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         chatRoomId: chatRoomId,
       };
       
-      if (buyerWs && buyerWs.readyState === WebSocket.OPEN) {
-        buyerWs.send(JSON.stringify(broadcastMessage));
-      }
-      
-      if (sellerWs && sellerWs.readyState === WebSocket.OPEN) {
-        sellerWs.send(JSON.stringify(broadcastMessage));
-      }
+      // Broadcast to all connected clients for instant delivery
+      clients.forEach((clientWs, clientUserId) => {
+        if ((clientUserId === buyerId || clientUserId === sellerId) && clientWs.readyState === WebSocket.OPEN) {
+          clientWs.send(JSON.stringify(broadcastMessage));
+        }
+      });
       
       res.json(messageWithSender);
     } catch (error) {
@@ -831,9 +834,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const sender = await storage.getUser(message.senderId);
           const messageWithSender = {
             ...newMessage,
+            _id: newMessage._id || newMessage.id,
             id: newMessage._id || newMessage.id,
             createdAt: newMessage.createdAt || new Date().toISOString(),
-            sender: sender || null,
+            sender: {
+              id: sender?.id || sender?._id || "",
+              firstName: sender?.firstName || "",
+              lastName: sender?.lastName || "",
+              profileImageUrl: sender?.profileImageUrl || "",
+            },
           };
           
           // Get chat room details to notify both buyer and seller
@@ -841,8 +850,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (chatRoom) {
             const buyerId = typeof chatRoom.buyerId === 'string' ? chatRoom.buyerId : chatRoom.buyerId.toString();
             const sellerId = typeof chatRoom.sellerId === 'string' ? chatRoom.sellerId : chatRoom.sellerId.toString();
-            const buyerWs = clients.get(buyerId);
-            const sellerWs = clients.get(sellerId);
             
             const broadcastMessage = {
               type: 'new_message',
@@ -850,13 +857,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
               chatRoomId: message.chatRoomId,
             };
             
-            if (buyerWs && buyerWs.readyState === WebSocket.OPEN) {
-              buyerWs.send(JSON.stringify(broadcastMessage));
-            }
-            
-            if (sellerWs && sellerWs.readyState === WebSocket.OPEN) {
-              sellerWs.send(JSON.stringify(broadcastMessage));
-            }
+            // Broadcast to all connected clients for instant delivery
+            clients.forEach((clientWs, userId) => {
+              if ((userId === buyerId || userId === sellerId) && clientWs.readyState === WebSocket.OPEN) {
+                clientWs.send(JSON.stringify(broadcastMessage));
+              }
+            });
           }
         }
       } catch (error) {

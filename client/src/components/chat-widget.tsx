@@ -293,70 +293,56 @@ export default function ChatWidget() {
 
   // Send message mutation
   const sendMessageMutation = useMutation({
-    mutationFn: (messageData: { chatRoomId: string; content: string }) => {
+    mutationFn: async (messageData: { chatRoomId: string; content: string }) => {
+      // Instantly add optimistic message to UI
+      const tempMessage = {
+        _id: `temp-${Date.now()}`,
+        content: messageData.content,
+        senderId: (user as any)?.id || "",
+        createdAt: new Date().toISOString(),
+        sender: {
+          id: (user as any)?.id || "",
+          firstName: (user as any)?.firstName || "",
+          lastName: (user as any)?.lastName || "",
+          profileImageUrl: (user as any)?.profileImageUrl || "",
+        }
+      };
+
+      // Update UI immediately
+      if (selectedChat && selectedChat.id === messageData.chatRoomId) {
+        setSelectedChat(prev => prev ? {
+          ...prev,
+          messages: [...prev.messages, tempMessage],
+        } : null);
+      }
+
+      // Send to server
       return apiRequest("POST", `/api/chat-rooms/${messageData.chatRoomId}/messages`, {
         content: messageData.content,
       });
     },
     onSuccess: (data, variables) => {
-      // The API returns the message directly
-      const serverMessage = data as any;
-      
-      // Add to processed set to prevent duplicates
-      if (serverMessage._id) {
-        processedMessageIds.current.add(serverMessage._id);
-      }
-      
-      // Ensure message has proper sender structure
-      const safeMessage = {
-        ...serverMessage,
-        content: serverMessage.content || variables.content, // Fallback to sent content
-        sender: {
-          id: serverMessage.sender?.id || "",
-          firstName: serverMessage.sender?.firstName || "",
-          lastName: serverMessage.sender?.lastName || "",
-          profileImageUrl: serverMessage.sender?.profileImageUrl || "",
-        }
-      };
-      
-      // Replace optimistic message with server response
+      console.log("Message sent successfully");
+      // Replace temp message with real message from server
+      const realMessage = data as any;
       if (selectedChat && selectedChat.id === variables.chatRoomId) {
         setSelectedChat(prev => {
           if (!prev) return null;
-          
-          // Remove temp message and add server message
-          const filteredMessages = prev.messages.filter(msg => !(msg._id && msg._id.startsWith('temp-')));
-          
-          // Check if we already have this message to avoid duplicates
-          const messageExists = filteredMessages.some(msg => msg._id === safeMessage._id);
-          
-          return {
-            ...prev,
-            messages: messageExists ? filteredMessages : [...filteredMessages, safeMessage],
-          };
+          const updatedMessages = prev.messages.map(msg => 
+            msg._id.startsWith('temp-') ? {
+              ...realMessage,
+              _id: realMessage._id || realMessage.id,
+              sender: {
+                id: realMessage.sender?.id || (user as any)?.id || "",
+                firstName: realMessage.sender?.firstName || (user as any)?.firstName || "",
+                lastName: realMessage.sender?.lastName || (user as any)?.lastName || "",
+                profileImageUrl: realMessage.sender?.profileImageUrl || (user as any)?.profileImageUrl || "",
+              }
+            } : msg
+          );
+          return { ...prev, messages: updatedMessages };
         });
       }
-      
-      // Update chat rooms cache
-      queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
-        return oldData.map(chat => {
-          if (chat.id === variables.chatRoomId) {
-            // Replace temp message with real message
-            const updatedMessages = chat.messages.map(msg => 
-              msg._id && msg._id.startsWith('temp-') ? safeMessage : msg
-            ).filter((msg, index, arr) => 
-              // Remove duplicates
-              arr.findIndex(m => m._id === msg._id) === index
-            );
-            
-            return {
-              ...chat,
-              messages: updatedMessages,
-            };
-          }
-          return chat;
-        });
-      });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -384,7 +370,7 @@ export default function ChatWidget() {
   }, [selectedChat?.messages]);
 
   const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedChat || !user) return;
+    if (!newMessage.trim() || !selectedChat || !user || sendMessageMutation.isPending) return;
 
     // Ensure we have a valid chat room ID
     const chatRoomId = selectedChat.id || (selectedChat as any)._id;
@@ -399,31 +385,11 @@ export default function ChatWidget() {
 
     // Store the message content before clearing input
     const messageContent = newMessage.trim();
-
-    // Create optimistic message for instant display
-    const optimisticMessage = {
-      _id: `temp-${Date.now()}`,
-      content: messageContent,
-      senderId: (user as any).id,
-      createdAt: new Date().toISOString(),
-      sender: {
-        id: (user as any).id || "",
-        firstName: (user as any).firstName || "",
-        lastName: (user as any).lastName || "",
-        profileImageUrl: (user as any).profileImageUrl || "",
-      },
-    };
-
-    // Immediately add the message to the selected chat for instant display
-    setSelectedChat(prev => prev ? {
-      ...prev,
-      messages: [...(prev.messages || []), optimisticMessage],
-    } : null);
-
-    // Clear the input immediately
+    
+    // Clear the input immediately for responsive UI
     setNewMessage("");
 
-    // Send the message to the server
+    // Send the message to the server (mutation handles optimistic updates)
     sendMessageMutation.mutate({
       chatRoomId: chatRoomId,
       content: messageContent,
