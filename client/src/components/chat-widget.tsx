@@ -287,11 +287,14 @@ export default function ChatWidget() {
       const newMessage = data as any;
       
       // Add to processed set to prevent duplicates
-      processedMessageIds.current.add(newMessage._id);
+      if (newMessage._id) {
+        processedMessageIds.current.add(newMessage._id);
+      }
       
       // Ensure message has proper sender structure
       const safeMessage = {
         ...newMessage,
+        content: newMessage.content || variables.content, // Fallback to sent content
         sender: {
           id: newMessage.sender?.id || "",
           firstName: newMessage.sender?.firstName || "",
@@ -300,26 +303,13 @@ export default function ChatWidget() {
         }
       };
       
-      // Update the selected chat with the new message (replace optimistic message)
+      // Update the selected chat with the new message
       if (selectedChat && selectedChat.id === variables.chatRoomId) {
         setSelectedChat(prev => prev ? {
           ...prev,
-          messages: [...(prev.messages || []).filter(msg => msg._id && !msg._id.startsWith('temp-')), safeMessage],
+          messages: [...(prev.messages || []), safeMessage],
         } : null);
       }
-      
-      // Also update the chat rooms cache
-      queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
-        return oldData.map(chat => {
-          if (chat.id === variables.chatRoomId) {
-            return {
-              ...chat,
-              messages: [...(chat.messages || []).filter(msg => msg._id && !msg._id.startsWith('temp-')), safeMessage],
-            };
-          }
-          return chat;
-        });
-      });
       
       // Refresh chat rooms to get latest state
       queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
@@ -363,33 +353,16 @@ export default function ChatWidget() {
       return;
     }
 
-    // Create optimistic message to show immediately
-    const optimisticMessage = {
-      _id: `temp-${Date.now()}`,
-      content: newMessage.trim(),
-      senderId: (user as any).id,
-      createdAt: new Date().toISOString(),
-      sender: {
-        id: (user as any).id || "",
-        firstName: (user as any).firstName || "",
-        lastName: (user as any).lastName || "",
-        profileImageUrl: (user as any).profileImageUrl || "",
-      },
-    };
-
-    // Immediately add the message to the selected chat
-    setSelectedChat(prev => prev ? {
-      ...prev,
-      messages: [...(prev.messages || []), optimisticMessage],
-    } : null);
+    // Store the message content before clearing input
+    const messageContent = newMessage.trim();
 
     // Clear the input immediately
     setNewMessage("");
 
-    // Send the message to the server
+    // Send the message to the server directly without optimistic update
     sendMessageMutation.mutate({
       chatRoomId: chatRoomId,
-      content: optimisticMessage.content,
+      content: messageContent,
     });
   };
 
