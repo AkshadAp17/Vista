@@ -3,9 +3,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express, { type Request, Response, NextFunction } from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import { registerRoutes } from "../server/routes";
 import { AuthService } from "../server/auth";
 import { connectDB } from "../server/db";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Set default session secret if not provided - use environment variable in production
 if (!process.env.SESSION_SECRET) {
@@ -69,6 +74,18 @@ const initializeApp = async () => {
 const setupRoutes = async () => {
   await initializeApp();
   await registerRoutes(app);
+  
+  // Serve static files from dist/public for frontend
+  const staticPath = path.join(__dirname, '..', 'dist', 'public');
+  app.use(express.static(staticPath));
+  
+  // Catch-all handler: send back React's index.html file for any non-API routes
+  app.get('*', (req: Request, res: Response) => {
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ message: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(staticPath, 'index.html'));
+  });
   
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
