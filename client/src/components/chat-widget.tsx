@@ -161,18 +161,10 @@ export default function ChatWidget() {
       try {
         // Determine WebSocket URL properly for production and development
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const hostname = window.location.hostname || 'localhost';
-        const port = window.location.port || (protocol === "wss:" ? "443" : "5000");
+        const host = window.location.host;
         
-        // Construct the WebSocket URL
-        let wsUrl;
-        if (hostname.includes('replit.dev') || hostname.includes('vercel.app') || hostname.includes('herokuapp.com')) {
-          // For production environments, use the current host
-          wsUrl = `${protocol}//${window.location.host}/ws`;
-        } else {
-          // For local development, explicitly specify the port
-          wsUrl = `${protocol}//${hostname}:${port}/ws`;
-        }
+        // For Replit, use the current host directly
+        const wsUrl = `${protocol}//${host}/ws`;
         
         console.log("Attempting WebSocket connection to:", wsUrl);
         
@@ -681,12 +673,9 @@ export default function ChatWidget() {
                                   : "bg-gray-100 text-gray-900"
                               }`}
                             >
-                              <p className="text-sm break-words whitespace-pre-wrap">{
-                              (() => {
-                                console.log("Message debug:", { message, content: message.content, text: message.text });
-                                return message.content || message.text || "Message content not available";
-                              })()
-                            }</p>
+                              <p className="text-sm break-words whitespace-pre-wrap">
+                                {message.content || message.text || "Message content not available"}
+                              </p>
                               <p
                                 className={`text-xs mt-1 ${
                                   isOwnMessage ? "text-white/75" : "text-gray-500"
