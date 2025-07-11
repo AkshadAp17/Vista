@@ -260,6 +260,11 @@ Hema Motor is a full-stack web application for buying and selling two-wheelers (
 - July 10, 2025. Application now ready for production deployment on Vercel platform with proper build scripts and environment setup
 - July 11, 2025. Successfully deployed Hema Motor application to Vercel - both frontend and backend are live
 - July 11, 2025. Deployment completed with MongoDB Atlas integration and serverless API configuration
+- July 11, 2025. Fixed critical chat room messaging issues - messages now display correctly instead of showing dashes
+- July 11, 2025. Implemented WhatsApp-style chat experience with instant message display and optimistic updates
+- July 11, 2025. Enhanced time formatting to show relative time (now, 5m, yesterday) like modern messaging apps
+- July 11, 2025. Added loading spinner for message sending and improved message content validation
+- July 11, 2025. Optimized WebSocket connections to only open when chat widget is active to reduce server load
 
 ## Admin Credentials
 

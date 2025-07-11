@@ -283,36 +283,59 @@ export default function ChatWidget() {
       });
     },
     onSuccess: (data, variables) => {
-      // The API returns the message directly, not wrapped in data.message
-      const newMessage = data as any;
+      // The API returns the message directly
+      const serverMessage = data as any;
       
       // Add to processed set to prevent duplicates
-      if (newMessage._id) {
-        processedMessageIds.current.add(newMessage._id);
+      if (serverMessage._id) {
+        processedMessageIds.current.add(serverMessage._id);
       }
       
       // Ensure message has proper sender structure
       const safeMessage = {
-        ...newMessage,
-        content: newMessage.content || variables.content, // Fallback to sent content
+        ...serverMessage,
+        content: serverMessage.content || variables.content, // Fallback to sent content
         sender: {
-          id: newMessage.sender?.id || "",
-          firstName: newMessage.sender?.firstName || "",
-          lastName: newMessage.sender?.lastName || "",
-          profileImageUrl: newMessage.sender?.profileImageUrl || "",
+          id: serverMessage.sender?.id || "",
+          firstName: serverMessage.sender?.firstName || "",
+          lastName: serverMessage.sender?.lastName || "",
+          profileImageUrl: serverMessage.sender?.profileImageUrl || "",
         }
       };
       
-      // Update the selected chat with the new message
+      // Replace optimistic message with server response
       if (selectedChat && selectedChat.id === variables.chatRoomId) {
         setSelectedChat(prev => prev ? {
           ...prev,
-          messages: [...(prev.messages || []), safeMessage],
+          messages: prev.messages.map(msg => 
+            msg._id && msg._id.startsWith('temp-') ? safeMessage : msg
+          ).filter((msg, index, arr) => 
+            // Remove duplicates and keep only the last occurrence
+            arr.findIndex(m => m._id === msg._id) === index
+          ),
         } : null);
       }
       
-      // Refresh chat rooms to get latest state
-      queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
+      // Update chat rooms cache
+      queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
+        return oldData.map(chat => {
+          if (chat.id === variables.chatRoomId) {
+            // Replace temp message with real message
+            const updatedMessages = chat.messages.map(msg => 
+              msg._id && msg._id.startsWith('temp-') ? safeMessage : msg
+            ).filter((msg, index, arr) => 
+              // Remove duplicates
+              arr.findIndex(m => m._id === msg._id) === index
+            );
+            
+            return {
+              ...chat,
+              messages: updatedMessages,
+            };
+          }
+          return chat;
+        });
+      });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -356,10 +379,30 @@ export default function ChatWidget() {
     // Store the message content before clearing input
     const messageContent = newMessage.trim();
 
+    // Create optimistic message for instant display
+    const optimisticMessage = {
+      _id: `temp-${Date.now()}`,
+      content: messageContent,
+      senderId: (user as any).id,
+      createdAt: new Date().toISOString(),
+      sender: {
+        id: (user as any).id || "",
+        firstName: (user as any).firstName || "",
+        lastName: (user as any).lastName || "",
+        profileImageUrl: (user as any).profileImageUrl || "",
+      },
+    };
+
+    // Immediately add the message to the selected chat for instant display
+    setSelectedChat(prev => prev ? {
+      ...prev,
+      messages: [...(prev.messages || []), optimisticMessage],
+    } : null);
+
     // Clear the input immediately
     setNewMessage("");
 
-    // Send the message to the server directly without optimistic update
+    // Send the message to the server
     sendMessageMutation.mutate({
       chatRoomId: chatRoomId,
       content: messageContent,
@@ -374,7 +417,7 @@ export default function ChatWidget() {
   };
 
   const formatTime = (dateString: string | Date | number) => {
-    if (!dateString) return "--:--";
+    if (!dateString) return "";
     
     let date: Date;
     if (typeof dateString === 'string') {
@@ -384,16 +427,44 @@ export default function ChatWidget() {
     } else if (dateString instanceof Date) {
       date = dateString;
     } else {
-      return "--:--";
+      return "";
     }
     
-    if (isNaN(date.getTime())) return "--:--";
+    if (isNaN(date.getTime())) return "";
     
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    
+    // If less than 1 minute ago, show "now"
+    if (diffMinutes < 1) {
+      return "now";
+    }
+    // If less than 60 minutes ago, show "X min ago"
+    else if (diffMinutes < 60) {
+      return `${diffMinutes}m`;
+    }
+    // If today, show time only
+    else if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: false,
+      });
+    }
+    // If yesterday, show "Yesterday"
+    else {
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (date.toDateString() === yesterday.toDateString()) {
+        return "Yesterday";
+      }
+      // Otherwise show date
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+    }
   };
 
   const getOtherUser = (chat: ChatRoom) => {
@@ -582,7 +653,7 @@ export default function ChatWidget() {
                                   : "bg-gray-100 text-gray-900"
                               }`}
                             >
-                              <p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
+                              <p className="text-sm break-words whitespace-pre-wrap">{message.content || message.text || "Message content not available"}</p>
                               <p
                                 className={`text-xs mt-1 ${
                                   isOwnMessage ? "text-white/75" : "text-gray-500"
@@ -618,7 +689,11 @@ export default function ChatWidget() {
                         disabled={!newMessage.trim() || sendMessageMutation.isPending}
                         className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
                       >
-                        <Send className="h-4 w-4" />
+                        {sendMessageMutation.isPending ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        ) : (
+                          <Send className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
