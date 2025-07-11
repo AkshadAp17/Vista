@@ -217,8 +217,19 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
     }
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    // Determine WebSocket URL properly for production and development
     const host = window.location.host || 'localhost:5000';
-    const wsUrl = `${protocol}//${host}/ws`;
+    
+    // For production environments, ensure we have the correct WebSocket URL
+    let wsUrl;
+    if (host.includes('replit.dev') || host.includes('vercel.app') || host.includes('herokuapp.com')) {
+      wsUrl = `${protocol}//${host}/ws`;
+    } else {
+      // For local development
+      wsUrl = `${protocol}//${host}/ws`;
+    }
+    
+    console.log("WebSocket URL:", wsUrl);
     
     console.log("Attempting WebSocket connection to:", wsUrl);
     

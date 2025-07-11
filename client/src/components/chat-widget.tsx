@@ -159,9 +159,19 @@ export default function ChatWidget() {
     connectionTimeout.current = setTimeout(() => {
       const connectWebSocket = () => {
       try {
+        // Determine WebSocket URL properly for production and development
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const host = window.location.host;
-        const wsUrl = `${protocol}//${host}/ws`;
+        const host = window.location.host || 'localhost:5000';
+        
+        // For production environments, ensure we have the correct WebSocket URL
+        let wsUrl;
+        if (host.includes('replit.dev') || host.includes('vercel.app') || host.includes('herokuapp.com')) {
+          wsUrl = `${protocol}//${host}/ws`;
+        } else {
+          // For local development
+          wsUrl = `${protocol}//${host}/ws`;
+        }
+        
         console.log("Attempting WebSocket connection to:", wsUrl);
         
         const ws = new WebSocket(wsUrl);
@@ -250,9 +260,25 @@ export default function ChatWidget() {
         ws.onerror = (error) => {
           console.error("WebSocket error:", error);
           setSocket(null);
+          socketRef.current = null;
+          
+          // Try to reconnect after a delay if user is still authenticated
+          if (isAuthenticated && user) {
+            setTimeout(() => {
+              if (!socketRef.current) {
+                console.log("Attempting WebSocket reconnection...");
+                connectWebSocket();
+              }
+            }, 5000);
+          }
         };
       } catch (error) {
         console.error("Failed to create WebSocket connection:", error);
+        setSocket(null);
+        socketRef.current = null;
+        
+        // If WebSocket fails, the chat will still work via HTTP API calls
+        console.log("Chat will continue to work via HTTP API");
       }
     };
 
