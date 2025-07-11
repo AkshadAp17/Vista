@@ -138,9 +138,9 @@ export default function ChatWidget() {
     }
   }, [selectedChat, isOpen]);
 
-  // WebSocket connection
+  // WebSocket connection - only when chat widget is open
   useEffect(() => {
-    if (!isAuthenticated || !user || !(user as any)?.id) return;
+    if (!isAuthenticated || !user || !(user as any)?.id || !isOpen) return;
 
     // Close any existing socket
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -152,7 +152,7 @@ export default function ChatWidget() {
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         const host = window.location.host;
         const wsUrl = `${protocol}//${host}/ws`;
-        console.log("Connecting to WebSocket:", wsUrl);
+        console.log("Attempting WebSocket connection to:", wsUrl);
         
         const ws = new WebSocket(wsUrl);
         socketRef.current = ws;
@@ -253,7 +253,7 @@ export default function ChatWidget() {
         socketRef.current.close();
       }
     };
-  }, [isAuthenticated, user, queryClient, toast]);
+  }, [isAuthenticated, user, queryClient, toast, isOpen]);
 
   // Listen for custom events to select specific chats
   useEffect(() => {
@@ -304,7 +304,7 @@ export default function ChatWidget() {
       if (selectedChat && selectedChat.id === variables.chatRoomId) {
         setSelectedChat(prev => prev ? {
           ...prev,
-          messages: [...(prev.messages || []).filter(msg => !msg._id.startsWith('temp-')), safeMessage],
+          messages: [...(prev.messages || []).filter(msg => msg._id && !msg._id.startsWith('temp-')), safeMessage],
         } : null);
       }
       
@@ -314,7 +314,7 @@ export default function ChatWidget() {
           if (chat.id === variables.chatRoomId) {
             return {
               ...chat,
-              messages: [...(chat.messages || []).filter(msg => !msg._id.startsWith('temp-')), safeMessage],
+              messages: [...(chat.messages || []).filter(msg => msg._id && !msg._id.startsWith('temp-')), safeMessage],
             };
           }
           return chat;
@@ -579,12 +579,13 @@ export default function ChatWidget() {
                   <ScrollArea className="flex-1 p-4 overflow-hidden">
                     <div className="space-y-4 overflow-y-auto">
                       {selectedChat.messages && selectedChat.messages.length > 0 ? (
-                        selectedChat.messages.map((message: any) => {
+                        selectedChat.messages.map((message: any, index: number) => {
                         const isOwnMessage = message.senderId === (user as any)?.id;
+                        const messageKey = message._id || message.id || `message-${index}-${message.createdAt}`;
                         
                         return (
                           <div
-                            key={message._id || message.id}
+                            key={messageKey}
                             className={`flex items-start space-x-3 ${
                               isOwnMessage ? "flex-row-reverse space-x-reverse" : ""
                             }`}
