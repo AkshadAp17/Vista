@@ -605,13 +605,18 @@ export default function AuthForm() {
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         placeholder="Enter your password"
+                        autoComplete="current-password"
+                        style={{ 
+                          WebkitTextSecurity: showLoginPassword ? 'none' : 'disc',
+                        }}
+                        className="pr-10"
                         required
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent z-10"
                         onClick={() => setShowLoginPassword(!showLoginPassword)}
                       >
                         {showLoginPassword ? (
@@ -677,13 +682,18 @@ export default function AuthForm() {
                         value={signupData.password}
                         onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                         placeholder="Create strong password"
+                        autoComplete="new-password"
+                        style={{ 
+                          WebkitTextSecurity: showSignupPassword ? 'none' : 'disc',
+                        }}
+                        className="pr-10"
                         required
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent z-10"
                         onClick={() => setShowSignupPassword(!showSignupPassword)}
                       >
                         {showSignupPassword ? (
