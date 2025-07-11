@@ -181,11 +181,12 @@ export default function ChatWidget() {
             // Add to processed set
             processedMessageIds.current.add(data.message._id);
             
-            // Ensure message has proper sender structure
+            // Ensure message has proper sender structure with correct IDs
             const message = {
               ...data.message,
+              senderId: data.message.senderId || data.message.sender?.id,
               sender: {
-                id: data.message.sender?.id || "",
+                id: data.message.sender?.id || data.message.senderId || "",
                 firstName: data.message.sender?.firstName || "",
                 lastName: data.message.sender?.lastName || "",
                 profileImageUrl: data.message.sender?.profileImageUrl || "",
@@ -305,15 +306,20 @@ export default function ChatWidget() {
       
       // Replace optimistic message with server response
       if (selectedChat && selectedChat.id === variables.chatRoomId) {
-        setSelectedChat(prev => prev ? {
-          ...prev,
-          messages: prev.messages.map(msg => 
-            msg._id && msg._id.startsWith('temp-') ? safeMessage : msg
-          ).filter((msg, index, arr) => 
-            // Remove duplicates and keep only the last occurrence
-            arr.findIndex(m => m._id === msg._id) === index
-          ),
-        } : null);
+        setSelectedChat(prev => {
+          if (!prev) return null;
+          
+          // Remove temp message and add server message
+          const filteredMessages = prev.messages.filter(msg => !(msg._id && msg._id.startsWith('temp-')));
+          
+          // Check if we already have this message to avoid duplicates
+          const messageExists = filteredMessages.some(msg => msg._id === safeMessage._id);
+          
+          return {
+            ...prev,
+            messages: messageExists ? filteredMessages : [...filteredMessages, safeMessage],
+          };
+        });
       }
       
       // Update chat rooms cache
@@ -624,7 +630,20 @@ export default function ChatWidget() {
                     <div className="space-y-4 overflow-y-auto">
                       {selectedChat.messages && selectedChat.messages.length > 0 ? (
                         selectedChat.messages.map((message: any, index: number) => {
-                        const isOwnMessage = message.senderId === (user as any)?.id;
+                        // More robust check for own messages
+                        const currentUserId = (user as any)?.id;
+                        const messageSenderId = message.senderId || message.sender?.id;
+                        const isOwnMessage = currentUserId && messageSenderId && (messageSenderId === currentUserId);
+                        
+                        // Debug logging for message alignment
+                        if (process.env.NODE_ENV === 'development') {
+                          console.log('Message alignment check:', {
+                            currentUserId,
+                            messageSenderId,
+                            isOwnMessage,
+                            messageContent: message.content
+                          });
+                        }
                         const messageKey = message._id || message.id || `message-${index}-${message.createdAt}`;
                         
                         return (
