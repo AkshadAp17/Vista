@@ -392,6 +392,15 @@ export class DatabaseStorage implements IStorage {
       messages.map(async (message) => {
         const sender = await User.findOne({ id: message.senderId });
         const messageObj = message.toObject();
+        
+        // Debug logging for message content
+        console.log("Debug - Message object:", {
+          id: messageObj._id,
+          content: messageObj.content,
+          senderId: messageObj.senderId,
+          chatRoomId: messageObj.chatRoomId
+        });
+        
         return {
           ...messageObj,
           id: messageObj._id.toString(),

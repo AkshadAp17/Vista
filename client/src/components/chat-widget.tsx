@@ -679,7 +679,12 @@ export default function ChatWidget() {
                                   : "bg-gray-100 text-gray-900"
                               }`}
                             >
-                              <p className="text-sm break-words whitespace-pre-wrap">{message.content || message.text || "Message content not available"}</p>
+                              <p className="text-sm break-words whitespace-pre-wrap">{
+                              (() => {
+                                console.log("Message debug:", { message, content: message.content, text: message.text });
+                                return message.content || message.text || "Message content not available";
+                              })()
+                            }</p>
                               <p
                                 className={`text-xs mt-1 ${
                                   isOwnMessage ? "text-white/75" : "text-gray-500"
