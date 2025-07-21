@@ -59,32 +59,34 @@ export default function Header() {
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-4 md:space-x-8">
             <a href="/" className="flex items-center space-x-2">
               <Logo size="md" animated={true} />
             </a>
-            <nav className="hidden md:flex space-x-6">
-              <a href="/" className="text-gray-700 hover:text-hema-orange font-medium">
+            <nav className="hidden lg:flex space-x-4 xl:space-x-6">
+              <a href="/" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
                 Home
               </a>
-              <a href="/?type=motorcycle" className="text-gray-700 hover:text-hema-orange font-medium">
+              <a href="/?type=motorcycle" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
                 Motorcycles
               </a>
-              <a href="/?type=scooter" className="text-gray-700 hover:text-hema-orange font-medium">
+              <a href="/?type=scooter" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
                 Scooters
               </a>
-              <a href="/?type=electric" className="text-gray-700 hover:text-hema-orange font-medium">
+              <a href="/?type=electric" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
                 Electric
               </a>
             </nav>
           </div>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             {isAuthenticated ? (
               <>
                 {user && (user as any)?.isAdmin && (
                   <Button 
                     variant="outline"
+                    size="sm"
+                    className="hidden md:inline-flex text-xs md:text-sm"
                     onClick={() => window.location.href = '/admin'}
                   >
                     Admin Panel
@@ -93,16 +95,16 @@ export default function Header() {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
+                    <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 rounded-full">
+                      <Avatar className="h-7 w-7 md:h-8 md:w-8">
                         <AvatarImage src={(user as any)?.profileImageUrl || ""} alt="Profile" />
-                        <AvatarFallback>
+                        <AvatarFallback className="text-xs md:text-sm">
                           {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
                     <DropdownMenuItem onClick={() => {
                       if ((user as any)?.isAdmin) {
                         window.location.href = '/admin';
@@ -113,6 +115,12 @@ export default function Header() {
                       <User className="mr-2 h-4 w-4" />
                       <span>Dashboard</span>
                     </DropdownMenuItem>
+                    {user && (user as any)?.isAdmin && (
+                      <DropdownMenuItem className="md:hidden" onClick={() => window.location.href = '/admin'}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Admin Panel</span>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
@@ -135,29 +143,30 @@ export default function Header() {
             )}
             
             <Button 
-              className="md:hidden text-hema-secondary"
+              className="lg:hidden text-hema-secondary"
               variant="ghost"
+              size="sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
           </div>
         </div>
         
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t">
+          <div className="lg:hidden mt-4 pt-4 border-t border-gray-200">
             <nav className="flex flex-col space-y-2">
-              <a href="/" className="text-gray-700 hover:text-hema-orange font-medium py-2">
+              <a href="/" className="text-gray-700 hover:text-hema-orange font-medium py-2 px-2 rounded-md hover:bg-orange-50">
                 Home
               </a>
-              <a href="/?type=motorcycle" className="text-gray-700 hover:text-hema-orange font-medium py-2">
+              <a href="/?type=motorcycle" className="text-gray-700 hover:text-hema-orange font-medium py-2 px-2 rounded-md hover:bg-orange-50">
                 Motorcycles
               </a>
-              <a href="/?type=scooter" className="text-gray-700 hover:text-hema-orange font-medium py-2">
+              <a href="/?type=scooter" className="text-gray-700 hover:text-hema-orange font-medium py-2 px-2 rounded-md hover:bg-orange-50">
                 Scooters
               </a>
-              <a href="/?type=electric" className="text-gray-700 hover:text-hema-orange font-medium py-2">
+              <a href="/?type=electric" className="text-gray-700 hover:text-hema-orange font-medium py-2 px-2 rounded-md hover:bg-orange-50">
                 Electric
               </a>
             </nav>

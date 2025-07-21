@@ -9,12 +9,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bike } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
 export default function Home() {
   const { user } = useAuth();
   const [searchFilters, setSearchFilters] = useState({});
+
+  // Handle search parameters from landing page
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialFilters: any = {};
+    
+    if (urlParams.get('search')) initialFilters.search = urlParams.get('search');
+    if (urlParams.get('location')) initialFilters.location = urlParams.get('location');
+    if (urlParams.get('priceRange')) initialFilters.priceRange = urlParams.get('priceRange');
+    
+    if (Object.keys(initialFilters).length > 0) {
+      setSearchFilters(initialFilters);
+      // Clear URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const { data: featuredVehicles = [], isLoading: featuredLoading } = useQuery({
     queryKey: ["/api/vehicles/featured"],
@@ -57,7 +73,7 @@ export default function Home() {
           </div>
           
           {featuredLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {[...Array(8)].map((_, i) => (
                 <Card key={i} className="animate-pulse">
                   <div className="bg-gray-300 h-48 rounded-t-lg"></div>
@@ -70,7 +86,7 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {featuredVehicles.map((vehicle: any) => (
                 <VehicleCard key={vehicle.id} vehicle={vehicle} />
               ))}
@@ -98,7 +114,7 @@ export default function Home() {
           </div>
           
           {vehiclesLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {[...Array(12)].map((_, i) => (
                 <Card key={i} className="animate-pulse">
                   <div className="bg-gray-300 h-48 rounded-t-lg"></div>
@@ -112,7 +128,7 @@ export default function Home() {
             </div>
           ) : vehicles.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No vehicles found matching your criteria.</p>
+              <p className="text-gray-600 text-base md:text-lg px-4">No vehicles found matching your criteria.</p>
               <Button 
                 className="mt-4 bg-hema-orange hover:bg-hema-orange/90"
                 onClick={() => setSearchFilters({})}
@@ -121,7 +137,7 @@ export default function Home() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {vehicles.map((vehicle: any) => (
                 <VehicleCard key={vehicle.id} vehicle={vehicle} />
               ))}

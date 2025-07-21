@@ -208,13 +208,13 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
   };
 
   return (
-    <Card className="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+    <Card className="bg-white rounded-xl shadow-lg overflow-hidden card-hover group hover:shadow-xl transition-all duration-300">
       <div className="relative">
         {vehicle.images && vehicle.images.length > 0 ? (
           <img 
             src={vehicle.images[0]} 
             alt={`${vehicle.brand} ${vehicle.model}`}
-            className="w-full h-48 object-cover"
+            className="w-full h-40 sm:h-48 object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               // Fallback to placeholder on image load error
               e.currentTarget.style.display = 'none';
@@ -222,33 +222,33 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
             }}
           />
         ) : null}
-        <div className={`w-full h-48 bg-gray-200 flex items-center justify-center ${vehicle.images && vehicle.images.length > 0 ? 'hidden fallback-placeholder' : ''}`}>
-          <Camera className="h-12 w-12 text-gray-400" />
+        <div className={`w-full h-40 sm:h-48 bg-gray-200 flex items-center justify-center ${vehicle.images && vehicle.images.length > 0 ? 'hidden fallback-placeholder' : ''}`}>
+          <Camera className="h-8 sm:h-12 w-8 sm:w-12 text-gray-400" />
         </div>
         
         {vehicle.isFeatured && (
-          <div className="absolute top-3 left-3 bg-green-600 text-white px-2 py-1 rounded-lg text-sm font-medium">
+          <div className="absolute top-2 left-2 bg-green-600 text-white px-2 py-1 rounded-lg text-xs sm:text-sm font-medium">
             Featured
           </div>
         )}
         
         <div 
-          className={`absolute top-3 right-3 bg-white p-2 rounded-full hover:bg-red-50 cursor-pointer ${favoriteStatus?.isFavorite ? 'text-red-500' : 'text-gray-400'}`}
+          className={`absolute top-2 right-2 bg-white p-1.5 sm:p-2 rounded-full hover:bg-red-50 cursor-pointer ${favoriteStatus?.isFavorite ? 'text-red-500' : 'text-gray-400'}`}
           onClick={handleLike}
         >
-          <Heart className={`h-4 w-4 ${favoriteStatus?.isFavorite ? 'fill-current' : ''}`} />
+          <Heart className={`h-3 sm:h-4 w-3 sm:w-4 ${favoriteStatus?.isFavorite ? 'fill-current' : ''}`} />
         </div>
       </div>
       
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-semibold text-lg text-hema-secondary">
+          <h4 className="font-semibold text-base sm:text-lg text-hema-secondary truncate">
             {vehicle.brand} {vehicle.model}
           </h4>
-          <Bike className="h-6 w-6 text-orange-500 opacity-80" />
+          <Bike className="h-4 sm:h-6 w-4 sm:w-6 text-orange-500 opacity-80 flex-shrink-0" />
         </div>
         
-        <div className="flex items-center text-gray-600 text-sm mb-3 space-x-4">
+        <div className="flex items-center text-gray-600 text-xs sm:text-sm mb-3 space-x-3 sm:space-x-4">
           <span className="flex items-center">
             <Calendar className="h-3 w-3 mr-1" />
             {vehicle.year}
@@ -260,12 +260,12 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
         </div>
         
         <div className="flex items-center justify-between mb-3">
-          <span className="text-2xl font-bold text-hema-orange">
+          <span className="text-lg sm:text-2xl font-bold text-hema-orange">
             ₹{parseFloat(vehicle.price.toString()).toLocaleString()}
           </span>
-          <span className="text-gray-600 text-sm flex items-center">
+          <span className="text-gray-600 text-xs sm:text-sm flex items-center">
             <MapPin className="h-3 w-3 mr-1" />
-            {vehicle.location}
+            <span className="truncate max-w-20 sm:max-w-none">{vehicle.location}</span>
           </span>
         </div>
         
@@ -311,20 +311,21 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
         </div>
         
         {/* Action buttons */}
-        <div className="flex space-x-2 mb-3">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-3">
           <Button 
-            className="flex-1 bg-hema-orange text-white hover:bg-hema-orange/90 text-sm"
+            className="flex-1 bg-hema-orange text-white hover:bg-hema-orange/90 text-xs sm:text-sm py-2"
             onClick={handleViewDetails}
           >
-            <Eye className="h-4 w-4 mr-1" />
-            View Details
+            <Eye className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
+            <span className="hidden sm:inline">View Details</span>
+            <span className="sm:hidden">View</span>
           </Button>
           {vehicle.status !== 'sold' && !isOwner && (
             <Button 
-              className="bg-hema-secondary text-white hover:bg-hema-secondary/90 text-sm"
+              className="bg-hema-secondary text-white hover:bg-hema-secondary/90 text-xs sm:text-sm py-2"
               onClick={handleStartChat}
             >
-              <MessageCircle className="h-4 w-4 mr-1" />
+              <MessageCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
               Chat
             </Button>
           )}
@@ -332,9 +333,9 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
             <Button 
               disabled
               variant="outline"
-              className="bg-gray-100 text-gray-400 border-gray-300 text-sm cursor-not-allowed"
+              className="bg-gray-100 text-gray-400 border-gray-300 text-xs sm:text-sm cursor-not-allowed py-2"
             >
-              <X className="h-4 w-4 mr-1" />
+              <X className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
               Sold Out
             </Button>
           )}
@@ -345,20 +346,20 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           <Button 
             variant="outline"
             size="sm"
-            className={`flex-1 ${favoriteStatus?.isFavorite ? 'text-red-500 border-red-500' : 'text-gray-600'}`}
+            className={`flex-1 text-xs sm:text-sm py-1 ${favoriteStatus?.isFavorite ? 'text-red-500 border-red-500' : 'text-gray-600'}`}
             onClick={handleLike}
             disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
           >
-            <Heart className={`h-4 w-4 mr-1 ${favoriteStatus?.isFavorite ? 'fill-current' : ''}`} />
+            <Heart className={`h-3 sm:h-4 w-3 sm:w-4 mr-1 ${favoriteStatus?.isFavorite ? 'fill-current' : ''}`} />
             {favoriteStatus?.isFavorite ? 'Liked' : 'Like'}
           </Button>
           <Button 
             variant="outline"
             size="sm"
-            className="flex-1 text-gray-600"
+            className="flex-1 text-gray-600 text-xs sm:text-sm py-1"
             onClick={handleShare}
           >
-            <Share2 className="h-4 w-4 mr-1" />
+            <Share2 className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
             Share
           </Button>
         </div>

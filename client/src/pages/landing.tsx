@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,35 +10,51 @@ import BusinessCard from "@/components/business-card";
 import FloatingBusinessCard from "@/components/floating-business-card";
 
 export default function Landing() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [location, setLocation] = useState("");
+  const [priceRange, setPriceRange] = useState("");
+
+  const handleSearch = () => {
+    // Build search parameters
+    const params = new URLSearchParams();
+    if (searchTerm) params.append('search', searchTerm);
+    if (location) params.append('location', location);
+    if (priceRange) params.append('priceRange', priceRange);
+    
+    // Redirect to login with search parameters
+    window.location.href = `/api/login?${params.toString()}`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
       <header className="bg-white/95 backdrop-blur-sm shadow-2xl sticky top-0 z-50 border-b border-orange-200">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center justify-between">
             <Logo size="lg" animated={true} className="animate-in fade-in-50 duration-500" />
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               {/* Notification Bell */}
-              <div className="relative">
+              <div className="relative hidden sm:block">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="relative hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors"
                 >
-                  <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                  <Bell className="h-4 md:h-5 w-4 md:w-5 text-gray-600 dark:text-gray-300" />
                   {/* Notification Badge */}
-                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-[10px] text-white font-bold">3</span>
+                  <span className="absolute -top-1 -right-1 h-2.5 md:h-3 w-2.5 md:w-3 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-[8px] md:text-[10px] text-white font-bold">3</span>
                   </span>
                 </Button>
               </div>
               
               <Button 
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 rounded-full font-semibold"
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-3 md:px-6 py-2 md:py-3 rounded-full font-semibold text-sm md:text-base"
                 onClick={() => window.location.href = '/api/login'}
               >
-                <Users className="w-4 h-4 mr-2" />
-                Join Now
+                <Users className="w-3 md:w-4 h-3 md:h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Join Now</span>
+                <span className="sm:hidden">Join</span>
               </Button>
             </div>
           </div>
@@ -53,45 +70,49 @@ export default function Landing() {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="relative text-white py-24 px-4">
+        <div className="relative text-white py-12 md:py-24 px-4">
           <div className="container mx-auto">
-            <div className="text-center mb-16">
-              <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 mb-6 px-4 py-2 text-sm font-medium">
+            <div className="text-center mb-8 md:mb-16">
+              <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 mb-4 md:mb-6 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium">
                 🚀 India's Fastest Growing Two-Wheeler Marketplace
               </Badge>
-              <h2 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 md:mb-8 leading-tight">
                 Find Your
                 <span className="block bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
                   Dream Ride
                 </span>
               </h2>
-              <p className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed px-4">
                 Discover thousands of verified two-wheelers from trusted sellers across India.
                 <span className="block mt-2 text-orange-300">Safe, secure, and hassle-free.</span>
               </p>
             </div>
             
             {/* Search Bar */}
-            <div className="max-w-5xl mx-auto bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">Start Your Search</h3>
-                <p className="text-gray-600">Find exactly what you're looking for</p>
+            <div className="max-w-5xl mx-auto bg-white/95 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 border border-white/20">
+              <div className="text-center mb-4 md:mb-6">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-2">Start Your Search</h3>
+                <p className="text-gray-600 text-sm md:text-base">Find exactly what you're looking for</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="relative group">
-                  <Search className="absolute left-4 top-4 h-5 w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+                <div className="relative group sm:col-span-2 lg:col-span-1">
+                  <Search className="absolute left-3 md:left-4 top-3 md:top-4 h-4 md:h-5 w-4 md:w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
                   <Input 
                     placeholder="Search by brand, model..." 
-                    className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 rounded-xl text-lg transition-all duration-300 text-black dark:text-white"
+                    className="pl-10 md:pl-12 py-3 md:py-4 border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 rounded-xl text-sm md:text-lg transition-all duration-300 text-black dark:text-white"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   />
                 </div>
                 <div className="relative group">
-                  <MapPin className="absolute left-4 top-4 h-5 w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
-                  <Select>
-                    <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-lg text-black dark:text-white">
-                      <SelectValue placeholder="Select Location" />
+                  <MapPin className="absolute left-3 md:left-4 top-3 md:top-4 h-4 md:h-5 w-4 md:w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
+                  <Select value={location} onValueChange={setLocation}>
+                    <SelectTrigger className="pl-10 md:pl-12 py-3 md:py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-sm md:text-lg text-black dark:text-white">
+                      <SelectValue placeholder="Location" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
+                      <SelectItem value="">All Locations</SelectItem>
                       <SelectItem value="mumbai">Mumbai</SelectItem>
                       <SelectItem value="delhi">Delhi</SelectItem>
                       <SelectItem value="bangalore">Bangalore</SelectItem>
@@ -102,12 +123,13 @@ export default function Landing() {
                   </Select>
                 </div>
                 <div className="relative group">
-                  <IndianRupee className="absolute left-4 top-4 h-5 w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
-                  <Select>
-                    <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-lg text-black dark:text-white">
+                  <IndianRupee className="absolute left-3 md:left-4 top-3 md:top-4 h-4 md:h-5 w-4 md:w-5 text-orange-500 transition-colors group-hover:text-orange-600" />
+                  <Select value={priceRange} onValueChange={setPriceRange}>
+                    <SelectTrigger className="pl-10 md:pl-12 py-3 md:py-4 border-2 border-gray-200 focus:border-orange-500 rounded-xl text-sm md:text-lg text-black dark:text-white">
                       <SelectValue placeholder="Price Range" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
+                      <SelectItem value="">All Prices</SelectItem>
                       <SelectItem value="0-50000">Under ₹50,000</SelectItem>
                       <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
                       <SelectItem value="100000-200000">₹1,00,000 - ₹2,00,000</SelectItem>
@@ -116,11 +138,12 @@ export default function Landing() {
                   </Select>
                 </div>
                 <Button 
-                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-4 px-8 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                  onClick={() => window.location.href = '/api/login'}
+                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 md:py-4 px-4 md:px-8 rounded-xl text-sm md:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 sm:col-span-2 lg:col-span-1"
+                  onClick={handleSearch}
                 >
-                  <Search className="h-5 w-5 mr-2" />
-                  Search Now
+                  <Search className="h-4 md:h-5 w-4 md:w-5 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Search Now</span>
+                  <span className="sm:hidden">Search</span>
                 </Button>
               </div>
               
