@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { insertVehicleSchema } from "@shared/schema";
 import { z } from "zod";
+import { LoadingSpinner } from "@/components/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -604,12 +605,16 @@ export default function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-hema-orange hover:bg-hema-orange/90"
+            className="bg-hema-orange hover:bg-hema-orange/90 touch-target"
           >
-            {isSubmitting 
-              ? (vehicle ? "Updating..." : "Creating...") 
-              : (vehicle ? "Update Vehicle" : "Create Vehicle")
-            }
+            {isSubmitting ? (
+              <div className="flex items-center space-x-2">
+                <LoadingSpinner size="sm" />
+                <span>{vehicle ? "Updating..." : "Creating..."}</span>
+              </div>
+            ) : (
+              <span>{vehicle ? "Update Vehicle" : "Create Vehicle"}</span>
+            )}
           </Button>
           
           {onSuccess && (

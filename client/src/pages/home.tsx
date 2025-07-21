@@ -5,10 +5,11 @@ import VehicleCard from "@/components/vehicle-card";
 import SearchBar from "@/components/search-bar";
 import ChatWidget from "@/components/chat-widget";
 import FloatingBusinessCard from "@/components/floating-business-card";
+import { LoadingSpinner, VehicleCardSkeleton } from "@/components/loading-spinner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bike } from "lucide-react";
+import { Bike, Search as SearchIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 
 
@@ -73,17 +74,19 @@ export default function Home() {
           </div>
           
           {featuredLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {[...Array(8)].map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <div className="bg-gray-300 h-48 rounded-t-lg"></div>
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                    <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                    <div className="h-8 bg-gray-300 rounded"></div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="space-y-6">
+              <LoadingSpinner size="lg" text="Loading featured vehicles..." className="py-12" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <VehicleCardSkeleton key={i} />
+                ))}
+              </div>
+            </div>
+          ) : featuredVehicles.length === 0 ? (
+            <div className="text-center py-12">
+              <Bike className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg mb-2">No featured vehicles available</p>
+              <p className="text-gray-400">Check back later for new featured listings</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -116,23 +119,21 @@ export default function Home() {
           </div>
           
           {vehiclesLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {[...Array(12)].map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <div className="bg-gray-300 h-48 rounded-t-lg"></div>
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                    <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                    <div className="h-8 bg-gray-300 rounded"></div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="space-y-6">
+              <LoadingSpinner size="lg" text="Searching for vehicles..." className="py-8" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {[...Array(12)].map((_, i) => (
+                  <VehicleCardSkeleton key={i} />
+                ))}
+              </div>
             </div>
           ) : vehicles.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 text-base md:text-lg px-4">No vehicles found matching your criteria.</p>
+              <SearchIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600 text-lg mb-2 px-4">No vehicles found matching your criteria.</p>
+              <p className="text-gray-400 text-sm mb-4">Try adjusting your search filters or browse all vehicles</p>
               <Button 
-                className="mt-4 bg-hema-orange hover:bg-hema-orange/90"
+                className="mt-4 bg-hema-orange hover:bg-hema-orange/90 touch-target"
                 onClick={() => setSearchFilters({})}
               >
                 Show All Vehicles

@@ -24,8 +24,8 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
     const filters: any = {};
 
     if (search) filters.search = search;
-    if (location) filters.location = location;
-    if (priceRange) {
+    if (location && location !== "all") filters.location = location;
+    if (priceRange && priceRange !== "all") {
       const [min, max] = priceRange.split("-").map(Number);
       filters.priceRange = `${min},${max}`;
     }
@@ -55,7 +55,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
               <SelectValue placeholder="Location" />
             </SelectTrigger>
             <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
-              <SelectItem value="">All Locations</SelectItem>
+              <SelectItem value="all">All Locations</SelectItem>
               <SelectItem value="mumbai">Mumbai</SelectItem>
               <SelectItem value="delhi">Delhi</SelectItem>
               <SelectItem value="bangalore">Bangalore</SelectItem>
@@ -73,7 +73,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
-              <SelectItem value="">All Prices</SelectItem>
+              <SelectItem value="all">All Prices</SelectItem>
               <SelectItem value="0-50000">Under ₹50,000</SelectItem>
               <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
               <SelectItem value="100000-200000">

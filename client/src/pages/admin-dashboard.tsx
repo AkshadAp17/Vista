@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { LoadingSpinner, DashboardStatsSkeleton, VehicleCardSkeleton } from "@/components/loading-spinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -192,21 +193,25 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-lg flex items-center justify-center">
-                  <Bike className="h-6 w-6" />
+          {statsLoading ? (
+            <DashboardStatsSkeleton />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-lg flex items-center justify-center">
+                    <Bike className="h-6 w-6" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600">Total Vehicles</p>
+                    <p className="text-2xl font-bold text-hema-secondary">
+                      {stats?.totalVehicles || 0}
+                    </p>
+                  </div>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-600">Total Vehicles</p>
-                  <p className="text-2xl font-bold text-hema-secondary">
-                    {statsLoading ? "..." : stats?.totalVehicles || 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
           
           <Card>
             <CardContent className="p-6">

@@ -519,7 +519,22 @@ export default function ChatWidget() {
               
               <ScrollArea className="flex-1">
                 {chatsLoading ? (
-                  <div className="p-4 text-center text-gray-500">Loading chats...</div>
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center space-x-3 animate-pulse">
+                      <div className="bg-gray-200 h-10 w-10 rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                        <div className="bg-gray-200 h-3 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 animate-pulse">
+                      <div className="bg-gray-200 h-10 w-10 rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="bg-gray-200 h-4 rounded w-2/3"></div>
+                        <div className="bg-gray-200 h-3 rounded w-3/4"></div>
+                      </div>
+                    </div>
+                  </div>
                 ) : chatRooms.length === 0 ? (
                   <div className="p-4 text-center text-gray-500">
                     <MessageCircle className="mx-auto h-8 w-8 text-gray-400 mb-2" />

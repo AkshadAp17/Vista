@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { LoadingSpinner, DashboardStatsSkeleton, VehicleCardSkeleton } from "@/components/loading-spinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -49,7 +50,11 @@ export default function UserDashboard() {
   });
 
   if (isLoading || !isAuthenticated) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-neutral">
+        <LoadingSpinner size="lg" text="Loading your dashboard..." />
+      </div>
+    );
   }
 
   return (
