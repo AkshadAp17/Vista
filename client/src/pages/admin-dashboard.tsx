@@ -155,27 +155,31 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-neutral">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="bg-orange-500 text-white rounded-full p-2">
-                <Bike className="h-6 w-6" />
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="bg-orange-500 text-white rounded-full p-1.5 sm:p-2">
+                <Bike className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-hema-secondary">Admin Dashboard</h1>
-                <p className="text-gray-600">Welcome back, {user?.firstName || 'Admin'}</p>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-hema-secondary">Admin Dashboard</h1>
+                <p className="text-gray-600 text-sm sm:text-base hidden sm:block">Welcome back, {user?.firstName || 'Admin'}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4 flex-wrap">
               <SettingsForm isAdmin={true} />
               <Button 
                 variant="outline" 
+                size="sm"
+                className="text-xs sm:text-sm touch-target"
                 onClick={() => window.location.href = '/'}
               >
-                View Site
+                <span className="hidden sm:inline">View Site</span>
+                <span className="sm:hidden">Site</span>
               </Button>
               <Button 
-                className="bg-hema-orange hover:bg-hema-orange/90"
+                size="sm"
+                className="bg-hema-orange hover:bg-hema-orange/90 text-xs sm:text-sm touch-target"
                 onClick={() => window.location.href = '/api/auth/logout'}
               >
                 Logout
@@ -185,9 +189,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">

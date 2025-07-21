@@ -45,17 +45,17 @@ export default function Home() {
       <Header />
       
       {/* Hero Section */}
-      <section className="gradient-bg text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <div className="bg-orange-500 text-white rounded-full p-4 mr-4">
-                <Bike className="h-8 w-8" />
+      <section className="gradient-bg text-white py-8 sm:py-12 md:py-16">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <div className="flex items-center justify-center mb-4 sm:mb-6">
+              <div className="bg-orange-500 text-white rounded-full p-2 sm:p-3 md:p-4 mr-2 sm:mr-3 md:mr-4">
+                <Bike className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-white">Hema Motor</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Hema Motor</h1>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Find Your Perfect Ride</h2>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">Find Your Perfect Ride</h2>
+            <p className="text-base sm:text-lg md:text-xl opacity-90 max-w-2xl mx-auto px-2">
               Discover thousands of verified two-wheelers from trusted sellers across the country
             </p>
           </div>
@@ -65,11 +65,11 @@ export default function Home() {
       </section>
 
       {/* Featured Vehicles */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-hema-secondary mb-4">Featured Vehicles</h3>
-            <p className="text-gray-600 text-lg">Handpicked premium two-wheelers from verified sellers</p>
+      <section className="py-8 sm:py-12 md:py-16 bg-white">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <h3 className="text-2xl sm:text-3xl font-bold text-hema-secondary mb-3 sm:mb-4">Featured Vehicles</h3>
+            <p className="text-gray-600 text-base sm:text-lg px-2">Handpicked premium two-wheelers from verified sellers</p>
           </div>
           
           {featuredLoading ? (
@@ -96,18 +96,20 @@ export default function Home() {
       </section>
 
       {/* All Vehicles */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-3xl font-bold text-hema-secondary">All Vehicles</h3>
-            <div className="flex items-center space-x-4">
-              <Badge variant="secondary">{vehicles.length} vehicles found</Badge>
+      <section className="py-8 sm:py-12 md:py-16 bg-gray-50">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
+            <h3 className="text-2xl sm:text-3xl font-bold text-hema-secondary">All Vehicles</h3>
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap">
+              <Badge variant="secondary" className="text-xs sm:text-sm">{vehicles.length} vehicles found</Badge>
               {user?.isAdmin && (
                 <Button 
-                  className="bg-hema-orange hover:bg-hema-orange/90"
+                  size="sm"
+                  className="bg-hema-orange hover:bg-hema-orange/90 text-xs sm:text-sm touch-target"
                   onClick={() => window.location.href = '/admin'}
                 >
-                  Admin Dashboard
+                  <span className="hidden sm:inline">Admin Dashboard</span>
+                  <span className="sm:hidden">Admin</span>
                 </Button>
               )}
             </div>

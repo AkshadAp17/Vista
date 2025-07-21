@@ -57,46 +57,47 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-3 sm:px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 md:space-x-8">
+          <div className="flex items-center space-x-2 md:space-x-4">
             <a href="/" className="flex items-center space-x-2">
               <Logo size="md" animated={true} />
             </a>
-            <nav className="hidden lg:flex space-x-4 xl:space-x-6">
-              <a href="/" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
+            <nav className="hidden lg:flex space-x-3 xl:space-x-4">
+              <a href="/" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base transition-colors">
                 Home
               </a>
-              <a href="/?type=motorcycle" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
+              <a href="/?type=motorcycle" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base transition-colors">
                 Motorcycles
               </a>
-              <a href="/?type=scooter" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
+              <a href="/?type=scooter" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base transition-colors">
                 Scooters
               </a>
-              <a href="/?type=electric" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base">
+              <a href="/?type=electric" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base transition-colors">
                 Electric
               </a>
             </nav>
           </div>
           
-          <div className="flex items-center space-x-2 md:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
             {isAuthenticated ? (
               <>
                 {user && (user as any)?.isAdmin && (
                   <Button 
                     variant="outline"
                     size="sm"
-                    className="hidden md:inline-flex text-xs md:text-sm"
+                    className="hidden md:inline-flex text-xs md:text-sm touch-target"
                     onClick={() => window.location.href = '/admin'}
                   >
-                    Admin Panel
+                    <span className="hidden sm:inline">Admin Panel</span>
+                    <span className="sm:hidden">Admin</span>
                   </Button>
                 )}
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 rounded-full">
-                      <Avatar className="h-7 w-7 md:h-8 md:w-8">
+                    <Button variant="ghost" className="relative h-8 w-8 md:h-9 md:w-9 rounded-full touch-target">
+                      <Avatar className="h-8 w-8 md:h-9 md:w-9">
                         <AvatarImage src={(user as any)?.profileImageUrl || ""} alt="Profile" />
                         <AvatarFallback className="text-xs md:text-sm">
                           {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
@@ -104,7 +105,7 @@ export default function Header() {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
+                  <DropdownMenuContent className="w-48 md:w-56 mr-2" align="end" forceMount>
                     <DropdownMenuItem onClick={() => {
                       if ((user as any)?.isAdmin) {
                         window.location.href = '/admin';

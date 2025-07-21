@@ -87,14 +87,24 @@
     display: none !important;
   }
   
-  .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px hsla(0, 0%, 0%, 0.15);
+  /* Mobile-responsive hover effects */
+  @media (hover: hover) and (pointer: fine) {
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px hsla(0, 0%, 0%, 0.15);
+    }
   }
   
+  /* Mobile-first chat bubbles */
   .chat-bubble {
-    max-width: 75%;
+    max-width: 85%;
     word-wrap: break-word;
+  }
+  
+  @media (min-width: 768px) {
+    .chat-bubble {
+      max-width: 75%;
+    }
   }
   
   .nav-active {
@@ -128,5 +138,39 @@
   
   .border-hema-orange {
     border-color: hsl(14, 100%, 57%);
+  }
+  
+  /* Mobile responsive utilities */
+  .mobile-full-width {
+    width: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-full-width {
+      width: auto;
+    }
+  }
+  
+  /* Better touch targets for mobile */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Responsive text scaling */
+  .text-responsive {
+    font-size: 0.875rem;
+  }
+  
+  @media (min-width: 640px) {
+    .text-responsive {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .text-responsive {
+      font-size: 1.125rem;
+    }
   }
 }
