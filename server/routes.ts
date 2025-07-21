@@ -841,10 +841,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           const newMessage = await storage.addMessage(messageData);
           const sender = await storage.getUser(message.senderId);
+          
+          // Debug logging
+          console.log('New message created:', { 
+            id: newMessage._id || newMessage.id, 
+            content: newMessage.content,
+            senderId: newMessage.senderId 
+          });
+          console.log('Sender found:', { 
+            id: sender?.id, 
+            firstName: sender?.firstName, 
+            lastName: sender?.lastName 
+          });
+          
           const messageWithSender = {
-            ...newMessage,
             _id: newMessage._id || newMessage.id,
             id: newMessage._id || newMessage.id,
+            content: newMessage.content,
+            senderId: newMessage.senderId,
+            chatRoomId: newMessage.chatRoomId,
             createdAt: newMessage.createdAt || new Date().toISOString(),
             sender: {
               id: sender?.id || sender?._id || "",
@@ -853,6 +868,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               profileImageUrl: sender?.profileImageUrl || "",
             },
           };
+          
+          console.log('Message with sender ready for broadcast:', messageWithSender);
           
           // Get chat room details to notify both buyer and seller
           const chatRoom = await storage.getChatRoomWithMessages(message.chatRoomId);

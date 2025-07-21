@@ -252,6 +252,11 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
       
       if (data.type === "new_message" && chatRoomIdRef.current && data.chatRoomId === chatRoomIdRef.current) {
         console.log("Received new message via WebSocket:", data.message);
+        console.log("Message content check:", { 
+          content: data.message.content, 
+          hasContent: !!data.message.content,
+          messageKeys: Object.keys(data.message)
+        });
         
         // Check if we've already processed this message
         if (processedMessageIds.current.has(data.message._id)) {
@@ -262,9 +267,14 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
         // Add to processed set
         processedMessageIds.current.add(data.message._id);
         
-        // Ensure proper message structure with sender data
+        // Ensure proper message structure with sender data and CONTENT
         const safeMessage = {
-          ...data.message,
+          _id: data.message._id,
+          id: data.message.id || data.message._id,
+          content: data.message.content,
+          senderId: data.message.senderId,
+          chatRoomId: data.message.chatRoomId,
+          createdAt: data.message.createdAt,
           sender: {
             id: data.message.sender?.id || "",
             firstName: data.message.sender?.firstName || "",
@@ -272,6 +282,8 @@ export default function VehicleChatDialog({ open, onOpenChange, vehicle }: Vehic
             profileImageUrl: data.message.sender?.profileImageUrl || "",
           }
         };
+        
+        console.log("Safe message created:", safeMessage);
         
         setChatRoom(prev => {
           if (!prev) return null;

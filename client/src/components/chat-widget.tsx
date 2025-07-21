@@ -184,8 +184,11 @@ export default function ChatWidget() {
 
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data);
+          console.log("WebSocket message received:", data);
           
           if (data.type === "new_message") {
+            console.log("Processing new message:", data.message);
+            
             // Check if we've already processed this message
             if (processedMessageIds.current.has(data.message._id)) {
               console.log("Skipping duplicate message:", data.message._id);
@@ -195,10 +198,14 @@ export default function ChatWidget() {
             // Add to processed set
             processedMessageIds.current.add(data.message._id);
             
-            // Ensure message has proper sender structure with correct IDs
+            // Ensure message has proper sender structure with correct IDs and CONTENT
             const message = {
-              ...data.message,
+              _id: data.message._id,
+              id: data.message.id || data.message._id,
+              content: data.message.content,
               senderId: data.message.senderId || data.message.sender?.id,
+              chatRoomId: data.message.chatRoomId,
+              createdAt: data.message.createdAt,
               sender: {
                 id: data.message.sender?.id || data.message.senderId || "",
                 firstName: data.message.sender?.firstName || "",
@@ -206,6 +213,8 @@ export default function ChatWidget() {
                 profileImageUrl: data.message.sender?.profileImageUrl || "",
               }
             };
+            
+            console.log("Processed message for UI:", message);
             
             // Update chat rooms cache with new message
             queryClient.setQueryData(["/api/chat-rooms"], (oldData: ChatRoom[] = []) => {
