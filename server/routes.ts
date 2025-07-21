@@ -454,11 +454,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updateData: any = { status };
       if (status === 'sold') {
         updateData.soldAt = new Date();
+        
+        // Track the sale amount - add to total sales when marking as sold
+        const vehiclePrice = parseFloat(existingVehicle.price.toString());
+        console.log(`Vehicle ${id} marked as sold for ₹${vehiclePrice.toLocaleString()}`);
+        
+        // You could add sales tracking to database here if needed
+        // For now, the stats endpoint will calculate total sales from sold vehicles
       } else if (status === 'available') {
         updateData.soldAt = null;
+        console.log(`Vehicle ${id} marked as available again (removing from sales)`);
       }
 
       const vehicle = await storage.updateVehicle(id, updateData);
+      console.log(`Vehicle status updated:`, { id: vehicle.id, status: vehicle.status, price: vehicle.price, soldAt: vehicle.soldAt });
       res.json(vehicle);
     } catch (error) {
       console.error("Error updating vehicle status:", error);

@@ -420,18 +420,26 @@ export class DatabaseStorage implements IStorage {
     activeChats: number;
     totalSales: number;
   }> {
-    const [totalVehicles, totalUsers, activeChats] = await Promise.all([
+    const [totalVehicles, totalUsers, activeChats, soldVehicles] = await Promise.all([
       Vehicle.countDocuments(),
       User.countDocuments(),
-      ChatRoom.countDocuments({ isActive: true })
+      ChatRoom.countDocuments({ isActive: true }),
+      Vehicle.find({ status: 'sold' })
     ]);
     
-    // For now, we don't track sales directly, so we'll just return 0
+    // Calculate total sales from sold vehicles
+    const totalSales = soldVehicles.reduce((sum, vehicle) => {
+      const price = typeof vehicle.price === 'string' ? parseFloat(vehicle.price) : Number(vehicle.price);
+      return sum + (isNaN(price) ? 0 : price);
+    }, 0);
+    
+    console.log(`Stats calculated: ${totalVehicles} vehicles, ${totalUsers} users, ${activeChats} active chats, ₹${totalSales.toLocaleString()} total sales from ${soldVehicles.length} sold vehicles`);
+    
     return {
       totalVehicles,
       totalUsers,
       activeChats,
-      totalSales: 0
+      totalSales
     };
   }
 
