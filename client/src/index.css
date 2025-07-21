@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(222, 84%, 4.9%);
+  --muted: hsl(210, 40%, 98%);
+  --muted-foreground: hsl(215, 16%, 35%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222, 84%, 4.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222, 84%, 4.9%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --primary: hsl(14, 100%, 57%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 40%, 98%);
+  --secondary-foreground: hsl(222, 84%, 4.9%);
+  --accent: hsl(210, 40%, 98%);
+  --accent-foreground: hsl(222, 84%, 4.9%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(222, 84%, 4.9%);
+  --radius: 0.5rem;
+  --text-dark: hsl(210, 20%, 25%);
+  --text-light: hsl(215, 16%, 47%);
+  --neutral: hsl(210, 20%, 98%);
+  --success: hsl(134, 61%, 41%);
+  --hema-orange: hsl(14, 100%, 57%);
+  --hema-secondary: hsl(210, 20%, 25%);
+}
+
+.dark {
+  --background: hsl(222, 84%, 4.9%);
+  --foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217, 32%, 17%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --popover: hsl(222, 84%, 4.9%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 84%, 4.9%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 32%, 17%);
+  --input: hsl(217, 32%, 17%);
+  --primary: hsl(14, 100%, 57%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(217, 32%, 17%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --accent: hsl(217, 32%, 17%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62%, 30%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(212, 72%, 59%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(14, 100%, 57%) 0%, hsl(0, 84%, 60%) 100%);
+  }
+  
+  .card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Disable browser's default password reveal button */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
+  
+  input[type="password"]::-webkit-credentials-auto-fill-button {
+    display: none !important;
+  }
+  
+  input[type="password"]::-webkit-password-reveal {
+    display: none !important;
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px hsla(0, 0%, 0%, 0.15);
+  }
+  
+  .chat-bubble {
+    max-width: 75%;
+    word-wrap: break-word;
+  }
+  
+  .nav-active {
+    border-bottom: 2px solid hsl(14, 100%, 57%);
+  }
+  
+  .text-hema-orange {
+    color: hsl(14, 100%, 57%);
+  }
+  
+  .text-hema-secondary {
+    color: hsl(210, 20%, 25%);
+  }
+  
+  .bg-hema-orange {
+    background-color: hsl(14, 100%, 57%);
+  }
+  
+  /* Fix placeholder text visibility */
+  [data-placeholder] {
+    color: hsl(0, 0%, 20%) !important;
+  }
+  
+  .dark [data-placeholder] {
+    color: hsl(0, 0%, 80%) !important;
+  }
+  
+  .bg-hema-secondary {
+    background-color: hsl(210, 20%, 25%);
+  }
+  
+  .border-hema-orange {
+    border-color: hsl(14, 100%, 57%);
+  }
+}
