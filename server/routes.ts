@@ -324,8 +324,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (vehicleType) filters.vehicleType = vehicleType as string;
       if (sellerId) filters.sellerId = sellerId as string;
       if (priceRange) {
-        const [min, max] = (priceRange as string).split(',').map(Number);
-        filters.priceRange = [min, max];
+        // Handle both comma and dash separated formats
+        const priceStr = priceRange as string;
+        let parts;
+        if (priceStr.includes(',')) {
+          parts = priceStr.split(',').map(Number);
+        } else if (priceStr.includes('-')) {
+          parts = priceStr.split('-').map(Number);
+        } else {
+          // If no separator, treat as single value
+          const value = Number(priceStr);
+          parts = [0, value];
+        }
+        filters.priceRange = [parts[0], parts[1]];
       }
 
       const vehicles = await storage.getVehicles(filters);

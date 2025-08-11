@@ -26,11 +26,11 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
     if (search.trim()) filters.search = search.trim();
     if (location && location !== "all") filters.location = location;
     if (priceRange && priceRange !== "all") {
-      const [min, max] = priceRange.split("-").map(Number);
-      filters.priceRange = `${min},${max}`;
+      filters.priceRange = priceRange; // Send the raw format like "50000-100000"
     }
     if (vehicleType) filters.vehicleType = vehicleType;
 
+    console.log('Search filters being sent:', filters);
     onFiltersChange(filters);
   };
 
@@ -42,8 +42,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
       if (search.trim()) filters.search = search.trim();
       if (value && value !== "all") filters.location = value;
       if (priceRange && priceRange !== "all") {
-        const [min, max] = priceRange.split("-").map(Number);
-        filters.priceRange = `${min},${max}`;
+        filters.priceRange = priceRange;
       }
       if (vehicleType) filters.vehicleType = vehicleType;
       onFiltersChange(filters);
@@ -57,8 +56,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
       if (search.trim()) filters.search = search.trim();
       if (location && location !== "all") filters.location = location;
       if (value && value !== "all") {
-        const [min, max] = value.split("-").map(Number);
-        filters.priceRange = `${min},${max}`;
+        filters.priceRange = value;
       }
       if (vehicleType) filters.vehicleType = vehicleType;
       onFiltersChange(filters);
@@ -121,8 +119,10 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         <Button
           className="bg-hema-orange text-white py-3 px-4 md:px-6 hover:bg-hema-orange/90 font-medium sm:col-span-2 md:col-span-1 lg:col-span-1"
           onClick={handleSearch}
+          data-testid="search-button"
         >
           <Search className="h-4 w-4 mr-2" />
+          Search
           <span className="hidden sm:inline">Search</span>
         </Button>
       </div>
