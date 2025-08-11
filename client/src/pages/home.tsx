@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/header";
 import VehicleCard from "@/components/vehicle-card";
 import SearchBar from "@/components/search-bar";
+import SearchCategories from "@/components/search-categories";
 import ChatWidget from "@/components/chat-widget";
 import FloatingBusinessCard from "@/components/floating-business-card";
 import { LoadingSpinner, VehicleCardSkeleton } from "@/components/loading-spinner";
@@ -59,6 +60,24 @@ export default function Home() {
     setCurrentPage(1);
   };
 
+  const handleCategorySelect = (category: string) => {
+    const newFilters = { ...searchFilters, search: category };
+    setSearchFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const handlePriceRangeSelect = (range: string) => {
+    const newFilters = { ...searchFilters, priceRange: range };
+    setSearchFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const handleVehicleTypeSelect = (type: string) => {
+    const newFilters = { ...searchFilters, vehicleType: type };
+    setSearchFilters(newFilters);
+    setCurrentPage(1);
+  };
+
   const goToPage = (pageNumber: number) => {
     setCurrentPage(pageNumber);
     // Scroll to top of results
@@ -91,6 +110,13 @@ export default function Home() {
           <SearchBar onFiltersChange={handleFiltersChange} />
         </div>
       </section>
+
+      {/* Search Categories */}
+      <SearchCategories 
+        onCategorySelect={handleCategorySelect}
+        onPriceRangeSelect={handlePriceRangeSelect}
+        onVehicleTypeSelect={handleVehicleTypeSelect}
+      />
 
       {/* Featured Vehicles */}
       <section className="py-8 sm:py-12 md:py-16 bg-white">
