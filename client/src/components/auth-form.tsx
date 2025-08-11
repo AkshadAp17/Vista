@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Bike, Eye, EyeOff, User } from "lucide-react";
+import { Bike, Eye, EyeOff, User, Mail } from "lucide-react";
 import BusinessCard from "@/components/business-card";
 import { useLocation } from "wouter";
 import { Logo } from "@/components/ui/logo";
@@ -374,52 +374,103 @@ export default function AuthForm() {
             <CardHeader className="text-center space-y-4 pb-6">
               <div className="flex justify-center mb-4">
                 <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
-                  <Bike className="h-10 w-10 text-white" />
+                  <Mail className="h-10 w-10 text-white" />
                 </div>
               </div>
-              <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Email Verification</CardTitle>
+              <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Verify Your Email</CardTitle>
               <CardDescription className="text-base text-gray-600 dark:text-gray-300">
-                We sent a verification code to {verificationEmail}
+                Check your Gmail inbox for the verification code
               </CardDescription>
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                  📧 Sent to: {verificationEmail}
+                </p>
+              </div>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleVerifyEmail} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="verification-code">Verification Code</Label>
+              <form onSubmit={handleVerifyEmail} className="space-y-6">
+                <div className="space-y-3">
+                  <Label htmlFor="verification-code" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Enter Verification Code
+                  </Label>
                   <Input
                     id="verification-code"
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
-                    placeholder="Enter 6-digit code"
+                    placeholder="000000"
                     maxLength={6}
                     required
+                    className="text-center text-2xl font-mono tracking-widest h-14 border-2 focus:border-orange-500"
+                    data-testid="input-verification-code"
                   />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Enter the 6-digit code from your email
+                  </p>
                 </div>
+
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <Mail className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm">
+                      <p className="font-medium text-amber-800 dark:text-amber-200 mb-1">
+                        Check your Gmail inbox
+                      </p>
+                      <ul className="text-amber-700 dark:text-amber-300 space-y-1 text-xs">
+                        <li>• Look for an email from Hema Motor</li>
+                        <li>• Check your spam/junk folder</li>
+                        <li>• The code expires in 10 minutes</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
                 <Button 
                   type="submit" 
-                  className="w-full bg-hema-orange hover:bg-hema-orange/90"
-                  disabled={verifyEmailMutation.isPending}
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white h-12 text-lg font-semibold"
+                  disabled={verifyEmailMutation.isPending || verificationCode.length !== 6}
+                  data-testid="button-verify-email"
                 >
-                  {verifyEmailMutation.isPending ? "Verifying..." : "Verify Email"}
+                  {verifyEmailMutation.isPending ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Verifying...</span>
+                    </div>
+                  ) : (
+                    "Verify Email & Continue"
+                  )}
                 </Button>
               </form>
               
-              <div className="mt-4 text-center">
+              <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <Button 
-                  variant="link" 
+                  type="button"
+                  variant="outline" 
                   onClick={handleResendVerification}
                   disabled={resendVerificationMutation.isPending}
+                  className="w-full h-11"
+                  data-testid="button-resend-code"
                 >
-                  {resendVerificationMutation.isPending ? "Sending..." : "Resend Code"}
+                  {resendVerificationMutation.isPending ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Sending New Code...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Mail className="h-4 w-4" />
+                      <span>Send New Code</span>
+                    </div>
+                  )}
                 </Button>
-              </div>
-              
-              <div className="mt-4 text-center">
+                
                 <Button 
-                  variant="outline" 
+                  type="button"
+                  variant="ghost" 
                   onClick={() => setShowVerification(false)}
+                  className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                  data-testid="button-back-to-login"
                 >
-                  Back to Login
+                  ← Back to Login
                 </Button>
               </div>
             </CardContent>
