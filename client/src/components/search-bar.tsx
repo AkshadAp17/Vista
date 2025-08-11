@@ -23,7 +23,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
   const handleSearch = () => {
     const filters: any = {};
 
-    if (search) filters.search = search;
+    if (search.trim()) filters.search = search.trim();
     if (location && location !== "all") filters.location = location;
     if (priceRange && priceRange !== "all") {
       const [min, max] = priceRange.split("-").map(Number);
@@ -34,10 +34,41 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
     onFiltersChange(filters);
   };
 
+  // Trigger search when filters change (for auto-search on select changes)
+  const handleLocationChange = (value: string) => {
+    setLocation(value);
+    setTimeout(() => {
+      const filters: any = {};
+      if (search.trim()) filters.search = search.trim();
+      if (value && value !== "all") filters.location = value;
+      if (priceRange && priceRange !== "all") {
+        const [min, max] = priceRange.split("-").map(Number);
+        filters.priceRange = `${min},${max}`;
+      }
+      if (vehicleType) filters.vehicleType = vehicleType;
+      onFiltersChange(filters);
+    }, 100);
+  };
+
+  const handlePriceRangeChange = (value: string) => {
+    setPriceRange(value);
+    setTimeout(() => {
+      const filters: any = {};
+      if (search.trim()) filters.search = search.trim();
+      if (location && location !== "all") filters.location = location;
+      if (value && value !== "all") {
+        const [min, max] = value.split("-").map(Number);
+        filters.priceRange = `${min},${max}`;
+      }
+      if (vehicleType) filters.vehicleType = vehicleType;
+      onFiltersChange(filters);
+    }, 100);
+  };
+
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-4 md:p-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-        <div className="relative sm:col-span-2 md:col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+        <div className="relative sm:col-span-2 md:col-span-2 lg:col-span-2">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search by brand, model, vehicle ID..."
@@ -50,7 +81,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
 
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
-          <Select onValueChange={setLocation} value={location}>
+          <Select onValueChange={handleLocationChange} value={location}>
             <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200 text-sm md:text-base">
               <SelectValue placeholder="Location" />
             </SelectTrigger>
@@ -68,7 +99,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
 
         <div className="relative">
           <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
-          <Select onValueChange={setPriceRange} value={priceRange}>
+          <Select onValueChange={handlePriceRangeChange} value={priceRange}>
             <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200 text-sm md:text-base">
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
@@ -88,7 +119,7 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
         </div>
 
         <Button
-          className="bg-hema-orange text-white py-3 px-4 md:px-6 hover:bg-hema-orange/90 font-medium sm:col-span-2 md:col-span-1"
+          className="bg-hema-orange text-white py-3 px-4 md:px-6 hover:bg-hema-orange/90 font-medium sm:col-span-2 md:col-span-1 lg:col-span-1"
           onClick={handleSearch}
         >
           <Search className="h-4 w-4 mr-2" />

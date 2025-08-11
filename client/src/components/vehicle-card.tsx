@@ -32,6 +32,7 @@ interface VehicleCardProps {
     soldAt?: Date;
     fuelType: string;
     sellerId: string;
+    images?: string[];
     seller: {
       id: string;
       firstName: string;
@@ -124,7 +125,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
     }
   };
 
-  const isOwner = user?.id === vehicle.sellerId || user?.isAdmin;
+  const isOwner = (user as any)?.id === vehicle.sellerId || (user as any)?.isAdmin;
 
   const handleViewDetails = () => {
     window.location.href = `/vehicle/${vehicle.id}`;

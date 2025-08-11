@@ -16,6 +16,8 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const { user } = useAuth();
   const [searchFilters, setSearchFilters] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [vehiclesPerPage] = useState(12);
 
   // Handle search parameters from landing page
   useEffect(() => {
@@ -33,13 +35,38 @@ export default function Home() {
     }
   }, []);
 
+  // Reset to first page when search filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchFilters]);
+
   const { data: featuredVehicles = [], isLoading: featuredLoading } = useQuery({
     queryKey: ["/api/vehicles/featured"],
   });
 
-  const { data: vehicles = [], isLoading: vehiclesLoading } = useQuery({
+  const { data: allVehicles = [], isLoading: vehiclesLoading } = useQuery({
     queryKey: ["/api/vehicles", searchFilters],
   });
+
+  // Calculate pagination
+  const indexOfLastVehicle = currentPage * vehiclesPerPage;
+  const indexOfFirstVehicle = indexOfLastVehicle - vehiclesPerPage;
+  const vehicles = (allVehicles as any[]).slice(indexOfFirstVehicle, indexOfLastVehicle);
+  const totalPages = Math.ceil((allVehicles as any[]).length / vehiclesPerPage);
+
+  const handleFiltersChange = (filters: any) => {
+    setSearchFilters(filters);
+    setCurrentPage(1);
+  };
+
+  const goToPage = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    // Scroll to top of results
+    const resultsSection = document.getElementById('search-results');
+    if (resultsSection) {
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-neutral">
@@ -61,7 +88,7 @@ export default function Home() {
             </p>
           </div>
           
-          <SearchBar onFiltersChange={setSearchFilters} />
+          <SearchBar onFiltersChange={handleFiltersChange} />
         </div>
       </section>
 
@@ -82,7 +109,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          ) : featuredVehicles.length === 0 ? (
+          ) : (featuredVehicles as any[]).length === 0 ? (
             <div className="text-center py-12">
               <Bike className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 text-lg mb-2">No featured vehicles available</p>
@@ -90,7 +117,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {featuredVehicles.map((vehicle: any) => (
+              {(featuredVehicles as any[]).map((vehicle: any) => (
                 <VehicleCard key={vehicle.id} vehicle={vehicle} />
               ))}
             </div>
@@ -99,13 +126,13 @@ export default function Home() {
       </section>
 
       {/* All Vehicles */}
-      <section className="py-8 sm:py-12 md:py-16 bg-gray-50">
+      <section id="search-results" className="py-8 sm:py-12 md:py-16 bg-gray-50">
         <div className="container mx-auto px-3 sm:px-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
             <h3 className="text-2xl sm:text-3xl font-bold text-hema-secondary">All Vehicles</h3>
             <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap">
-              <Badge variant="secondary" className="text-xs sm:text-sm">{vehicles.length} vehicles found</Badge>
-              {user?.isAdmin && (
+              <Badge variant="secondary" className="text-xs sm:text-sm">{(allVehicles as any[]).length} vehicles found</Badge>
+              {(user as any)?.isAdmin && (
                 <Button 
                   size="sm"
                   className="bg-hema-orange hover:bg-hema-orange/90 text-xs sm:text-sm touch-target"
@@ -127,24 +154,87 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          ) : vehicles.length === 0 ? (
+          ) : (allVehicles as any[]).length === 0 ? (
             <div className="text-center py-12">
               <SearchIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-600 text-lg mb-2 px-4">No vehicles found matching your criteria.</p>
               <p className="text-gray-400 text-sm mb-4">Try adjusting your search filters or browse all vehicles</p>
               <Button 
                 className="mt-4 bg-hema-orange hover:bg-hema-orange/90 touch-target"
-                onClick={() => setSearchFilters({})}
+                onClick={() => handleFiltersChange({})}
               >
                 Show All Vehicles
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {vehicles.map((vehicle: any) => (
-                <VehicleCard key={vehicle.id} vehicle={vehicle} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8">
+                {vehicles.map((vehicle: any) => (
+                  <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                ))}
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-gray-200">
+                  <div className="text-sm text-gray-600">
+                    Showing {indexOfFirstVehicle + 1} to {Math.min(indexOfLastVehicle, (allVehicles as any[]).length)} of {(allVehicles as any[]).length} results
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="text-xs sm:text-sm"
+                    >
+                      Previous
+                    </Button>
+                    
+                    {/* Page Numbers */}
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        let pageNumber;
+                        if (totalPages <= 5) {
+                          pageNumber = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNumber = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNumber = totalPages - 4 + i;
+                        } else {
+                          pageNumber = currentPage - 2 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNumber}
+                            variant={currentPage === pageNumber ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => goToPage(pageNumber)}
+                            className={`w-8 h-8 text-xs ${
+                              currentPage === pageNumber ? "bg-hema-orange hover:bg-hema-orange/90" : ""
+                            }`}
+                          >
+                            {pageNumber}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="text-xs sm:text-sm"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
