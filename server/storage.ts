@@ -234,6 +234,14 @@ export class DatabaseStorage implements IStorage {
       };
     }
 
+    if (filters?.brand) {
+      query.brand = { $regex: filters.brand, $options: 'i' };
+    }
+
+    if (filters?.fuelType) {
+      query.fuelType = { $regex: filters.fuelType, $options: 'i' };
+    }
+
     const vehicles = await Vehicle.find(query).sort({ createdAt: -1 });
     
     const results = await Promise.all(

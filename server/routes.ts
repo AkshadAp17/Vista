@@ -316,13 +316,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Vehicle routes
   app.get('/api/vehicles', async (req, res) => {
     try {
-      const { search, location, priceRange, vehicleType, sellerId } = req.query;
+      const { search, location, priceRange, vehicleType, sellerId, brand, fuelType } = req.query;
       
       const filters: any = {};
       if (search) filters.search = search as string;
       if (location) filters.location = location as string;
       if (vehicleType) filters.vehicleType = vehicleType as string;
       if (sellerId) filters.sellerId = sellerId as string;
+      if (brand) filters.brand = brand as string;
+      if (fuelType) filters.fuelType = fuelType as string;
       if (priceRange) {
         // Handle both comma and dash separated formats
         const priceStr = priceRange as string;
