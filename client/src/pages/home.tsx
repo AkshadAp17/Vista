@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/header";
 import VehicleCard from "@/components/vehicle-card";
 import SearchBar from "@/components/search-bar";
-import SearchCategories from "@/components/search-categories";
+
 import ChatWidget from "@/components/chat-widget";
 import FloatingBusinessCard from "@/components/floating-business-card";
 import { LoadingSpinner, VehicleCardSkeleton } from "@/components/loading-spinner";
@@ -56,27 +56,12 @@ export default function Home() {
   const totalPages = Math.ceil((allVehicles as any[]).length / vehiclesPerPage);
 
   const handleFiltersChange = (filters: any) => {
+    console.log('Filters changed:', filters);
     setSearchFilters(filters);
     setCurrentPage(1);
   };
 
-  const handleCategorySelect = (category: string) => {
-    const newFilters = { ...searchFilters, search: category };
-    setSearchFilters(newFilters);
-    setCurrentPage(1);
-  };
 
-  const handlePriceRangeSelect = (range: string) => {
-    const newFilters = { ...searchFilters, priceRange: range };
-    setSearchFilters(newFilters);
-    setCurrentPage(1);
-  };
-
-  const handleVehicleTypeSelect = (type: string) => {
-    const newFilters = { ...searchFilters, vehicleType: type };
-    setSearchFilters(newFilters);
-    setCurrentPage(1);
-  };
 
   const goToPage = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -111,53 +96,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Search Categories */}
-      <SearchCategories 
-        onCategorySelect={handleCategorySelect}
-        onPriceRangeSelect={handlePriceRangeSelect}
-        onVehicleTypeSelect={handleVehicleTypeSelect}
-      />
 
-      {/* Featured Vehicles */}
-      <section className="py-8 sm:py-12 md:py-16 bg-white">
-        <div className="container mx-auto px-3 sm:px-4">
-          <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h3 className="text-2xl sm:text-3xl font-bold text-hema-secondary mb-3 sm:mb-4">Featured Vehicles</h3>
-            <p className="text-gray-600 text-base sm:text-lg px-2">Handpicked premium two-wheelers from verified sellers</p>
-          </div>
-          
-          {featuredLoading ? (
-            <div className="space-y-6">
-              <LoadingSpinner size="lg" text="Loading featured vehicles..." className="py-12" />
+
+{/* Featured Vehicles - Only show when no search filters */}
+      {Object.keys(searchFilters).length === 0 && (
+        <section className="py-8 sm:py-12 md:py-16 bg-white">
+          <div className="container mx-auto px-3 sm:px-4">
+            <div className="text-center mb-8 sm:mb-10 md:mb-12">
+              <h3 className="text-2xl sm:text-3xl font-bold text-hema-secondary mb-3 sm:mb-4">Featured Vehicles</h3>
+              <p className="text-gray-600 text-base sm:text-lg px-2">Handpicked premium two-wheelers from verified sellers</p>
+            </div>
+            
+            {featuredLoading ? (
+              <div className="space-y-6">
+                <LoadingSpinner size="lg" text="Loading featured vehicles..." className="py-12" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                  {[...Array(8)].map((_, i) => (
+                    <VehicleCardSkeleton key={i} />
+                  ))}
+                </div>
+              </div>
+            ) : (featuredVehicles as any[]).length === 0 ? (
+              <div className="text-center py-12">
+                <Bike className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg mb-2">No featured vehicles available</p>
+                <p className="text-gray-400">Check back later for new featured listings</p>
+              </div>
+            ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {[...Array(8)].map((_, i) => (
-                  <VehicleCardSkeleton key={i} />
+                {(featuredVehicles as any[]).map((vehicle: any) => (
+                  <VehicleCard key={vehicle.id} vehicle={vehicle} />
                 ))}
               </div>
-            </div>
-          ) : (featuredVehicles as any[]).length === 0 ? (
-            <div className="text-center py-12">
-              <Bike className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg mb-2">No featured vehicles available</p>
-              <p className="text-gray-400">Check back later for new featured listings</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {(featuredVehicles as any[]).map((vehicle: any) => (
-                <VehicleCard key={vehicle.id} vehicle={vehicle} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
+      )}
 
-      {/* All Vehicles */}
+{/* Search Results / All Vehicles */}
       <section id="search-results" className="py-8 sm:py-12 md:py-16 bg-gray-50">
         <div className="container mx-auto px-3 sm:px-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
-            <h3 className="text-2xl sm:text-3xl font-bold text-hema-secondary">All Vehicles</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold text-hema-secondary">
+              {Object.keys(searchFilters).length > 0 ? 'Search Results' : 'All Vehicles'}
+            </h3>
             <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap">
-              <Badge variant="secondary" className="text-xs sm:text-sm">{(allVehicles as any[]).length} vehicles found</Badge>
+              <Badge variant="secondary" className="text-xs sm:text-sm">
+                {(allVehicles as any[]).length} vehicles found
+              </Badge>
+              {Object.keys(searchFilters).length > 0 && (
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleFiltersChange({})}
+                  className="text-xs sm:text-sm"
+                >
+                  Clear Filters
+                </Button>
+              )}
               {(user as any)?.isAdmin && (
                 <Button 
                   size="sm"
