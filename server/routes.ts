@@ -69,6 +69,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email verification route
+  app.post('/api/auth/verify-email', async (req, res) => {
+    try {
+      const { email, verificationCode } = req.body;
+      const user = await AuthService.verifyEmail(email, verificationCode);
+      res.json({ message: "Email verified successfully", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    } catch (error: any) {
+      console.error("Email verification error:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Resend verification code route
+  app.post('/api/auth/resend-verification', async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      if (user.isEmailVerified) {
+        return res.status(400).json({ message: "Email is already verified" });
+      }
+
+      // Generate new verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      await storage.updateUser(user.id, {
+        verificationCode,
+        verificationCodeExpiry,
+      });
+
+      // Send verification email
+      await AuthService.sendVerificationEmail(email, verificationCode);
+      res.json({ message: "Verification code sent successfully" });
+    } catch (error: any) {
+      console.error("Resend verification error:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.get('/api/auth/logout', (req, res) => {
     req.session.destroy((err) => {
       if (err) {
@@ -141,17 +184,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/auth/verify-email', async (req, res) => {
-    try {
-      const { email, verificationCode } = req.body;
-      const user = await AuthService.verifyEmail(email, verificationCode);
-      res.json({ message: "Email verified successfully", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
-    } catch (error: any) {
-      console.error("Email verification error:", error);
-      res.status(400).json({ message: error.message });
-    }
-  });
-
   app.post('/api/auth/resend-verification', async (req, res) => {
     try {
       const { email } = req.body;
@@ -174,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       await AuthService.sendVerificationEmail(email, verificationCode);
-      res.json({ message: "Verification email sent successfully" });
+      res.json({ message: "Verification code sent successfully" });
     } catch (error: any) {
       console.error("Resend verification error:", error);
       res.status(500).json({ message: "Failed to send verification email" });

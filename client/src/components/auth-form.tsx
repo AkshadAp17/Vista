@@ -66,11 +66,24 @@ export default function AuthForm() {
       }
     },
     onError: (error: any) => {
-      toast({
-        title: "Login failed",
-        description: error.message || "Please check your credentials",
-        variant: "destructive",
-      });
+      const errorMessage = error.message || "Please check your credentials";
+      
+      // Check if the error is about unverified email
+      if (errorMessage.includes("verify your email")) {
+        setVerificationEmail(loginData.email);
+        setShowVerification(true);
+        toast({
+          title: "Email verification required",
+          description: "Please verify your email to continue logging in.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     },
   });
 
