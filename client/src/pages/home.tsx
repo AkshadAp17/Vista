@@ -47,6 +47,27 @@ export default function Home() {
 
   const { data: allVehicles = [], isLoading: vehiclesLoading } = useQuery({
     queryKey: ["/api/vehicles", searchFilters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      
+      if (searchFilters.search) params.append('search', searchFilters.search);
+      if (searchFilters.location) params.append('location', searchFilters.location);
+      if (searchFilters.priceRange) params.append('priceRange', searchFilters.priceRange);
+      if (searchFilters.vehicleType) params.append('vehicleType', searchFilters.vehicleType);
+      if (searchFilters.brand) params.append('brand', searchFilters.brand);
+      if (searchFilters.fuelType) params.append('fuelType', searchFilters.fuelType);
+      
+      const url = `/api/vehicles${params.toString() ? '?' + params.toString() : ''}`;
+      console.log('Making API request to:', url, 'with filters:', searchFilters);
+      
+      const response = await fetch(url, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    }
   });
 
   // Calculate pagination
