@@ -155,7 +155,7 @@ export default function ChatWidget() {
       socketRef.current = null;
     }
     
-    // Debounce connection attempts
+    // Reduce connection delay for better responsiveness
     connectionTimeout.current = setTimeout(() => {
       const connectWebSocket = () => {
       try {
@@ -198,6 +198,9 @@ export default function ChatWidget() {
             // Add to processed set
             processedMessageIds.current.add(data.message._id);
             
+            // Also add a small delay to prevent race conditions with optimistic updates
+            setTimeout(() => {
+            
             // Ensure message has proper sender structure with correct IDs and CONTENT
             const message = {
               _id: data.message._id,
@@ -229,12 +232,23 @@ export default function ChatWidget() {
               });
             });
 
-            // Update selected chat if it matches
+            // Update selected chat if it matches, but check for duplicates first
             if (selectedChat && selectedChat.id === data.chatRoomId) {
-              setSelectedChat(prev => prev ? {
-                ...prev,
-                messages: [...(prev.messages || []), message],
-              } : null);
+              setSelectedChat(prev => {
+                if (!prev) return null;
+                
+                // Check if message already exists to prevent duplicates
+                const existingMessage = prev.messages.find(m => m._id === message._id);
+                if (existingMessage) {
+                  console.log("Message already exists in selected chat, skipping");
+                  return prev;
+                }
+                
+                return {
+                  ...prev,
+                  messages: [...(prev.messages || []), message],
+                };
+              });
               
               // Mark this chat as viewed since we're currently looking at it
               viewedChatRooms.current.add(data.chatRoomId);
@@ -251,6 +265,8 @@ export default function ChatWidget() {
             
             // Always invalidate the query to refresh the chat list
             queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
+            
+            }, 50); // Small delay to prevent race condition with optimistic updates
           }
         };
 
@@ -286,7 +302,7 @@ export default function ChatWidget() {
     };
 
       connectWebSocket();
-    }, 300); // 300ms debounce
+    }, 100); // Reduced to 100ms for faster response
 
     return () => {
       if (connectionTimeout.current) {
@@ -350,28 +366,41 @@ export default function ChatWidget() {
         content: messageData.content,
       });
     },
-    onSuccess: (data, variables) => {
+    onSuccess: async (response, variables) => {
       console.log("Message sent successfully");
-      // Replace temp message with real message from server
-      const realMessage = data as any;
-      if (selectedChat && selectedChat.id === variables.chatRoomId) {
-        setSelectedChat(prev => {
-          if (!prev) return null;
-          const updatedMessages = prev.messages.map(msg => 
-            msg._id && msg._id.startsWith('temp-') ? {
-              ...realMessage,
-              _id: realMessage._id || realMessage.id,
-              sender: {
-                id: realMessage.sender?.id || (user as any)?.id || "",
-                firstName: realMessage.sender?.firstName || (user as any)?.firstName || "",
-                lastName: realMessage.sender?.lastName || (user as any)?.lastName || "",
-                profileImageUrl: realMessage.sender?.profileImageUrl || (user as any)?.profileImageUrl || "",
-              }
-            } : msg
-          );
-          return { ...prev, messages: updatedMessages };
-        });
-      }
+      // Get the real message from server response
+      const realMessage = await response.json();
+      
+      // Wait a bit to ensure WebSocket message doesn't create duplicate
+      setTimeout(() => {
+        if (selectedChat && selectedChat.id === variables.chatRoomId) {
+          setSelectedChat(prev => {
+            if (!prev) return null;
+            
+            // Remove temp message and ensure we don't have duplicate real messages
+            const filteredMessages = prev.messages.filter(msg => 
+              !msg._id?.startsWith('temp-') && msg._id !== realMessage._id
+            );
+            
+            // Add the real message if it's not already there
+            const hasRealMessage = filteredMessages.some(msg => msg._id === realMessage._id);
+            if (!hasRealMessage) {
+              filteredMessages.push({
+                ...realMessage,
+                _id: realMessage._id || realMessage.id,
+                sender: {
+                  id: realMessage.sender?.id || (user as any)?.id || "",
+                  firstName: realMessage.sender?.firstName || (user as any)?.firstName || "",
+                  lastName: realMessage.sender?.lastName || (user as any)?.lastName || "",
+                  profileImageUrl: realMessage.sender?.profileImageUrl || (user as any)?.profileImageUrl || "",
+                }
+              });
+            }
+            
+            return { ...prev, messages: filteredMessages };
+          });
+        }
+      }, 100); // Small delay to prevent race condition
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
