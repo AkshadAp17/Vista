@@ -6,6 +6,13 @@ Hema Motor is a full-stack web application designed as a modern marketplace for 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (January 2025)
+- **Search Optimization**: Removed browse categories component to focus on core search functionality
+- **UI Simplification**: Streamlined homepage to display search bar and vehicle results only
+- **Search Enhancement**: Fixed price range filter handling for both dash and comma formats
+- **Conditional Display**: Featured vehicles now hide when search filters are active
+- **Filter Management**: Added clear filters button and improved search result labeling
+
 ## System Architecture
 
 ### UI/UX Decisions
@@ -21,6 +28,7 @@ Preferred communication style: Simple, everyday language.
 - **Backend**: Node.js with Express.js REST API, WebSocket support for real-time communication.
 - **Authentication**: Custom authentication system leveraging Replit Auth (OpenID Connect) with bcrypt for password hashing and secure session management. Includes role-based access control (admin privileges), automatic user profile creation, and a complete forgot password functionality with 2-step verification.
 - **Vehicle Management**: CRUD operations for vehicle listings, advanced search and filter capabilities (location, price, type, brand, vehicle ID/number), support for featured vehicles, and image uploads (base64 storage). Includes a comprehensive vehicle status system ("available", "pending", "sold").
+- **Search System**: Optimized search interface with real-time filtering by search terms, location, price range, and vehicle type. Features conditional display (featured vehicles hidden during search), clear filters functionality, and dynamic result labeling.
 - **Chat System**: Real-time WebSocket-based messaging between buyers and sellers, organized chat rooms per vehicle listing, persistent message history, WhatsApp-style instant message display with optimistic updates, and relative time formatting.
 - **User Management**: Comprehensive settings/profile management for both admin and users, including password change and phone number fields.
 - **Social Features**: Like/share functionality for vehicle cards with local storage.
