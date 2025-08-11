@@ -203,9 +203,9 @@ export default function ChatWidget() {
             
             // Ensure message has proper sender structure with correct IDs and CONTENT
             const message = {
-              _id: data.message._id,
-              id: data.message.id || data.message._id,
-              content: data.message.content,
+              _id: data.message._id || data.message.id,
+              id: data.message._id || data.message.id,
+              content: data.message.content || data.message.text, // Handle both content and text fields
               senderId: data.message.senderId || data.message.sender?.id,
               chatRoomId: data.message.chatRoomId,
               createdAt: data.message.createdAt,
@@ -216,6 +216,8 @@ export default function ChatWidget() {
                 profileImageUrl: data.message.sender?.profileImageUrl || "",
               }
             };
+            
+            console.log("WebSocket processed message:", message);
             
             console.log("Processed message for UI:", message);
             
@@ -366,41 +368,49 @@ export default function ChatWidget() {
         content: messageData.content,
       });
     },
-    onSuccess: async (response, variables) => {
-      console.log("Message sent successfully");
-      // Get the real message from server response
-      const realMessage = await response.json();
+    onSuccess: (realMessage, variables) => {
+      console.log("Message sent successfully", realMessage);
       
-      // Wait a bit to ensure WebSocket message doesn't create duplicate
+      // Small delay to prevent race condition with WebSocket updates
       setTimeout(() => {
         if (selectedChat && selectedChat.id === variables.chatRoomId) {
           setSelectedChat(prev => {
             if (!prev) return null;
             
             // Remove temp message and ensure we don't have duplicate real messages
-            const filteredMessages = prev.messages.filter(msg => 
-              !msg._id?.startsWith('temp-') && msg._id !== realMessage._id
+            let updatedMessages = prev.messages.filter(msg => 
+              !msg._id?.startsWith('temp-') && msg._id !== realMessage._id && msg._id !== realMessage.id
             );
             
             // Add the real message if it's not already there
-            const hasRealMessage = filteredMessages.some(msg => msg._id === realMessage._id);
+            const hasRealMessage = updatedMessages.some(msg => 
+              msg._id === realMessage._id || msg._id === realMessage.id
+            );
             if (!hasRealMessage) {
-              filteredMessages.push({
+              const processedMessage = {
                 ...realMessage,
                 _id: realMessage._id || realMessage.id,
+                id: realMessage._id || realMessage.id,
+                content: realMessage.content, // Ensure content is preserved
                 sender: {
                   id: realMessage.sender?.id || (user as any)?.id || "",
                   firstName: realMessage.sender?.firstName || (user as any)?.firstName || "",
                   lastName: realMessage.sender?.lastName || (user as any)?.lastName || "",
                   profileImageUrl: realMessage.sender?.profileImageUrl || (user as any)?.profileImageUrl || "",
                 }
-              });
+              };
+              
+              console.log("Adding processed message to UI:", processedMessage);
+              updatedMessages.push(processedMessage);
             }
             
-            return { ...prev, messages: filteredMessages };
+            // Sort messages by creation time
+            updatedMessages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            
+            return { ...prev, messages: updatedMessages };
           });
         }
-      }, 100); // Small delay to prevent race condition
+      }, 50); // Reduced delay
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -727,7 +737,7 @@ export default function ChatWidget() {
                               }`}
                             >
                               <p className="text-sm break-words whitespace-pre-wrap">
-                                {message.content || message.text || "Message content not available"}
+                                {message.content || message.text || `[DEBUG: No content - Keys: ${Object.keys(message).join(', ')}]`}
                               </p>
                               <p
                                 className={`text-xs mt-1 ${
