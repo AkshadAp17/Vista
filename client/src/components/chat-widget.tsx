@@ -368,7 +368,9 @@ export default function ChatWidget() {
         content: messageData.content,
       });
     },
-    onSuccess: (realMessage, variables) => {
+    onSuccess: async (response, variables) => {
+      // The response is a Response object, we need to parse it
+      const realMessage = await response.json();
       console.log("Message sent successfully", realMessage);
       
       // Small delay to prevent race condition with WebSocket updates
@@ -388,10 +390,12 @@ export default function ChatWidget() {
             );
             if (!hasRealMessage) {
               const processedMessage = {
-                ...realMessage,
                 _id: realMessage._id || realMessage.id,
                 id: realMessage._id || realMessage.id,
-                content: realMessage.content, // Ensure content is preserved
+                content: realMessage.content,
+                senderId: realMessage.senderId,
+                chatRoomId: realMessage.chatRoomId,
+                createdAt: realMessage.createdAt,
                 sender: {
                   id: realMessage.sender?.id || (user as any)?.id || "",
                   firstName: realMessage.sender?.firstName || (user as any)?.firstName || "",
