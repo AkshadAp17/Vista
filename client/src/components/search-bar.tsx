@@ -110,187 +110,167 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl p-4 md:p-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7 gap-3 md:gap-4">
-        <div className="relative sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search by brand, model, vehicle ID..."
-            className="pl-10 py-3 border-gray-300 focus:ring-2 focus:ring-hema-orange focus:border-transparent text-black dark:text-white text-sm md:text-base"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            data-testid="search-input"
-          />
-        </div>
+    <div className="max-w-7xl mx-auto">
+      <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 md:p-8 backdrop-blur-sm bg-opacity-95">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5">
+          <div className="relative sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="Search by brand, model, vehicle ID..."
+              className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 placeholder-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              data-testid="search-input"
+            />
+          </div>
 
-        <div className="relative">
-          <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
-          <Select onValueChange={handleLocationChange} value={location}>
-            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200 text-sm md:text-base">
-              <SelectValue placeholder="Location" />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
-              <SelectItem value="all">All Locations</SelectItem>
-              <SelectItem value="mumbai">Mumbai</SelectItem>
-              <SelectItem value="delhi">Delhi</SelectItem>
-              <SelectItem value="bangalore">Bangalore</SelectItem>
-              <SelectItem value="chennai">Chennai</SelectItem>
-              <SelectItem value="pune">Pune</SelectItem>
-              <SelectItem value="hyderabad">Hyderabad</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="relative">
+            <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+            <Select onValueChange={handleLocationChange} value={location}>
+              <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                <SelectValue placeholder="Location" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                <SelectItem value="all">All Locations</SelectItem>
+                <SelectItem value="mumbai">Mumbai</SelectItem>
+                <SelectItem value="delhi">Delhi</SelectItem>
+                <SelectItem value="bangalore">Bangalore</SelectItem>
+                <SelectItem value="chennai">Chennai</SelectItem>
+                <SelectItem value="pune">Pune</SelectItem>
+                <SelectItem value="hyderabad">Hyderabad</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Brand Filter */}
-        <div className="relative">
-          <Select onValueChange={handleBrandChange} value={brand}>
-            <SelectTrigger className="py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200 text-sm md:text-base">
-              <SelectValue placeholder="Brand" />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
-              <SelectItem value="all">All Brands</SelectItem>
-              <SelectItem value="honda">Honda</SelectItem>
-              <SelectItem value="suzuki">Suzuki</SelectItem>
-              <SelectItem value="yamaha">Yamaha</SelectItem>
-              <SelectItem value="bajaj">Bajaj</SelectItem>
-              <SelectItem value="tvs">TVS</SelectItem>
-              <SelectItem value="hero">Hero</SelectItem>
-              <SelectItem value="royal enfield">Royal Enfield</SelectItem>
-              <SelectItem value="ktm">KTM</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="relative">
+            <Select onValueChange={handleBrandChange} value={brand}>
+              <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                <SelectValue placeholder="Brand" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                <SelectItem value="all">All Brands</SelectItem>
+                <SelectItem value="honda">Honda</SelectItem>
+                <SelectItem value="suzuki">Suzuki</SelectItem>
+                <SelectItem value="yamaha">Yamaha</SelectItem>
+                <SelectItem value="bajaj">Bajaj</SelectItem>
+                <SelectItem value="tvs">TVS</SelectItem>
+                <SelectItem value="hero">Hero</SelectItem>
+                <SelectItem value="royal enfield">Royal Enfield</SelectItem>
+                <SelectItem value="ktm">KTM</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Vehicle Type Filter */}
-        <div className="relative">
-          <Select onValueChange={handleVehicleTypeChange} value={vehicleType}>
-            <SelectTrigger className="py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200 text-sm md:text-base">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="motorcycle">Motorcycle</SelectItem>
-              <SelectItem value="scooter">Scooter</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="cruiser">Cruiser</SelectItem>
-              <SelectItem value="electric">Electric</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="relative">
+            <Select onValueChange={handleVehicleTypeChange} value={vehicleType}>
+              <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="motorcycle">Motorcycle</SelectItem>
+                <SelectItem value="scooter">Scooter</SelectItem>
+                <SelectItem value="sports">Sports</SelectItem>
+                <SelectItem value="cruiser">Cruiser</SelectItem>
+                <SelectItem value="electric">Electric</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Fuel Type Filter */}
-        <div className="relative">
-          <Select onValueChange={handleFuelTypeChange} value={fuelType}>
-            <SelectTrigger className="py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200 text-sm md:text-base">
-              <SelectValue placeholder="Fuel" />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
-              <SelectItem value="all">All Fuel</SelectItem>
-              <SelectItem value="petrol">Petrol</SelectItem>
-              <SelectItem value="electric">Electric</SelectItem>
-              <SelectItem value="diesel">Diesel</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="relative">
+            <Select onValueChange={handleFuelTypeChange} value={fuelType}>
+              <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                <SelectValue placeholder="Fuel" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                <SelectItem value="all">All Fuel</SelectItem>
+                <SelectItem value="petrol">Petrol</SelectItem>
+                <SelectItem value="electric">Electric</SelectItem>
+                <SelectItem value="diesel">Diesel</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="relative">
-          <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
-          <Select onValueChange={handlePriceRangeChange} value={priceRange}>
-            <SelectTrigger className="pl-10 py-3 border-gray-300 text-black dark:text-white data-[placeholder]:text-gray-800 dark:data-[placeholder]:text-gray-200 text-sm md:text-base">
-              <SelectValue placeholder="Price Range" />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-black dark:bg-gray-800 dark:text-white">
-              <SelectItem value="all">All Prices</SelectItem>
-              <SelectItem value="0-50000">Under ₹50,000</SelectItem>
-              <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
-              <SelectItem value="100000-200000">₹1,00,000 - ₹2,00,000</SelectItem>
-              <SelectItem value="200000-500000">₹2,00,000 - ₹5,00,000</SelectItem>
-              <SelectItem value="500000-999999">Above ₹5,00,000</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="relative">
+            <IndianRupee className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+            <Select onValueChange={handlePriceRangeChange} value={priceRange}>
+              <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                <SelectValue placeholder="Price Range" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                <SelectItem value="all">All Prices</SelectItem>
+                <SelectItem value="0-50000">Under ₹50,000</SelectItem>
+                <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
+                <SelectItem value="100000-200000">₹1,00,000 - ₹2,00,000</SelectItem>
+                <SelectItem value="200000-500000">₹2,00,000 - ₹5,00,000</SelectItem>
+                <SelectItem value="500000-999999">Above ₹5,00,000</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Button
-          className="bg-hema-orange text-white py-3 px-4 md:px-6 hover:bg-hema-orange/90 font-medium xl:col-span-1"
-          onClick={handleSearch}
-          data-testid="search-button"
-        >
-          <Search className="h-4 w-4 mr-2" />
-          <span className="hidden lg:inline">Search</span>
-        </Button>
+          <Button
+            className="bg-gradient-to-r from-hema-orange to-orange-600 text-white py-4 px-6 hover:from-hema-orange/90 hover:to-orange-600/90 font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 xl:col-span-1"
+            onClick={handleSearch}
+            data-testid="search-button"
+          >
+            <Search className="h-5 w-5 mr-2" />
+            <span className="hidden lg:inline">Search</span>
+            <span className="lg:hidden">Go</span>
+          </Button>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const newType = vehicleType === "motorcycle" ? "" : "motorcycle";
-            setVehicleType(newType);
-            // Trigger search automatically when vehicle type changes
-            const filters: any = {};
-            if (search) filters.search = search;
-            if (location) filters.location = location;
-            if (priceRange) {
-              const [min, max] = priceRange.split("-").map(Number);
-              filters.priceRange = `${min},${max}`;
+        {/* Quick filter buttons */}
+        <div className="mt-6 flex flex-wrap gap-3 justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const newType = vehicleType === "motorcycle" ? "" : "motorcycle";
+              setVehicleType(newType);
+              handleVehicleTypeChange(newType || "all");
+            }}
+            className={
+              vehicleType === "motorcycle" 
+                ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90 rounded-full px-6 py-2 font-medium shadow-md" 
+                : "text-gray-700 border-gray-300 hover:border-hema-orange hover:text-hema-orange rounded-full px-6 py-2 font-medium shadow-sm transition-all duration-200"
             }
-            if (newType) filters.vehicleType = newType;
-            onFiltersChange(filters);
-          }}
-          className={
-            vehicleType === "motorcycle" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
-          }
-        >
-          Motorcycles
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const newType = vehicleType === "scooter" ? "" : "scooter";
-            setVehicleType(newType);
-            // Trigger search automatically when vehicle type changes
-            const filters: any = {};
-            if (search) filters.search = search;
-            if (location) filters.location = location;
-            if (priceRange) {
-              const [min, max] = priceRange.split("-").map(Number);
-              filters.priceRange = `${min},${max}`;
+          >
+            🏍️ Motorcycles
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const newType = vehicleType === "scooter" ? "" : "scooter";
+              setVehicleType(newType);
+              handleVehicleTypeChange(newType || "all");
+            }}
+            className={
+              vehicleType === "scooter" 
+                ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90 rounded-full px-6 py-2 font-medium shadow-md" 
+                : "text-gray-700 border-gray-300 hover:border-hema-orange hover:text-hema-orange rounded-full px-6 py-2 font-medium shadow-sm transition-all duration-200"
             }
-            if (newType) filters.vehicleType = newType;
-            onFiltersChange(filters);
-          }}
-          className={
-            vehicleType === "scooter" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
-          }
-        >
-          Scooters
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const newType = vehicleType === "electric" ? "" : "electric";
-            setVehicleType(newType);
-            // Trigger search automatically when vehicle type changes
-            const filters: any = {};
-            if (search) filters.search = search;
-            if (location) filters.location = location;
-            if (priceRange) {
-              const [min, max] = priceRange.split("-").map(Number);
-              filters.priceRange = `${min},${max}`;
+          >
+            🛴 Scooters
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const newType = vehicleType === "electric" ? "" : "electric";
+              setVehicleType(newType);
+              handleVehicleTypeChange(newType || "all");
+            }}
+            className={
+              vehicleType === "electric" 
+                ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90 rounded-full px-6 py-2 font-medium shadow-md" 
+                : "text-gray-700 border-gray-300 hover:border-hema-orange hover:text-hema-orange rounded-full px-6 py-2 font-medium shadow-sm transition-all duration-200"
             }
-            if (newType) filters.vehicleType = newType;
-            onFiltersChange(filters);
-          }}
-          className={
-            vehicleType === "electric" ? "bg-hema-orange text-white border-hema-orange hover:bg-hema-orange/90" : "text-gray-700"
-          }
-        >
-          Electric
-        </Button>
+          >
+            ⚡ Electric
+          </Button>
+        </div>
       </div>
     </div>
   );
