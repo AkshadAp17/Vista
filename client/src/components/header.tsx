@@ -56,7 +56,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50">
+    <header className="bg-white shadow-lg sticky top-0 z-50 border-b-2 border-orange-100">
       <div className="container mx-auto px-3 sm:px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 md:space-x-4">
@@ -107,13 +107,14 @@ export default function Header() {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 md:h-9 md:w-9 rounded-full touch-target">
-                      <Avatar className="h-8 w-8 md:h-9 md:w-9">
+                    <Button variant="ghost" className="relative h-10 w-10 md:h-11 md:w-11 rounded-full touch-target border-2 border-orange-200 hover:border-orange-300 transition-colors">
+                      <Avatar className="h-9 w-9 md:h-10 md:w-10">
                         <AvatarImage src={(user as any)?.profileImageUrl || ""} alt="Profile" />
-                        <AvatarFallback className="text-xs md:text-sm">
+                        <AvatarFallback className="text-xs md:text-sm bg-gradient-to-br from-orange-500 to-red-500 text-white font-bold border-2 border-white">
                           {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
                         </AvatarFallback>
                       </Avatar>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-48 md:w-56 mr-2" align="end" forceMount>

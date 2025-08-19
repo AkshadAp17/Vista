@@ -16,10 +16,20 @@ export function LoadingSpinner({ size = "md", className, text }: LoadingSpinnerP
 
   return (
     <div className={cn("flex items-center justify-center", className)}>
-      <div className="flex flex-col items-center space-y-2">
-        <Loader2 className={cn("animate-spin text-hema-orange", sizeClasses[size])} />
+      <div className="flex flex-col items-center space-y-3">
+        <div className="relative">
+          <div className={cn("bg-gradient-to-r from-orange-500 to-red-500 rounded-full animate-spin border-4 border-transparent", sizeClasses[size])}>
+            <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
+              <Loader2 className={cn("text-orange-500 animate-spin", 
+                size === "sm" ? "h-2 w-2" : 
+                size === "md" ? "h-3 w-3" : "h-4 w-4"
+              )} />
+            </div>
+          </div>
+          <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-orange-400 rounded-full animate-ping"></div>
+        </div>
         {text && (
-          <p className="text-sm text-gray-600 animate-pulse">{text}</p>
+          <p className="text-sm text-gray-600 animate-pulse font-medium">{text}</p>
         )}
       </div>
     </div>

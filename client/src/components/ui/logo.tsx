@@ -75,19 +75,21 @@ export function Logo({
   return (
     <div className={cn("flex items-center", sizes[size].container, className)}>
       <div className="relative">
-        <Bike 
-          className={cn(
-            sizes[size].icon, 
-            variants[variant].icon, 
-            isAnimating && "transform transition-transform duration-700",
-            isAnimating && "animate-bounce"
-          )}
-        />
+        <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-full p-2 border-2 border-orange-200 shadow-lg">
+          <Bike 
+            className={cn(
+              sizes[size].icon, 
+              "text-white",
+              isAnimating && "transform transition-transform duration-700",
+              isAnimating && "animate-bounce"
+            )}
+          />
+        </div>
         {animated && (
           <div className={cn(
-            "absolute -top-1 -right-1 w-2 h-2 rounded-full animate-pulse",
-            size === "lg" || size === "xl" ? "w-3 h-3" : "w-2 h-2",
-            variant === "default" ? "bg-orange-400" : "bg-white"
+            "absolute -top-1 -right-1 rounded-full animate-pulse border-2 border-white",
+            size === "lg" || size === "xl" ? "w-4 h-4" : "w-3 h-3",
+            "bg-green-500"
           )}></div>
         )}
       </div>
