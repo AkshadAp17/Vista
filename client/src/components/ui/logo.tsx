@@ -59,9 +59,9 @@ export function Logo({
   
   const variants = {
     default: {
-      icon: "text-hema-orange",
-      title: "text-hema-secondary",
-      tagline: "text-gray-500",
+      icon: "text-orange-500",
+      title: "text-gray-900",
+      tagline: "text-orange-500",
       titleGradient: "from-orange-600 to-red-600",
     },
     white: {

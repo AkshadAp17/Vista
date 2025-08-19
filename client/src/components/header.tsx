@@ -56,22 +56,12 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
-      <div className="container mx-auto px-4 sm:px-6 py-4">
+    <header className="bg-white shadow-lg sticky top-0 z-50">
+      <div className="container mx-auto px-3 sm:px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 md:space-x-6">
-            <a href="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
-              <div className="bg-gradient-to-r from-hema-orange to-orange-600 rounded-xl p-2.5 shadow-md">
-                <Bike className="h-7 w-7 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight leading-none">
-                  Hema Motor
-                </h1>
-                <p className="text-xs text-hema-orange font-medium -mt-0.5">
-                  Dream Ride Awaits
-                </p>
-              </div>
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <a href="/" className="flex items-center space-x-2">
+              <Logo size="md" animated={true} />
             </a>
             <nav className="hidden lg:flex space-x-3 xl:space-x-4">
               <a href="/" className="text-gray-700 hover:text-hema-orange font-medium text-sm xl:text-base transition-colors">
