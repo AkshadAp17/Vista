@@ -64,7 +64,7 @@ export default function AuthForm() {
       if (response.user?.isAdmin) {
         setLocation("/admin");
       } else {
-        setLocation("/dashboard");
+        setLocation("/");
       }
     },
     onError: (error: any) => {

@@ -83,15 +83,26 @@ export default function Header() {
             {isAuthenticated ? (
               <>
                 {user && (user as any)?.isAdmin && (
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    className="hidden md:inline-flex text-xs md:text-sm touch-target"
-                    onClick={() => window.location.href = '/admin'}
-                  >
-                    <span className="hidden sm:inline">Admin Panel</span>
-                    <span className="sm:hidden">Admin</span>
-                  </Button>
+                  <>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className="hidden md:inline-flex text-xs md:text-sm touch-target"
+                      onClick={() => window.location.href = '/admin'}
+                    >
+                      <span className="hidden sm:inline">Admin Panel</span>
+                      <span className="sm:hidden">Admin</span>
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className="hidden md:inline-flex text-xs md:text-sm touch-target"
+                      onClick={() => window.location.href = '/users'}
+                    >
+                      <span className="hidden sm:inline">All Users</span>
+                      <span className="sm:hidden">Users</span>
+                    </Button>
+                  </>
                 )}
                 
                 <DropdownMenu>
@@ -120,6 +131,12 @@ export default function Header() {
                       <DropdownMenuItem className="md:hidden" onClick={() => window.location.href = '/admin'}>
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Admin Panel</span>
+                      </DropdownMenuItem>
+                    )}
+                    {user && (user as any)?.isAdmin && (
+                      <DropdownMenuItem onClick={() => window.location.href = '/users'}>
+                        <User className="mr-2 h-4 w-4" />
+                        <span>All Users</span>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem onClick={() => setSettingsOpen(true)}>

@@ -10,6 +10,7 @@ import Home from "@/pages/home";
 import AdminDashboard from "@/pages/admin-dashboard";
 import UserDashboard from "@/pages/user-dashboard";
 import VehicleDetail from "@/pages/vehicle-detail";
+import UsersPage from "@/pages/users";
 
 function Router() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -35,6 +36,7 @@ function Router() {
           <Route path="/dashboard">
             {user?.isAdmin ? <AdminDashboard /> : <UserDashboard />}
           </Route>
+          <Route path="/users" component={UsersPage} />
           <Route path="/vehicle/:id" component={VehicleDetail} />
         </>
       )}
