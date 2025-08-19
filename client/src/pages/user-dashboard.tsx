@@ -64,7 +64,7 @@ export default function UserDashboard() {
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <img src={logoIcon} alt="Hema Motor" className="h-8 w-8 sm:h-10 sm:w-10" />
+{/*               <img src={logoIcon} alt="Hema Motor" className="h-8 w-8 sm:h-10 sm:w-10" /> */}
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
                 <Bike className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
