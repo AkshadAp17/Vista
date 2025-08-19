@@ -44,6 +44,8 @@ export default function AuthForm() {
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showResetForm, setShowResetForm] = useState(false);
+  const [showVerifyAccount, setShowVerifyAccount] = useState(false);
+  const [accountVerificationEmail, setAccountVerificationEmail] = useState("");
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -207,6 +209,31 @@ export default function AuthForm() {
     },
   });
 
+  const verifyAccountMutation = useMutation({
+    mutationFn: (email: string) => apiRequest("POST", "/api/auth/resend-verification", { email }),
+    onSuccess: () => {
+      toast({
+        title: "Verification email sent",
+        description: "Please check your email for the new verification code",
+      });
+      setVerificationEmail(accountVerificationEmail);
+      setShowVerification(true);
+      setShowVerifyAccount(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send verification email",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleVerifyAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+    verifyAccountMutation.mutate(accountVerificationEmail);
+  };
+
   const handleForgotPassword = (e: React.FormEvent) => {
     e.preventDefault();
     forgotPasswordMutation.mutate(forgotEmail);
@@ -223,7 +250,7 @@ export default function AuthForm() {
 
   // Visual side component
   const VisualSide = ({ title, subtitle, features }: { title: string; subtitle: string; features: string[] }) => (
-    <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 relative overflow-hidden">
+    <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 relative overflow-hidden items-center justify-center">
       {/* Business Card Button */}
       <div className="absolute top-6 left-6 z-20">
         <Button
@@ -286,7 +313,7 @@ export default function AuthForm() {
         </div>
       </div>
       
-      <div className="relative z-10 flex flex-col justify-center items-center text-white p-8 h-full">
+      <div className="relative z-10 flex flex-col justify-center items-center text-white p-8">
         <div className="text-center space-y-8 max-w-lg backdrop-blur-sm bg-black/20 p-10 rounded-3xl border border-white/20 shadow-2xl animate-in fade-in-50 duration-700">
           <div className="bg-white/15 backdrop-blur-sm p-8 rounded-full w-32 h-32 flex items-center justify-center mx-auto relative group shadow-2xl">
             <div className="absolute inset-0 bg-white/10 rounded-full animate-ping opacity-50 duration-2000 group-hover:opacity-100"></div>
@@ -592,6 +619,83 @@ export default function AuthForm() {
     );
   }
 
+  // Show verify account form if needed
+  if (showVerifyAccount) {
+    return (
+      <div className="min-h-screen flex">
+        <VisualSide 
+          title="Verify Account"
+          subtitle="Re-verify your account to access all features"
+          features={[
+            "Enter your email to get a new verification code",
+            "Check your email for the verification code",
+            "Continue using all platform features"
+          ]}
+        />
+
+        {/* Right Side - Verify Account Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white dark:bg-slate-900 p-4">
+          <Card className="w-full max-w-md border-none shadow-2xl">
+            <CardHeader className="text-center space-y-4 pb-6">
+              <div className="flex justify-center mb-4">
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 rounded-full">
+                  <Mail className="h-10 w-10 text-white" />
+                </div>
+              </div>
+              <CardTitle className="text-2xl font-bold text-orange-600 dark:text-orange-400">Verify Account</CardTitle>
+              <CardDescription className="text-base text-gray-600 dark:text-gray-300">
+                Enter your email to re-verify your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleVerifyAccount} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="verify-email">Email</Label>
+                  <Input
+                    id="verify-email"
+                    type="email"
+                    value={accountVerificationEmail}
+                    onChange={(e) => setAccountVerificationEmail(e.target.value)}
+                    placeholder="rider@bikemail.com"
+                    required
+                    data-testid="input-verify-email"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white h-12 text-lg font-semibold"
+                  disabled={verifyAccountMutation.isPending}
+                  data-testid="button-send-verification"
+                >
+                  {verifyAccountMutation.isPending ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Sending Verification Email...</span>
+                    </div>
+                  ) : (
+                    "Send Verification Email"
+                  )}
+                </Button>
+              </form>
+              
+              <div className="mt-6 text-center">
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  onClick={() => setShowVerifyAccount(false)}
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                  data-testid="button-back-to-auth"
+                >
+                  ← Back to Login
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   // Show business card if needed
   if (showBusinessCard) {
     return (
@@ -671,7 +775,7 @@ export default function AuthForm() {
                         autoComplete="current-password"
                         style={{ 
                           WebkitTextSecurity: showLoginPassword ? 'none' : 'disc',
-                        }}
+                        } as React.CSSProperties}
                         className="pr-10"
                         required
                       />
@@ -696,6 +800,18 @@ export default function AuthForm() {
                     disabled={loginMutation.isPending}
                   >
                     {loginMutation.isPending ? "Signing In..." : "Sign In"}
+                  </Button>
+                  
+                  {/* Verify Account Button */}
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="w-full border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                    onClick={() => setShowVerifyAccount(true)}
+                    data-testid="button-verify-account-login"
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Verify Account
                   </Button>
                 </form>
               </TabsContent>
@@ -748,7 +864,7 @@ export default function AuthForm() {
                         autoComplete="new-password"
                         style={{ 
                           WebkitTextSecurity: showSignupPassword ? 'none' : 'disc',
-                        }}
+                        } as React.CSSProperties}
                         className="pr-10"
                         required
                       />
@@ -773,6 +889,18 @@ export default function AuthForm() {
                     disabled={signupMutation.isPending}
                   >
                     {signupMutation.isPending ? "Creating Account..." : "Create Account"}
+                  </Button>
+                  
+                  {/* Verify Account Button */}
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="w-full border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                    onClick={() => setShowVerifyAccount(true)}
+                    data-testid="button-verify-account-signup"
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Verify Account
                   </Button>
                 </form>
               </TabsContent>
