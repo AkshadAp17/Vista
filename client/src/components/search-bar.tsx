@@ -112,114 +112,118 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 md:p-8 backdrop-blur-sm bg-opacity-95">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5">
-          <div className="relative sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              placeholder="Search by brand, model, vehicle ID..."
-              className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 placeholder-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              data-testid="search-input"
-            />
+        <div className="space-y-4">
+          {/* Main search row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
+            <div className="relative sm:col-span-2 md:col-span-2 lg:col-span-2">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                placeholder="Search by brand, model, vehicle ID..."
+                className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 placeholder-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                data-testid="search-input"
+              />
+            </div>
+
+            <div className="relative">
+              <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+              <Select onValueChange={handleLocationChange} value={location}>
+                <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                  <SelectValue placeholder="Location" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                  <SelectItem value="all">All Locations</SelectItem>
+                  <SelectItem value="mumbai">Mumbai</SelectItem>
+                  <SelectItem value="delhi">Delhi</SelectItem>
+                  <SelectItem value="bangalore">Bangalore</SelectItem>
+                  <SelectItem value="chennai">Chennai</SelectItem>
+                  <SelectItem value="pune">Pune</SelectItem>
+                  <SelectItem value="hyderabad">Hyderabad</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="relative">
+              <Select onValueChange={handleBrandChange} value={brand}>
+                <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                  <SelectValue placeholder="Brand" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                  <SelectItem value="all">All Brands</SelectItem>
+                  <SelectItem value="honda">Honda</SelectItem>
+                  <SelectItem value="suzuki">Suzuki</SelectItem>
+                  <SelectItem value="yamaha">Yamaha</SelectItem>
+                  <SelectItem value="bajaj">Bajaj</SelectItem>
+                  <SelectItem value="tvs">TVS</SelectItem>
+                  <SelectItem value="hero">Hero</SelectItem>
+                  <SelectItem value="royal enfield">Royal Enfield</SelectItem>
+                  <SelectItem value="ktm">KTM</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="relative">
+              <Select onValueChange={handleVehicleTypeChange} value={vehicleType}>
+                <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="motorcycle">Motorcycle</SelectItem>
+                  <SelectItem value="scooter">Scooter</SelectItem>
+                  <SelectItem value="sports">Sports</SelectItem>
+                  <SelectItem value="cruiser">Cruiser</SelectItem>
+                  <SelectItem value="electric">Electric</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="relative">
+              <Select onValueChange={handleFuelTypeChange} value={fuelType}>
+                <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                  <SelectValue placeholder="Fuel" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                  <SelectItem value="all">All Fuel</SelectItem>
+                  <SelectItem value="petrol">Petrol</SelectItem>
+                  <SelectItem value="electric">Electric</SelectItem>
+                  <SelectItem value="diesel">Diesel</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="relative">
+              <IndianRupee className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+              <Select onValueChange={handlePriceRangeChange} value={priceRange}>
+                <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
+                  <SelectValue placeholder="Price Range" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
+                  <SelectItem value="all">All Prices</SelectItem>
+                  <SelectItem value="0-50000">Under ₹50,000</SelectItem>
+                  <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
+                  <SelectItem value="100000-200000">₹1,00,000 - ₹2,00,000</SelectItem>
+                  <SelectItem value="200000-500000">₹2,00,000 - ₹5,00,000</SelectItem>
+                  <SelectItem value="500000-999999">Above ₹5,00,000</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="relative">
-            <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
-            <Select onValueChange={handleLocationChange} value={location}>
-              <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
-                <SelectItem value="all">All Locations</SelectItem>
-                <SelectItem value="mumbai">Mumbai</SelectItem>
-                <SelectItem value="delhi">Delhi</SelectItem>
-                <SelectItem value="bangalore">Bangalore</SelectItem>
-                <SelectItem value="chennai">Chennai</SelectItem>
-                <SelectItem value="pune">Pune</SelectItem>
-                <SelectItem value="hyderabad">Hyderabad</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="relative">
-            <Select onValueChange={handleBrandChange} value={brand}>
-              <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
-                <SelectValue placeholder="Brand" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
-                <SelectItem value="all">All Brands</SelectItem>
-                <SelectItem value="honda">Honda</SelectItem>
-                <SelectItem value="suzuki">Suzuki</SelectItem>
-                <SelectItem value="yamaha">Yamaha</SelectItem>
-                <SelectItem value="bajaj">Bajaj</SelectItem>
-                <SelectItem value="tvs">TVS</SelectItem>
-                <SelectItem value="hero">Hero</SelectItem>
-                <SelectItem value="royal enfield">Royal Enfield</SelectItem>
-                <SelectItem value="ktm">KTM</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="relative">
-            <Select onValueChange={handleVehicleTypeChange} value={vehicleType}>
-              <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="motorcycle">Motorcycle</SelectItem>
-                <SelectItem value="scooter">Scooter</SelectItem>
-                <SelectItem value="sports">Sports</SelectItem>
-                <SelectItem value="cruiser">Cruiser</SelectItem>
-                <SelectItem value="electric">Electric</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="relative">
-            <Select onValueChange={handleFuelTypeChange} value={fuelType}>
-              <SelectTrigger className="py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
-                <SelectValue placeholder="Fuel" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
-                <SelectItem value="all">All Fuel</SelectItem>
-                <SelectItem value="petrol">Petrol</SelectItem>
-                <SelectItem value="electric">Electric</SelectItem>
-                <SelectItem value="diesel">Diesel</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="relative">
-            <IndianRupee className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
-            <Select onValueChange={handlePriceRangeChange} value={priceRange}>
-              <SelectTrigger className="pl-12 py-4 border-2 border-gray-200 focus:ring-2 focus:ring-hema-orange focus:border-hema-orange rounded-xl text-gray-800 data-[placeholder]:text-gray-500 text-base font-medium shadow-sm transition-all duration-200 hover:border-gray-300">
-                <SelectValue placeholder="Price Range" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
-                <SelectItem value="all">All Prices</SelectItem>
-                <SelectItem value="0-50000">Under ₹50,000</SelectItem>
-                <SelectItem value="50000-100000">₹50,000 - ₹1,00,000</SelectItem>
-                <SelectItem value="100000-200000">₹1,00,000 - ₹2,00,000</SelectItem>
-                <SelectItem value="200000-500000">₹2,00,000 - ₹5,00,000</SelectItem>
-                <SelectItem value="500000-999999">Above ₹5,00,000</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="xl:col-span-1 flex justify-center">
+          {/* Centered search button */}
+          <div className="flex justify-center">
             <Button
-              className="bg-gradient-to-r from-hema-orange to-orange-600 text-white py-4 px-8 hover:from-hema-orange/90 hover:to-orange-600/90 font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto min-w-[120px]"
+              className="bg-gradient-to-r from-hema-orange to-orange-600 text-white py-4 px-12 hover:from-hema-orange/90 hover:to-orange-600/90 font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
               onClick={handleSearch}
               data-testid="search-button"
             >
-              <Search className="h-5 w-5 mr-2" />
-              <span>Search</span>
+              <Search className="h-5 w-5 mr-3" />
+              <span className="text-lg">Search</span>
             </Button>
           </div>
-      </div>
+        </div>
 
         {/* Quick filter buttons */}
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
