@@ -264,9 +264,9 @@ export default function AuthForm() {
       </div>
       {/* Dynamic background elements */}
       <div className="absolute inset-0">
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-orange-400/40 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-400/40 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-300/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-orange-400/40 rounded-full blur-3xl animate-[pulse_4s_ease-in-out_infinite]"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-400/40 rounded-full blur-3xl animate-[pulse_4s_ease-in-out_infinite]" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-300/30 rounded-full blur-3xl animate-[pulse_4s_ease-in-out_infinite]" style={{ animationDelay: '1s' }}></div>
       </div>
       
       {/* Animated motorcycle path */}
@@ -314,18 +314,18 @@ export default function AuthForm() {
       </div>
       
       <div className="relative z-10 flex flex-col justify-center items-center text-white p-8">
-        <div className="text-center space-y-8 max-w-lg backdrop-blur-sm bg-black/20 p-10 rounded-3xl border border-white/20 shadow-2xl animate-in fade-in-50 duration-700">
+        <div className="text-center space-y-8 max-w-lg backdrop-blur-sm bg-black/20 p-10 rounded-3xl border border-white/20 shadow-2xl">
           <div className="bg-white/15 backdrop-blur-sm p-8 rounded-full w-32 h-32 flex items-center justify-center mx-auto relative group shadow-2xl">
-            <div className="absolute inset-0 bg-white/10 rounded-full animate-ping opacity-50 duration-2000 group-hover:opacity-100"></div>
+            <div className="absolute inset-0 bg-white/10 rounded-full animate-[ping_3s_ease-in-out_infinite] opacity-50 group-hover:opacity-100"></div>
             <div className="relative z-10 flex items-center justify-center">
               <Bike className="h-12 w-12 text-white" />
             </div>
           </div>
           <div className="space-y-4">
-            <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-orange-200 to-white bg-clip-text text-transparent animate-in slide-in-from-bottom-4 duration-700">{title}</h1>
-            <p className="text-lg lg:text-xl text-white/90 animate-in slide-in-from-bottom-5 duration-700 delay-150">{subtitle}</p>
+            <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-orange-200 to-white bg-clip-text text-transparent">{title}</h1>
+            <p className="text-lg lg:text-xl text-white/90">{subtitle}</p>
           </div>
-          <div className="space-y-4 text-white/85 animate-in slide-in-from-bottom-6 duration-700 delay-300">
+          <div className="space-y-4 text-white/85">
             {features.map((feature, index) => (
               <div key={index} className="flex items-center space-x-3 transition-all hover:translate-x-1 duration-300 text-left">
                 <div className="w-2 h-2 bg-orange-300 rounded-full flex-shrink-0"></div>
@@ -337,7 +337,7 @@ export default function AuthForm() {
       </div>
       
       {/* Decorative motorcycle silhouettes */}
-      <div className="absolute bottom-10 right-10 opacity-10 animate-in slide-in-from-right duration-1000 delay-500">
+      <div className="absolute bottom-10 right-10 opacity-10">
         <svg viewBox="0 0 400 200" className="w-96 h-48">
           <path d="M50 150 Q100 120 150 130 Q200 140 250 120 Q300 100 350 110" 
                 stroke="white" strokeWidth="3" fill="none"/>
@@ -350,7 +350,7 @@ export default function AuthForm() {
         </svg>
       </div>
       
-      <div className="absolute top-20 left-20 opacity-10 animate-in slide-in-from-left duration-1000 delay-700">
+      <div className="absolute top-20 left-20 opacity-10">
         <svg viewBox="0 0 300 150" className="w-72 h-36">
           <circle cx="60" cy="120" r="20" fill="white"/>
           <circle cx="200" cy="110" r="20" fill="white"/>
@@ -363,20 +363,14 @@ export default function AuthForm() {
 
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div 
-            key={i}
-            className="absolute rounded-full bg-white/30 animate-float"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 6 + 2}px`,
-              height: `${Math.random() * 6 + 2}px`,
-              animationDuration: `${Math.random() * 10 + 10}s`,
-              animationDelay: `${Math.random() * 5}s`
-            }}
-          />
-        ))}
+        <div className="absolute rounded-full bg-white/30 animate-[float_12s_ease-in-out_infinite]" style={{top: '10%', left: '15%', width: '4px', height: '4px', animationDelay: '0s'}} />
+        <div className="absolute rounded-full bg-white/20 animate-[float_15s_ease-in-out_infinite]" style={{top: '25%', left: '80%', width: '3px', height: '3px', animationDelay: '2s'}} />
+        <div className="absolute rounded-full bg-white/25 animate-[float_18s_ease-in-out_infinite]" style={{top: '60%', left: '10%', width: '5px', height: '5px', animationDelay: '4s'}} />
+        <div className="absolute rounded-full bg-white/30 animate-[float_14s_ease-in-out_infinite]" style={{top: '80%', left: '70%', width: '2px', height: '2px', animationDelay: '1s'}} />
+        <div className="absolute rounded-full bg-white/20 animate-[float_16s_ease-in-out_infinite]" style={{top: '40%', left: '90%', width: '4px', height: '4px', animationDelay: '3s'}} />
+        <div className="absolute rounded-full bg-white/25 animate-[float_13s_ease-in-out_infinite]" style={{top: '70%', left: '30%', width: '3px', height: '3px', animationDelay: '5s'}} />
+        <div className="absolute rounded-full bg-white/30 animate-[float_17s_ease-in-out_infinite]" style={{top: '15%', left: '60%', width: '5px', height: '5px', animationDelay: '2.5s'}} />
+        <div className="absolute rounded-full bg-white/20 animate-[float_11s_ease-in-out_infinite]" style={{top: '90%', left: '20%', width: '4px', height: '4px', animationDelay: '6s'}} />
       </div>
     </div>
   );
