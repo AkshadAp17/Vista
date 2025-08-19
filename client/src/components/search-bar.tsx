@@ -209,15 +209,16 @@ export default function SearchBar({ onFiltersChange }: SearchBarProps) {
             </Select>
           </div>
 
-          <Button
-            className="bg-gradient-to-r from-hema-orange to-orange-600 text-white py-4 px-6 hover:from-hema-orange/90 hover:to-orange-600/90 font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 xl:col-span-1"
-            onClick={handleSearch}
-            data-testid="search-button"
-          >
-            <Search className="h-5 w-5 mr-2" />
-            <span className="hidden lg:inline">Search</span>
-            <span className="lg:hidden">Go</span>
-          </Button>
+          <div className="xl:col-span-1 flex justify-center">
+            <Button
+              className="bg-gradient-to-r from-hema-orange to-orange-600 text-white py-4 px-8 hover:from-hema-orange/90 hover:to-orange-600/90 font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto min-w-[120px]"
+              onClick={handleSearch}
+              data-testid="search-button"
+            >
+              <Search className="h-5 w-5 mr-2" />
+              <span>Search</span>
+            </Button>
+          </div>
       </div>
 
         {/* Quick filter buttons */}

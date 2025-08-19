@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 
 export default function Home() {
   const { user } = useAuth();
-  const [searchFilters, setSearchFilters] = useState({});
+  const [searchFilters, setSearchFilters] = useState<any>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [vehiclesPerPage] = useState(12);
 
@@ -50,12 +50,12 @@ export default function Home() {
     queryFn: async () => {
       const params = new URLSearchParams();
       
-      if (searchFilters.search) params.append('search', searchFilters.search);
-      if (searchFilters.location) params.append('location', searchFilters.location);
-      if (searchFilters.priceRange) params.append('priceRange', searchFilters.priceRange);
-      if (searchFilters.vehicleType) params.append('vehicleType', searchFilters.vehicleType);
-      if (searchFilters.brand) params.append('brand', searchFilters.brand);
-      if (searchFilters.fuelType) params.append('fuelType', searchFilters.fuelType);
+      if (searchFilters?.search) params.append('search', searchFilters.search);
+      if (searchFilters?.location) params.append('location', searchFilters.location);
+      if (searchFilters?.priceRange) params.append('priceRange', searchFilters.priceRange);
+      if (searchFilters?.vehicleType) params.append('vehicleType', searchFilters.vehicleType);
+      if (searchFilters?.brand) params.append('brand', searchFilters.brand);
+      if (searchFilters?.fuelType) params.append('fuelType', searchFilters.fuelType);
       
       const url = `/api/vehicles${params.toString() ? '?' + params.toString() : ''}`;
       console.log('Making API request to:', url, 'with filters:', searchFilters);
@@ -98,34 +98,18 @@ export default function Home() {
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-hema-orange via-orange-500 to-red-600 text-white py-12 sm:py-16 md:py-20 relative overflow-hidden">
-        {/* Clean geometric background patterns */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-48 h-48 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="flex items-center justify-center mb-6 sm:mb-8">
-              <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white rounded-2xl p-3 sm:p-4 md:p-5 mr-3 sm:mr-4 shadow-lg">
-                <Bike className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" />
+      <section className="gradient-bg text-white py-8 sm:py-12 md:py-16">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <div className="flex items-center justify-center mb-4 sm:mb-6">
+              <div className="bg-orange-500 text-white rounded-full p-2 sm:p-3 md:p-4 mr-2 sm:mr-3 md:mr-4">
+                <Bike className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
               </div>
-              <div className="text-left">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight">
-                  Hema Motor
-                </h1>
-                <p className="text-sm sm:text-base md:text-lg text-white opacity-90 mt-1">
-                  Your Dream Ride Awaits
-                </p>
-              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Hema Motor</h1>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-white">
-              Find Your Perfect Two-Wheeler
-            </h2>
-            <p className="text-lg sm:text-xl md:text-2xl opacity-95 max-w-3xl mx-auto leading-relaxed">
-              Discover thousands of verified motorcycles, scooters & electric vehicles from trusted sellers
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">Find Your Perfect Ride</h2>
+            <p className="text-base sm:text-lg md:text-xl opacity-90 max-w-2xl mx-auto px-2">
+              Discover thousands of verified two-wheelers from trusted sellers across the country
             </p>
           </div>
           
