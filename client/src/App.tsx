@@ -12,6 +12,8 @@ import UserDashboard from "@/pages/user-dashboard";
 import VehicleDetail from "@/pages/vehicle-detail";
 import UsersPage from "@/pages/users";
 import SettingsPage from "@/pages/settings";
+import NotificationSettings from "@/pages/notification-settings";
+import PrivacySettings from "@/pages/privacy-settings";
 
 function Router() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -61,6 +63,8 @@ function Router() {
           </Route>
           <Route path="/users" component={UsersPage} />
           <Route path="/settings" component={SettingsPage} />
+          <Route path="/settings/notifications" component={NotificationSettings} />
+          <Route path="/settings/privacy" component={PrivacySettings} />
           <Route path="/vehicle/:id" component={VehicleDetail} />
         </>
       )}

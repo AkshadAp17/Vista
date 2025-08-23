@@ -73,8 +73,14 @@ export default function UserDashboard() {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral">
-        <LoadingSpinner size="lg" text="Loading your dashboard..." />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <LoadingSpinner size="lg" text="Loading your dashboard..." />
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-48 animate-pulse mx-auto"></div>
+            <div className="h-3 bg-gray-200 rounded w-32 animate-pulse mx-auto"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -204,7 +210,9 @@ export default function UserDashboard() {
               </CardHeader>
               <CardContent>
                 {chatsLoading ? (
-                  <div className="text-center py-8">Loading chats...</div>
+                  <div className="flex items-center justify-center py-8">
+                    <LoadingSpinner size="md" text="Loading your chats..." />
+                  </div>
                 ) : chatRooms.length === 0 ? (
                   <div className="text-center py-8">
                     <MessageCircle className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -283,7 +291,9 @@ export default function UserDashboard() {
               </CardHeader>
               <CardContent>
                 {favoritesLoading ? (
-                  <div className="text-center py-8">Loading favorites...</div>
+                  <div className="flex items-center justify-center py-8">
+                    <LoadingSpinner size="md" text="Loading your favorites..." />
+                  </div>
                 ) : favoriteVehicles.length === 0 ? (
                   <div className="text-center py-8">
                     <Heart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -402,6 +412,7 @@ export default function UserDashboard() {
                           variant="outline" 
                           size="sm" 
                           className="w-full justify-start border-blue-200 hover:bg-blue-500 hover:text-white transition-all"
+                          onClick={() => window.location.href = '/settings/notifications'}
                         >
                           <Bell className="h-4 w-4 mr-3" />
                           Notification Settings
@@ -410,6 +421,7 @@ export default function UserDashboard() {
                           variant="outline" 
                           size="sm" 
                           className="w-full justify-start border-green-200 hover:bg-green-500 hover:text-white transition-all"
+                          onClick={() => window.location.href = '/settings/privacy'}
                         >
                           <User className="h-4 w-4 mr-3" />
                           Privacy Settings
