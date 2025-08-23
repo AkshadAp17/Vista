@@ -119,7 +119,7 @@ export default function UserDashboard() {
                 onClick={() => window.location.href = '/'}
               >
                 <Home className="h-4 w-4 mr-2" />
-                Browse
+                Home
               </Button>
               <Button 
                 size="sm"
