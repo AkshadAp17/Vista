@@ -141,25 +141,23 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
       return;
     }
 
+    if (isOwner) {
+      toast({
+        title: "Cannot Chat",
+        description: "You cannot chat with yourself about your own vehicle.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // Create or get existing chat room
       const response = await apiRequest('POST', '/api/chat-rooms', {
         vehicleId: vehicle.id,
       });
 
-      // Get the floating chat widget to open
-      const chatWidget = document.querySelector('[data-chat-widget]') as HTMLButtonElement;
-      if (chatWidget) {
-        chatWidget.click();
-        
-        // Wait a bit for the widget to open, then trigger a manual selection
-        setTimeout(() => {
-          // Trigger a custom event to select this chat
-          window.dispatchEvent(new CustomEvent('selectChat', { 
-            detail: { chatRoomId: (response as any).id } 
-          }));
-        }, 300);
-      }
+      // Navigate directly to dashboard with chat focus
+      window.location.href = `/dashboard?chat=${(response as any).id}`;
     } catch (error) {
       toast({
         title: "Error",

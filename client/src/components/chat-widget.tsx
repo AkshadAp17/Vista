@@ -105,6 +105,24 @@ export default function ChatWidget() {
     }
   }, [isOpen, chatRooms]);
 
+  // Listen for selectChat events from vehicle cards
+  useEffect(() => {
+    const handleSelectChat = (event: CustomEvent) => {
+      const chatRoomId = event.detail.chatRoomId;
+      if (chatRooms.length > 0) {
+        const chat = chatRooms.find((c: ChatRoom) => c.id === chatRoomId);
+        if (chat) {
+          setSelectedChat(chat);
+        }
+      }
+    };
+
+    window.addEventListener('selectChat', handleSelectChat as EventListener);
+    return () => {
+      window.removeEventListener('selectChat', handleSelectChat as EventListener);
+    };
+  }, [chatRooms]);
+
   // Update unread count
   useEffect(() => {
     if (chatRooms && chatRooms.length > 0) {
@@ -558,10 +576,10 @@ export default function ChatWidget() {
           queryClient.invalidateQueries({ queryKey: ["/api/chat-rooms"] });
         }
       }}>
-        <DialogContent className="max-w-4xl h-[600px] p-0 overflow-hidden">
+        <DialogContent className="max-w-4xl md:h-[600px] h-[90vh] w-[95vw] md:w-auto p-0 overflow-hidden">
           <div className="flex h-full overflow-hidden">
-            {/* Chat List Sidebar */}
-            <div className="w-1/3 border-r flex flex-col">
+            {/* Chat List Sidebar - Hidden on mobile, shown on desktop */}
+            <div className="hidden md:flex md:w-1/3 border-r flex-col">
               <DialogHeader className="p-4 border-b bg-gradient-to-r from-orange-50 to-red-50">
                 <DialogTitle className="flex items-center">
                   <MessageCircle className="h-5 w-5 mr-2 text-orange-500" />
@@ -656,13 +674,88 @@ export default function ChatWidget() {
               </ScrollArea>
             </div>
 
-            {/* Chat Messages Area */}
-            <div className="flex-1 flex flex-col">
+            {/* Mobile Chat List - Show on mobile when no chat selected */}
+            <div className="md:hidden w-full flex flex-col" style={{ display: selectedChat ? 'none' : 'flex' }}>
+              <DialogHeader className="p-4 border-b bg-gradient-to-r from-orange-50 to-red-50">
+                <DialogTitle className="flex items-center">
+                  <MessageCircle className="h-5 w-5 mr-2 text-orange-500" />
+                  Messages
+                </DialogTitle>
+              </DialogHeader>
+              
+              <ScrollArea className="flex-1">
+                {chatsLoading ? (
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center space-x-3 animate-pulse">
+                      <div className="bg-gray-200 h-10 w-10 rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                        <div className="bg-gray-200 h-3 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : chatRooms.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500">
+                    <MessageCircle className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                    <p>No conversations yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1 p-2">
+                    {chatRooms.filter((chat: ChatRoom) => chat.vehicle && chat.vehicle.brand).map((chat: ChatRoom) => {
+                      const otherUser = getOtherUser(chat);
+                      const lastMessage = chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+                      
+                      return (
+                        <div
+                          key={chat.id}
+                          className="p-3 rounded-lg cursor-pointer hover:bg-orange-50 border border-gray-200"
+                          onClick={() => setSelectedChat(chat)}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Avatar className="w-10 h-10">
+                              <AvatarImage src={otherUser.profileImageUrl || ""} />
+                              <AvatarFallback>
+                                {otherUser.firstName?.[0] || ""}{otherUser.lastName?.[0] || ""}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-sm truncate">
+                                {otherUser.firstName} {otherUser.lastName}
+                              </h4>
+                              <p className="text-xs text-blue-600 truncate">
+                                {chat.vehicle?.brand} {chat.vehicle?.model}
+                              </p>
+                              {lastMessage && (
+                                <p className="text-xs text-gray-500 truncate mt-1">
+                                  {lastMessage.content}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
+
+            {/* Chat Messages Area - Full width on mobile */}
+            <div className="flex-1 flex flex-col w-full" style={{ display: selectedChat ? 'flex' : 'none' }}>
               {selectedChat ? (
                 <>
                   {/* Chat Header */}
                   <div className="p-4 border-b bg-gradient-to-r from-orange-50 to-red-50">
                     <div className="flex items-center justify-between">
+                      {/* Mobile Back Button */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="md:hidden"
+                        onClick={() => setSelectedChat(null)}
+                      >
+                        ← Back
+                      </Button>
                       <div className="flex items-center space-x-3">
                         <Bike className="h-5 w-5 text-orange-500" />
                         <div>

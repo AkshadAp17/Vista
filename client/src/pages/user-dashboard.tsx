@@ -18,6 +18,28 @@ import SettingsForm from "@/components/settings-form";
 export default function UserDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  
+  // Check for chat parameter in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const chatId = urlParams.get('chat');
+    if (chatId && isAuthenticated) {
+      // Automatically open chat widget and select the chat
+      setTimeout(() => {
+        const chatWidget = document.querySelector('[data-chat-widget]') as HTMLButtonElement;
+        if (chatWidget) {
+          chatWidget.click();
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('selectChat', { 
+              detail: { chatRoomId: chatId } 
+            }));
+          }, 500);
+        }
+      }, 1000);
+      // Clean up URL
+      window.history.replaceState({}, '', '/dashboard');
+    }
+  }, [isAuthenticated]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -295,49 +317,62 @@ export default function UserDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="w-20 h-20">
-                      <AvatarImage src={user?.profileImageUrl || ""} />
-                      <AvatarFallback className="text-xl bg-hema-orange text-white">
-                        {user?.firstName?.[0]}{user?.lastName?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="text-lg font-medium">
-                        {user?.firstName} {user?.lastName}
-                      </h3>
-                      <p className="text-gray-600">{user?.email}</p>
-                      <Button 
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => window.location.href = '/settings'}
-                      >
-                        <Settings className="h-4 w-4 mr-2" />
-                        Edit Profile
-                      </Button>
+                  <div className="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-lg border border-orange-100">
+                    <div className="flex items-center space-x-6">
+                      <div className="relative">
+                        <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                          <AvatarImage src={user?.profileImageUrl || ""} />
+                          <AvatarFallback className="text-2xl bg-hema-orange text-white font-bold">
+                            {user?.firstName?.[0]}{user?.lastName?.[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-hema-secondary">
+                          {user?.firstName} {user?.lastName}
+                        </h3>
+                        <p className="text-gray-600 text-lg">{user?.email}</p>
+                        <div className="flex items-center gap-3 mt-3">
+                          <Button 
+                            className="bg-hema-orange hover:bg-hema-orange/90 text-white"
+                            size="sm"
+                            onClick={() => window.location.href = '/settings'}
+                          >
+                            <Settings className="h-4 w-4 mr-2" />
+                            Edit Profile
+                          </Button>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            Online
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-medium mb-2">Account Information</h4>
-                      <div className="space-y-2 text-sm">
-                        <div>
-                          <span className="text-gray-600">Name:</span>
-                          <span className="ml-2">{user?.firstName} {user?.lastName}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <Card className="p-4 bg-white border border-gray-200">
+                      <h4 className="font-semibold text-hema-secondary mb-4 flex items-center">
+                        <User className="h-4 w-4 mr-2 text-hema-orange" />
+                        Account Information
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Name</span>
+                          <span className="font-semibold">{user?.firstName} {user?.lastName}</span>
                         </div>
-                        <div>
-                          <span className="text-gray-600">Email:</span>
-                          <span className="ml-2">{user?.email}</span>
+                        <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Email</span>
+                          <span className="font-semibold">{user?.email}</span>
                         </div>
-                        <div>
-                          <span className="text-gray-600">Phone:</span>
-                          <span className="ml-2">{(user as any)?.phoneNumber || 'Not provided'}</span>
+                        <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Phone</span>
+                          <span className="font-semibold">{(user as any)?.phoneNumber || 'Not provided'}</span>
                         </div>
-                        <div>
-                          <span className="text-gray-600">Member since:</span>
-                          <span className="ml-2">
+                        <div className="flex items-center justify-between py-2">
+                          <span className="text-gray-600 font-medium">Member since</span>
+                          <span className="font-semibold">
                             {(user as any)?.createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'long',
@@ -346,30 +381,41 @@ export default function UserDashboard() {
                           </span>
                         </div>
                       </div>
-                    </div>
+                    </Card>
                     
-                    <div>
-                      <h4 className="font-medium mb-2">Quick Actions</h4>
-                      <div className="space-y-2">
+                    <Card className="p-4 bg-white border border-gray-200">
+                      <h4 className="font-semibold text-hema-secondary mb-4 flex items-center">
+                        <Settings className="h-4 w-4 mr-2 text-hema-orange" />
+                        Quick Actions
+                      </h4>
+                      <div className="space-y-3">
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="w-full justify-start"
+                          className="w-full justify-start border-hema-orange/20 hover:bg-hema-orange hover:text-white transition-all"
                           onClick={() => window.location.href = '/settings'}
                         >
-                          <Settings className="h-4 w-4 mr-2" />
+                          <Settings className="h-4 w-4 mr-3" />
                           Account Settings
                         </Button>
-                        <Button variant="outline" size="sm" className="w-full justify-start">
-                          <Bell className="h-4 w-4 mr-2" />
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full justify-start border-blue-200 hover:bg-blue-500 hover:text-white transition-all"
+                        >
+                          <Bell className="h-4 w-4 mr-3" />
                           Notification Settings
                         </Button>
-                        <Button variant="outline" size="sm" className="w-full justify-start">
-                          <User className="h-4 w-4 mr-2" />
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full justify-start border-green-200 hover:bg-green-500 hover:text-white transition-all"
+                        >
+                          <User className="h-4 w-4 mr-3" />
                           Privacy Settings
                         </Button>
                       </div>
-                    </div>
+                    </Card>
                   </div>
                 </div>
               </CardContent>
