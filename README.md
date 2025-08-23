@@ -1,344 +1,542 @@
 # Hema Motor 🏍️
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-4.4%2B-green)](https://www.mongodb.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13%2B-blue)](https://www.postgresql.org/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-success)](https://vista-3.onrender.com/)
+
 A modern, full-stack marketplace for buying and selling two-wheelers including motorcycles, scooters, and electric vehicles. Built with React, Node.js, and real-time messaging capabilities.
 
-## ✨ Features
+## 🌐 Live Demo
+
+**🚀 [View Live Application](https://vista-3.onrender.com/)**
+
+Experience the full functionality of Hema Motor with our live demo deployment. The application includes all features mentioned below and is hosted on Render for optimal performance.
+
+## 🌟 Features
 
 ### 🔐 Authentication & Security
-- Secure authentication system using Replit Auth (OpenID Connect)
-- Password hashing with bcrypt
-- Role-based access control with admin privileges
-- Forgot password functionality with 2-step verification
-- Secure session management
+- **Secure Authentication**: OAuth integration with Replit Auth (OpenID Connect)
+- **Password Security**: bcrypt hashing with salt rounds
+- **Role-Based Access**: Admin and user privilege management
+- **Password Recovery**: 2-step verification with OTP via email
+- **Session Management**: Secure session handling with PostgreSQL storage
 
 ### 🏍️ Vehicle Management
-- Complete CRUD operations for vehicle listings
-- Advanced search and filtering (location, price, type, brand, vehicle ID)
-- Featured vehicles system
-- Image uploads with base64 storage
-- Vehicle status tracking (available, pending, sold)
-- Auto-generated vehicle numbering (e.g., VH001)
+- **Complete CRUD**: Full vehicle listing management
+- **Advanced Search**: Multi-parameter filtering (location, price, type, brand, vehicle ID)
+- **Featured Listings**: Promotional vehicle showcase system
+- **Media Upload**: Base64 image storage with compression
+- **Status Tracking**: Real-time vehicle availability (available, pending, sold)
+- **Smart Numbering**: Auto-generated vehicle IDs (VH001, VH002, etc.)
 
-### 🔍 Smart Search System
-- Real-time search with instant filtering
-- Search by location, price range, vehicle type, and keywords
-- Conditional display logic (featured vehicles hidden during search)
-- Clear filters functionality
-- Dynamic result labeling
+### 🔍 Intelligent Search System
+- **Real-Time Search**: Instant results with debounced input
+- **Multi-Filter Support**: Location, price range, vehicle type, and keyword search
+- **Dynamic Results**: Conditional display logic for featured vehicles
+- **Filter Management**: Clear all filters functionality
+- **Result Analytics**: Dynamic result count and categorization
 
-### 💬 Real-time Chat System
-- WebSocket-based messaging between buyers and sellers
-- Organized chat rooms per vehicle listing
-- Persistent message history
-- WhatsApp-style instant messaging with optimistic updates
-- Relative time formatting
-- Chat request notifications
+### 💬 Real-Time Chat System
+- **WebSocket Messaging**: Instant communication between buyers and sellers
+- **Organized Rooms**: Vehicle-specific chat channels
+- **Message Persistence**: Complete chat history storage
+- **Optimistic Updates**: WhatsApp-style instant message delivery
+- **Smart Timestamps**: Relative time formatting (2m ago, 1h ago)
+- **Notifications**: Chat request alerts and unread message counts
 
 ### 👤 User Management
-- Comprehensive profile and settings management
-- Admin and user dashboards
-- Password change functionality
-- Phone number management
+- **Profile Management**: Comprehensive user settings and information
+- **Dashboard Systems**: Separate admin and user control panels
+- **Security Controls**: Password change and account management
+- **Contact Management**: Phone number verification and updates
 
 ### 🎨 Modern UI/UX
-- Tailwind CSS with custom design system
-- Radix UI primitives with shadcn/ui components
-- Dark gradients and smooth animations
-- Bicycle-themed branding with orange accent colors
-- Professional split-screen login/signup layouts
-- Enhanced mobile responsiveness
+- **Design System**: Tailwind CSS with custom component library
+- **Component Library**: Radix UI primitives with shadcn/ui components
+- **Visual Identity**: Professional gradient themes with orange accents
+- **Responsive Design**: Mobile-first approach with adaptive layouts
+- **Smooth Animations**: Micro-interactions and transitions
+- **Accessibility**: WCAG 2.1 compliant interface elements
 
-### 🌟 Social Features
-- Like/share functionality for vehicle listings
-- Local storage for user preferences
-- Business card component for company information
-
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
 ### Frontend
 - **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Routing**: Wouter
-- **State Management**: TanStack Query for server state
-- **Forms**: React Hook Form with Zod validation
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI + shadcn/ui
+- **Build Tool**: Vite with Hot Module Replacement
+- **Routing**: Wouter (lightweight React router)
+- **State Management**: TanStack Query for server state management
+- **Form Handling**: React Hook Form with Zod schema validation
+- **Styling**: Tailwind CSS utility-first framework
+- **UI Components**: Radix UI headless components + shadcn/ui
 
 ### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js REST API
-- **Real-time**: WebSocket support with `ws` library
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js RESTful API
+- **Real-Time**: WebSocket implementation with `ws` library
 - **Database**: MongoDB with Mongoose ODM
-- **Session Storage**: PostgreSQL with connect-pg-simple
-- **ORM**: Drizzle ORM
+- **Session Store**: PostgreSQL with connect-pg-simple
+- **Query Builder**: Drizzle ORM for type-safe database queries
+- **Email Service**: Nodemailer with Gmail SMTP
 
 ### Development & Deployment
-- **Development DB**: MongoDB Memory Server
-- **Email Service**: Gmail SMTP for OTP verification
-- **Platform Integration**: Replit Auth and environment configuration
-- **Deployment**: Vercel-optimized builds
-- **Build Tools**: esbuild (backend), Vite (frontend)
+- **Development Database**: MongoDB Memory Server for testing
+- **Authentication Provider**: Replit OAuth integration
+- **Build System**: Custom build pipeline with esbuild
+- **Deployment**: Vercel-optimized configuration
+- **Environment Management**: dotenv with validation
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
-- MongoDB database
-- PostgreSQL (for sessions)
-- Replit account (for authentication)
-- Gmail account (for email service)
+Before you begin, ensure you have the following installed:
 
-## 🚀 Getting Started
+- **Node.js**: Version 18.0.0 or higher
+- **MongoDB**: Version 4.4 or higher
+- **PostgreSQL**: Version 13 or higher
+- **Git**: For version control
+- **Replit Account**: For OAuth authentication setup
+- **Gmail Account**: For OTP email services (with app password)
 
-### 1. Clone the Repository
+## 🚀 Quick Start
+
+### 1. Clone Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/yourusername/hema-motor.git
 cd hema-motor
 ```
 
 ### 2. Install Dependencies
 ```bash
-# Install all dependencies
+# Install root dependencies
 npm install
 
-# If using separate client/server setup
-cd client
-npm install
-cd ../server
-npm install
+# Install client dependencies
+cd client && npm install
+
+# Install server dependencies
+cd ../server && npm install
+cd ..
 ```
 
-### 3. Environment Configuration
-Create `.env` files in both root and backend directories:
+### 3. Environment Setup
 
-**Root `.env`:**
+Create environment files in the project root:
+
+**.env (Root)**
 ```env
 VITE_API_URL=http://localhost:3001
 VITE_WS_URL=ws://localhost:3001
+NODE_ENV=development
 ```
 
-**Backend `.env`:**
+**.env (Backend/Server)**
 ```env
+# Database Configuration
 MONGODB_URI=mongodb://localhost:27017/hema-motor
 POSTGRESQL_URL=postgresql://username:password@localhost:5432/sessions
+
+# Authentication
 REPLIT_CLIENT_ID=your_replit_client_id
 REPLIT_CLIENT_SECRET=your_replit_client_secret
-GMAIL_USER=your_gmail@gmail.com
-GMAIL_PASS=your_app_password
-SESSION_SECRET=your_session_secret
+SESSION_SECRET=your_super_secure_session_secret
+
+# Email Service
+GMAIL_USER=your.email@gmail.com
+GMAIL_PASS=your_gmail_app_password
+
+# Server Configuration
 PORT=3001
+NODE_ENV=development
 ```
 
 ### 4. Database Setup
+
+**MongoDB Setup:**
 ```bash
 # Start MongoDB service
 sudo systemctl start mongod
 
+# Or using MongoDB Atlas (cloud)
+# Update MONGODB_URI in .env to your Atlas connection string
+```
+
+**PostgreSQL Setup:**
+```bash
 # Start PostgreSQL service
 sudo systemctl start postgresql
 
-# Run database migrations (if any)
-cd backend
-npm run migrate
+# Create database
+createdb sessions
+
+# Run migrations if available
+cd server && npm run migrate
 ```
 
-### 5. Start Development Servers
+### 5. Start Development Environment
+
 ```bash
-# Using the build script
-npm run build
+# Method 1: Use the build script
+npm run build && npm start
 
-# Or start individual services
-# Terminal 1: Start server
-cd server
-npm run dev
+# Method 2: Start services individually
+# Terminal 1 - Backend
+cd server && npm run dev
 
-# Terminal 2: Start client
-cd client
-npm run dev
+# Terminal 2 - Frontend
+cd client && npm run dev
 
-# Using Docker (if preferred)
-docker build -t hema-motor .
-docker run -p 3000:3000 hema-motor
+# Method 3: Using Docker
+docker-compose up -d
 ```
 
-Visit `http://localhost:5173` to access the application.
+**Access the application:**
+- **Live Demo**: https://vista-3.onrender.com/
+- Frontend (Dev): http://localhost:5173
+- Backend API (Dev): http://localhost:3001
+- WebSocket (Dev): ws://localhost:3001
 
 ## 📁 Project Structure
 
 ```
 hema-motor/
-├── api/                   # Backend API routes and logic
-├── client/                # Frontend React application
-├── scripts/               # Build and deployment scripts
-├── server/                # Server configuration and setup
-├── shared/                # Shared utilities and types
-├── .dockerignore          # Docker ignore file
-├── .env                   # Environment variables
-├── .gitignore             # Git ignore file
-├── Dockerfile             # Docker container configuration
-├── Procfile               # Process file for deployment
-├── README.md              # Project documentation
-├── VERCEL_FIX.md          # Vercel deployment fixes
-├── build.js               # Build configuration
-├── build-vercel.sh        # Vercel build script
-├── components.json        # UI components configuration
-├── cookies.txt            # Cookie configuration
-└── admin_*.txt            # Admin configuration files
+├── 📁 api/                    # Backend API routes and middleware
+│   ├── routes/               # Express route definitions
+│   ├── middleware/           # Custom middleware functions
+│   └── controllers/          # Request handlers
+├── 📁 client/                # Frontend React application
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/           # Route-based page components
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── utils/           # Utility functions
+│   │   └── types/           # TypeScript type definitions
+│   ├── public/              # Static assets
+│   └── package.json         # Frontend dependencies
+├── 📁 server/                # Server configuration and setup
+│   ├── models/              # Database models (Mongoose)
+│   ├── utils/               # Server utilities
+│   ├── websocket/           # WebSocket handlers
+│   └── package.json         # Backend dependencies
+├── 📁 shared/                # Shared utilities and types
+│   ├── types/               # Common TypeScript interfaces
+│   └── constants/           # Application constants
+├── 📁 scripts/               # Build and deployment scripts
+├── 📄 .env.example           # Environment template
+├── 📄 .gitignore            # Git ignore rules
+├── 📄 Dockerfile            # Container configuration
+├── 📄 docker-compose.yml    # Multi-service container setup
+├── 📄 package.json          # Root dependencies and scripts
+├── 📄 README.md             # Project documentation
+└── 📄 CHANGELOG.md          # Version history
 ```
 
 ## 🔧 Available Scripts
 
-### Root Level
+### Root Level Commands
 ```bash
-npm run build        # Build entire application using build.js
 npm run dev          # Start development environment
+npm run build        # Build entire application
 npm run start        # Start production server
+npm run test         # Run all tests
+npm run lint         # Lint entire codebase
+npm run format       # Format code with Prettier
 npm run deploy       # Deploy to production
 ```
 
-### Client (Frontend)
+### Frontend Commands
 ```bash
 cd client
-npm run dev          # Start development server
+npm run dev          # Start Vite dev server
 npm run build        # Build for production
 npm run preview      # Preview production build
-npm run lint         # Run ESLint
+npm run test         # Run frontend tests
+npm run lint:fix     # Fix linting issues
 ```
 
-### Server (Backend)
+### Backend Commands
 ```bash
 cd server
-npm run dev          # Start development server
-npm run build        # Build for production
+npm run dev          # Start Express server with nodemon
+npm run build        # Build server for production
 npm run start        # Start production server
-npm run test         # Run tests
+npm run test         # Run API tests
+npm run migrate      # Run database migrations
+npm run seed         # Seed database with sample data
 ```
 
-### Scripts Directory
-```bash
-./scripts/build.sh   # Custom build scripts
-./build-vercel.sh    # Vercel-specific build process
+## 🌐 API Documentation
+
+### Authentication Endpoints
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/login` | User login | ❌ |
+| POST | `/api/auth/register` | User registration | ❌ |
+| POST | `/api/auth/logout` | User logout | ✅ |
+| POST | `/api/auth/forgot-password` | Request password reset | ❌ |
+| POST | `/api/auth/reset-password` | Reset password with OTP | ❌ |
+| GET | `/api/auth/verify` | Verify session | ✅ |
+
+### Vehicle Management Endpoints
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/vehicles` | Get all vehicles with filters | ❌ |
+| GET | `/api/vehicles/featured` | Get featured vehicles | ❌ |
+| GET | `/api/vehicles/:id` | Get specific vehicle | ❌ |
+| POST | `/api/vehicles` | Create vehicle listing | ✅ |
+| PUT | `/api/vehicles/:id` | Update vehicle listing | ✅ |
+| DELETE | `/api/vehicles/:id` | Delete vehicle listing | ✅ |
+| POST | `/api/vehicles/:id/like` | Toggle vehicle like | ✅ |
+
+### Chat System Endpoints
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/chats/:vehicleId` | Get chat messages | ✅ |
+| POST | `/api/chats/:vehicleId/messages` | Send message | ✅ |
+| GET | `/api/chats/rooms` | Get user's chat rooms | ✅ |
+
+### User Management Endpoints
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/users/profile` | Get user profile | ✅ |
+| PUT | `/api/users/profile` | Update user profile | ✅ |
+| POST | `/api/users/change-password` | Change password | ✅ |
+| GET | `/api/users/listings` | Get user's vehicle listings | ✅ |
+
+### WebSocket Events
+```javascript
+// Client to Server
+'join_chat' - Join vehicle chat room
+'send_message' - Send chat message
+'typing' - Typing indicator
+
+// Server to Client
+'message_received' - New chat message
+'user_joined' - User joined chat
+'user_left' - User left chat
+'typing_status' - Typing status update
 ```
-
-## 🌐 API Endpoints
-
-### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/logout` - User logout
-- `POST /api/auth/forgot-password` - Request password reset
-- `POST /api/auth/reset-password` - Reset password with OTP
-
-### Vehicles
-- `GET /api/vehicles` - Get all vehicles with filters
-- `GET /api/vehicles/:id` - Get vehicle by ID
-- `POST /api/vehicles` - Create new vehicle listing
-- `PUT /api/vehicles/:id` - Update vehicle listing
-- `DELETE /api/vehicles/:id` - Delete vehicle listing
-
-### Chat
-- `GET /api/chats/:vehicleId` - Get chat messages for vehicle
-- `POST /api/chats/:vehicleId` - Send message
-- WebSocket: `/ws` - Real-time messaging
-
-### User Management
-- `GET /api/users/profile` - Get user profile
-- `PUT /api/users/profile` - Update user profile
-- `POST /api/users/change-password` - Change password
-
-## 🎨 Design System
-
-The application uses a consistent design system with:
-- **Primary Colors**: Orange accent (#F97316) with dark gradients
-- **Typography**: Modern, clean fonts with proper hierarchy
-- **Components**: Reusable UI components following atomic design principles
-- **Responsive Design**: Mobile-first approach with breakpoint-specific layouts
-- **Animations**: Smooth transitions and micro-interactions
-
-## 📱 Mobile Responsiveness
-
-All components are optimized for mobile devices including:
-- Responsive navigation and search bar
-- Optimized vehicle card layouts
-- Touch-friendly chat interface
-- Mobile-specific login/signup flows
 
 ## 🔒 Security Features
 
-- Password hashing with bcrypt
-- Secure session management
-- CORS protection
-- Input validation with Zod
-- Rate limiting on API endpoints
-- SQL injection prevention
-- XSS protection
+- **Authentication**: OAuth 2.0 with Replit integration
+- **Password Security**: bcrypt with configurable salt rounds
+- **Session Management**: Secure HTTP-only cookies
+- **Input Validation**: Zod schema validation for all inputs
+- **SQL Injection Prevention**: Parameterized queries with Mongoose
+- **XSS Protection**: Content sanitization and CSP headers
+- **CORS Configuration**: Restricted origin access
+- **Rate Limiting**: API endpoint request limiting
+- **Environment Security**: Sensitive data in environment variables
 
-## 🚀 Deployment
+## 🚀 Deployment Guide
 
-### Vercel Deployment (Recommended)
-1. Connect your repository to Vercel
-2. Configure environment variables in Vercel dashboard
-3. Use the provided `build-vercel.sh` script for deployment
-4. Check `VERCEL_FIX.md` for deployment troubleshooting
+### Render Deployment (Current Live Demo)
+
+The application is currently deployed on Render at: **https://vista-3.onrender.com/**
+
+**Render Deployment Steps:**
+1. **Connect Repository** to Render
+2. **Configure Environment Variables** in Render Dashboard
+3. **Set Build Command**: `npm run build`
+4. **Set Start Command**: `npm start`
+5. **Configure Web Service** with appropriate instance type
+
+### Vercel Deployment
+
+1. **Connect Repository**
+   ```bash
+   # Install Vercel CLI
+   npm i -g vercel
+   
+   # Login and link project
+   vercel login
+   vercel --prod
+   ```
+
+2. **Environment Variables**
+   Configure in Vercel Dashboard:
+   - `MONGODB_URI`
+   - `POSTGRESQL_URL`
+   - `REPLIT_CLIENT_ID`
+   - `REPLIT_CLIENT_SECRET`
+   - `GMAIL_USER`
+   - `GMAIL_PASS`
+   - `SESSION_SECRET`
+
+3. **Build Configuration**
+   The project includes optimized Vercel configuration in `vercel.json`
 
 ### Docker Deployment
-```bash
-# Build Docker image
-docker build -t hema-motor .
 
-# Run container
-docker run -p 3000:3000 -d hema-motor
+1. **Build Image**
+   ```bash
+   docker build -t hema-motor .
+   ```
 
-# With environment file
-docker run --env-file .env -p 3000:3000 -d hema-motor
-```
+2. **Run Container**
+   ```bash
+   # With environment file
+   docker run --env-file .env -p 3000:3000 hema-motor
+   
+   # Or with docker-compose
+   docker-compose up -d
+   ```
 
 ### Manual Deployment
-```bash
-# Build the application
-npm run build
 
-# Deploy using your hosting provider
-# Files will be built according to build.js configuration
+1. **Build Application**
+   ```bash
+   npm run build
+   ```
+
+2. **Deploy Files**
+   - Upload `dist/` folder to your hosting provider
+   - Configure environment variables
+   - Set up reverse proxy (Nginx recommended)
+
+## 🧪 Testing
+
+### Running Tests
+```bash
+# Run all tests
+npm test
+
+# Run specific test suites
+npm run test:frontend
+npm run test:backend
+npm run test:e2e
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
 ```
+
+### Test Structure
+- **Unit Tests**: Component and utility function testing
+- **Integration Tests**: API endpoint testing
+- **E2E Tests**: Complete user workflow testing
+- **Performance Tests**: Load testing for scalability
+
+## 📊 Performance Optimization
+
+- **Frontend**: Code splitting, lazy loading, image optimization
+- **Backend**: Database indexing, query optimization, caching
+- **Real-time**: Efficient WebSocket connection management
+- **Build**: Tree shaking, minification, compression
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions! Please follow these steps:
 
-## 📝 Recent Updates (January 2025)
+1. **Fork the Repository**
+   ```bash
+   git fork https://github.com/yourusername/hema-motor.git
+   ```
 
-- ✅ Removed browse categories for focused search experience
-- ✅ Streamlined homepage with search-first approach
-- ✅ Enhanced price range filter handling
-- ✅ Improved conditional display logic for featured vehicles
-- ✅ Added clear filters functionality
-- ✅ Better search result labeling
+2. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+
+3. **Make Changes**
+   - Follow the existing code style
+   - Add tests for new features
+   - Update documentation as needed
+
+4. **Commit Changes**
+   ```bash
+   git commit -m "feat: add amazing feature"
+   ```
+
+5. **Push and Create PR**
+   ```bash
+   git push origin feature/amazing-feature
+   # Create pull request on GitHub
+   ```
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Use conventional commit messages
+- Maintain test coverage above 80%
+- Update documentation for new features
+
+## 📈 Roadmap
+
+### Version 2.0 (Q2 2025)
+- [ ] Mobile application (React Native)
+- [ ] Advanced analytics dashboard
+- [ ] AI-powered vehicle recommendations
+- [ ] Payment gateway integration
+- [ ] Multi-language support
+
+### Version 2.1 (Q3 2025)
+- [ ] Video calls for vehicle inspections
+- [ ] Blockchain-based ownership verification
+- [ ] Advanced filtering with machine learning
+- [ ] Social features and user reviews
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Database Connection Issues**
+```bash
+# Check MongoDB status
+sudo systemctl status mongod
+
+# Restart MongoDB
+sudo systemctl restart mongod
+```
+
+**Port Already in Use**
+```bash
+# Find process using port
+lsof -i :3001
+
+# Kill process
+kill -9 <PID>
+```
+
+**Build Failures**
+```bash
+# Clear node modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Getting Help
+- 📖 Check the [Wiki](https://github.com/yourusername/hema-motor/wiki)
+- 🐛 Report bugs in [Issues](https://github.com/yourusername/hema-motor/issues)
+- 💬 Join our [Discord Community](https://discord.gg/hema-motor)
+- 📧 Email support: support@hemamotor.com
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation in the `/docs` folder
-
 ## 🙏 Acknowledgments
 
-- Replit for authentication services
-- Radix UI for accessible component primitives
-- Tailwind CSS for utility-first styling
-- MongoDB and PostgreSQL for reliable data storage
+- **Replit Team** - For seamless OAuth integration
+- **Vercel** - For excellent deployment platform
+- **Radix UI** - For accessible component primitives  
+- **Tailwind CSS** - For utility-first styling approach
+- **MongoDB & PostgreSQL** - For reliable data storage solutions
+- **Open Source Community** - For the amazing tools and libraries
+
+## 📞 Support & Contact
+
+- **🌐 Live Demo**: [https://vista-3.onrender.com/](https://vista-3.onrender.com/)
+- **📚 Documentation**: [https://docs.hemamotor.com](https://docs.hemamotor.com)
+- **✉️ Support Email**: support@hemamotor.com
+- **🐦 Twitter**: [@HemaMotor](https://twitter.com/HemaMotor)
+- **💼 LinkedIn**: [HemaMotor](https://linkedin.com/company/hemamotor)
 
 ---
 
-Built with ❤️ for the two-wheeler community
-#   U R L  
- #   U R L  
- 
+<div align="center">
+  <p><strong>Built with ❤️ for the two-wheeler community</strong></p>
+  <p>© 2025 Hema Motor. All rights reserved.</p>
+</div>
