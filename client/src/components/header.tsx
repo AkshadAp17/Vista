@@ -8,14 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Bike, Plus, User, Settings, LogOut, Menu, Bell } from "lucide-react";
-import SettingsForm from "@/components/settings-form";
 import { Logo } from "@/components/ui/logo";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -140,7 +132,7 @@ export default function Header() {
                         <span>All Users</span>
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                    <DropdownMenuItem onClick={() => window.location.href = '/settings'}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </DropdownMenuItem>
@@ -193,15 +185,6 @@ export default function Header() {
         )}
       </div>
 
-      {/* Settings Modal */}
-      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Settings</DialogTitle>
-          </DialogHeader>
-          <SettingsForm isAdmin={(user as any)?.isAdmin} />
-        </DialogContent>
-      </Dialog>
     </header>
   );
 }

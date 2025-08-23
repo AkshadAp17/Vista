@@ -11,6 +11,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import UserDashboard from "@/pages/user-dashboard";
 import VehicleDetail from "@/pages/vehicle-detail";
 import UsersPage from "@/pages/users";
+import SettingsPage from "@/pages/settings";
 
 function Router() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -59,6 +60,7 @@ function Router() {
             {user?.isAdmin ? <AdminDashboard /> : <UserDashboard />}
           </Route>
           <Route path="/users" component={UsersPage} />
+          <Route path="/settings" component={SettingsPage} />
           <Route path="/vehicle/:id" component={VehicleDetail} />
         </>
       )}
